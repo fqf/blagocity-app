@@ -1,17 +1,12 @@
-import { Text, View, StyleSheet } from "react-native";
+import { Text, View } from "react-native";
+import { FC } from "react";
 
-export default function Index() {
+const Index: FC = () => {
   return (
-    <View style={styles.container}>
-      <Text>Edit src/app/index.tsx to edit this screen.</Text>
+    <View>
+      <Text>Привет Мир!</Text>
     </View>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
+export default Index;
