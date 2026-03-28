@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "БлагоСити",
-    "description": "БлагоСити - твой город в твоих руках",
+    "description": "Городская система помощи инвалидам и лицам с ограниченными возможностями",
     "slug": "blagocity",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -34,7 +34,13 @@
       [
         "expo-font",
         {
-          "fonts": []
+          "fonts": [
+            "./assets/fonts/LexendDeca-Bold.ttf",
+            "./assets/fonts/LexendDeca-ExtraLight.ttf",
+            "./assets/fonts/LexendDeca-Medium.ttf",
+            "./assets/fonts/LexendDeca-Regular.ttf",
+            "./assets/fonts/LexendDeca-SemiBold.ttf"
+          ]
         }
       ],
       [
@@ -43,8 +49,7 @@
           "assets": []
         }
       ],
-      "expo-asset",
-      "expo-font"
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true,

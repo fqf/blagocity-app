@@ -1,12 +1,8 @@
-import { Text, View } from "react-native";
 import { FC } from "react";
+import { Redirect } from "expo-router";
 
 const Index: FC = () => {
-  return (
-    <View>
-      <Text>Привет Мир!</Text>
-    </View>
-  );
+  return <Redirect href="/auth/login" />;
 };
 
 export default Index;
