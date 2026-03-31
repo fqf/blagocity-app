@@ -1,13 +1,13 @@
 import { FC } from "react";
 import AuthLayout from "@/components/layouts/auth-layout";
-import LoginScreen from "@/components/screens/auth/login-screen";
+import SignInScreen from "@/components/screens/auth/sign-in-screen";
 
-const Login: FC = () => {
+const SignIn: FC = () => {
   return (
     <AuthLayout>
-      <LoginScreen />
+      <SignInScreen />
     </AuthLayout>
   );
 };
 
-export default Login;
+export default SignIn;
