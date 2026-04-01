@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { NativeSyntheticEvent, StyleSheet, Text, TextInput, TextInputFocusEventData, View } from "react-native";
 import COLORS from "@/constants/colors";
 import chroma from "chroma-js";
@@ -13,6 +13,7 @@ type TProps = {
   keyboardType?: "default" | "number-pad" | "decimal-pad" | "numeric" | "email-address" | "phone-pad" | "url";
   isSecure?: boolean;
   disabled?: boolean;
+  error?: string;
   onFocus?: () => void;
   onChange?: (text: string) => void;
   onBlur?: (e: NativeSyntheticEvent<TextInputFocusEventData>) => void;
@@ -42,6 +43,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: COLORS.text,
   },
+  error: {
+    fontFamily: "LexendDeca-Regular",
+    fontSize: 12,
+    color: COLORS.error,
+    textAlign: "center",
+  },
 });
 const Input: FC<TProps> = ({
   label,
@@ -51,8 +58,8 @@ const Input: FC<TProps> = ({
   multiline,
   autoCapitalize,
   keyboardType,
-  isSecure,
   disabled,
+  error,
   onFocus,
   onChange,
   onBlur,
@@ -60,13 +67,29 @@ const Input: FC<TProps> = ({
 }) => {
   const [status, setStatus] = useState<"unfocused" | "focused" | "error">("unfocused");
   const handleOnFocus = () => {
-    setStatus("focused");
+    if (!error) {
+      setStatus("focused");
+    }
+
     onFocus?.();
   };
   const handleOnBlur = (e: NativeSyntheticEvent<any>) => {
-    setStatus("unfocused");
+    if (!error) {
+      setStatus("unfocused");
+    }
+
     onBlur?.(e);
   };
+  const handleOnChange = (text: string, onChange?: (text: string) => void) => {
+    setStatus("focused");
+    onChange?.(text);
+  };
+
+  useEffect(() => {
+    if (error) {
+      setStatus("error");
+    }
+  }, [error]);
 
   return (
     <View style={styles.container}>
@@ -81,11 +104,19 @@ const Input: FC<TProps> = ({
           autoCapitalize={autoCapitalize}
           keyboardType={keyboardType}
           readOnly={disabled}
-          style={[styles.input, status === "focused" ? { borderColor: COLORS.active, backgroundColor: "white" } : null]}
-          onChangeText={onChange}
+          style={[
+            styles.input,
+            status === "focused"
+              ? { borderColor: COLORS.active, backgroundColor: "white" }
+              : status === "error"
+                ? { borderColor: COLORS.error, backgroundColor: chroma(COLORS.error).alpha(0.1).hex() }
+                : null,
+          ]}
+          onChangeText={(text: string) => handleOnChange(text, onChange)}
           onFocus={handleOnFocus}
           onBlur={handleOnBlur}
         />
+        {!!error && <Text style={styles.error}>{error}</Text>}
       </View>
     </View>
   );

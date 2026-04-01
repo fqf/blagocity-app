@@ -1,8 +1,13 @@
-import { FC } from "react";
-import { Redirect } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
+import VideoSplashScreen from "@/components/screens/common/video-splash-screen";
 
-const Index: FC = () => {
-  return <Redirect href="/auth/sign-in" />;
+SplashScreen.setOptions({
+  duration: 1000,
+  fade: true,
+});
+
+const Index = () => {
+  return <VideoSplashScreen />;
 };
 
 export default Index;

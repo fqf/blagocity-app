@@ -5,6 +5,7 @@ import { Formik } from "formik";
 import Input from "@/components/inputs/input";
 import OnboardingButton from "@/components/buttons/onboarding-button";
 import LinkButton from "@/components/buttons/link-button";
+import { Image } from "expo-image";
 
 const styles = StyleSheet.create({
   container: {
@@ -14,12 +15,18 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 20,
   },
+  logo: {
+    width: 295,
+    height: (376 * 295) / 507,
+    marginBottom: 30,
+  },
   form: {
     height: Dimensions.get("window").height,
     alignItems: "center",
     justifyContent: "center",
     gap: 14,
     paddingHorizontal: 20,
+    paddingBottom: 100,
   },
   buttons: {
     width: "100%",
@@ -67,6 +74,7 @@ const SignUpScreen: FC = () => {
           <View style={styles.content}>
             <ScrollView showsVerticalScrollIndicator={false}>
               <View style={styles.form}>
+                <Image source={{ uri: "logo" }} style={styles.logo} />
                 <Input label="Никнейм" placeholder="Придумайте ваш никнейм" />
                 <Input label="Кодовое слово" placeholder="Придумайте кодовое слово" />
                 <Input placeholder="Повторите кодовое слово" />

@@ -1,6 +1,4 @@
-import { FC } from "react";
-
-const NotFound: FC = () => {
+const NotFound = () => {
   return <></>;
 };
 
