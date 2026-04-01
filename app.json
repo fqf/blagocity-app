@@ -43,7 +43,13 @@
       [
         "expo-asset",
         {
-          "assets": ["./assets/images/logo.png", "./assets/video/intro.mp4"]
+          "assets": [
+            "./assets/video/intro.mp4",
+            "./assets/images/logo.png",
+            "./assets/images/onboarding/places.png",
+            "./assets/images/onboarding/clans.png",
+            "./assets/images/onboarding/discounts.png"
+          ]
         }
       ],
       "expo-secure-store",

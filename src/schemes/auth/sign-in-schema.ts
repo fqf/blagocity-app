@@ -5,7 +5,9 @@ const signInSchema: ZodObject = z.object({
     .string({
       error: "Обязательно для заполнения!",
     })
-    .trim(),
+    .trim()
+    .min(3, { error: "Должно быть минимум 3 символа!" })
+    .max(30, { error: "Должно быть максимум 30 символов!" }),
   code: z.string({
     error: "Обязательно для заполнения!",
   }),

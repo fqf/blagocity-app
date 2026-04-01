@@ -1,7 +1,7 @@
 import { FC } from "react";
 
-const Map: FC = () => {
+const Main: FC = () => {
   return <></>;
 };
 
-export default Map;
+export default Main;

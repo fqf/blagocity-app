@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { ChangeEvent, FC, useEffect, useState } from "react";
 import { Dimensions, Keyboard, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from "react-native";
 import COLORS from "@/constants/colors";
 import { Formik } from "formik";
@@ -6,6 +6,9 @@ import Input from "@/components/inputs/input";
 import OnboardingButton from "@/components/buttons/onboarding-button";
 import LinkButton from "@/components/buttons/link-button";
 import { Image } from "expo-image";
+import { toFormikValidationSchema } from "zod-formik-adapter";
+import signUpSchema from "@/schemes/auth/sign-up-schema";
+import { useRouter } from "expo-router";
 
 const styles = StyleSheet.create({
   container: {
@@ -50,6 +53,21 @@ const styles = StyleSheet.create({
 });
 const SignUpScreen: FC = () => {
   const [behavior, setBehavior] = useState<"height" | undefined>();
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState(false);
+  const [isSecure, setIsSecure] = useState(true);
+  const router = useRouter();
+  const handleOnInputChange = (callBack: (e: string | ChangeEvent<any>) => void, e: string | ChangeEvent<any>) => {
+    setError(false);
+    callBack(e);
+  };
+  const handleOnSubmit = async ({ nickname, code, code2 }: { nickname: string; code: string; code2: string }) => {
+    setPending(true);
+
+    setTimeout(() => {
+      router.push("/onboarding/places");
+    }, 1000);
+  };
 
   useEffect(() => {
     if (Platform.OS === "android") {
@@ -69,15 +87,47 @@ const SignUpScreen: FC = () => {
 
   return (
     <KeyboardAvoidingView behavior={Platform.OS === "android" ? behavior : "height"} style={styles.container}>
-      <Formik initialValues={{}} onSubmit={() => {}}>
+      <Formik
+        initialValues={{
+          nickname: "",
+          code: "",
+          code2: "",
+        }}
+        validationSchema={toFormikValidationSchema(signUpSchema)}
+        onSubmit={handleOnSubmit}>
         {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
           <View style={styles.content}>
             <ScrollView showsVerticalScrollIndicator={false}>
               <View style={styles.form}>
                 <Image source={{ uri: "logo" }} style={styles.logo} />
-                <Input label="Никнейм" placeholder="Придумайте ваш никнейм" />
-                <Input label="Кодовое слово" placeholder="Придумайте кодовое слово" />
-                <Input placeholder="Повторите кодовое слово" />
+                <Input
+                  label="Никнейм"
+                  placeholder="Придумайте ваш никнейм"
+                  value={values.nickname}
+                  error={touched.nickname && !!errors.nickname ? errors.nickname : ""}
+                  disabled={pending}
+                  onChange={e => handleOnInputChange(handleChange("nickname"), e)}
+                  onBlur={handleBlur("nickname")}
+                />
+                <Input
+                  label="Кодовое слово"
+                  placeholder="Придумайте кодовое слово"
+                  value={values.code}
+                  isSecure={isSecure}
+                  error={touched.code && !!errors.code ? errors.code : ""}
+                  disabled={pending}
+                  onChange={e => handleOnInputChange(handleChange("code"), e)}
+                  onBlur={handleBlur("code")}
+                />
+                <Input
+                  placeholder="Повторите кодовое слово"
+                  value={values.code2}
+                  isSecure={isSecure}
+                  error={touched.code2 && !!errors.code2 ? errors.code2 : ""}
+                  disabled={pending}
+                  onChange={e => handleOnInputChange(handleChange("code2"), e)}
+                  onBlur={handleBlur("code2")}
+                />
                 <View style={styles.footer}>
                   <Text style={styles.footerText}>
                     Запомните ваш никнейм и кодовое слово. Они могут понадобиться службе технической поддержки, если
@@ -85,7 +135,12 @@ const SignUpScreen: FC = () => {
                   </Text>
                 </View>
                 <View style={styles.buttons}>
-                  <OnboardingButton text="Зарегистрироваться" />
+                  <OnboardingButton
+                    text="Зарегистрироваться"
+                    pendingText="Регистрация в приложении..."
+                    pending={pending}
+                    onPress={handleSubmit}
+                  />
                   <View style={styles.footer}>
                     <Text style={styles.footerText}>Уже есть аккаунт?</Text>
                     <LinkButton text="Авторизоваться" href="/auth/sign-in" />
