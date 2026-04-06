@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
     width: "100%",
     gap: 20,
     position: "absolute",
-    bottom: 30,
+    bottom: 25,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -65,8 +65,8 @@ const SignUpScreen: FC = () => {
     setPending(true);
 
     setTimeout(() => {
-      router.push("/onboarding/places");
-    }, 1000);
+      router.push("/auth/about/step-1");
+    }, 2000);
   };
 
   useEffect(() => {

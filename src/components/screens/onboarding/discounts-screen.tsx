@@ -4,6 +4,7 @@ import { StyleSheet, Text, View } from "react-native";
 import OnboardingButton from "@/components/buttons/onboarding-button";
 import COLORS from "@/constants/colors";
 import { Image } from "expo-image";
+import Stepper from "@/components/others/stepper";
 
 const styles = StyleSheet.create({
   container: {
@@ -33,7 +34,7 @@ const styles = StyleSheet.create({
   },
   buttons: {
     width: "100%",
-    gap: 20,
+    gap: 22,
     position: "absolute",
     bottom: 30,
     alignItems: "center",
@@ -43,8 +44,7 @@ const styles = StyleSheet.create({
 const DiscountsScreen: FC = () => {
   const router = useRouter();
   const handleOnPress = () => {
-    //router.push("/tabs/main");
-    router.push("/onboarding/places");
+    router.push("/tabs/main");
   };
 
   return (
@@ -53,6 +53,7 @@ const DiscountsScreen: FC = () => {
       <Text style={styles.title}>Получай скидки</Text>
       <Text style={styles.text}>Зарабатывай баллы за активность и обменивай их на реальные скидки в заведениях.</Text>
       <View style={styles.buttons}>
+        <Stepper count={3} current={2} />
         <OnboardingButton text="Начать" onPress={handleOnPress} />
       </View>
     </View>

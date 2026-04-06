@@ -8,6 +8,7 @@ import LinkButton from "@/components/buttons/link-button";
 import { Image } from "expo-image";
 import { toFormikValidationSchema } from "zod-formik-adapter";
 import signInSchema from "@/schemes/auth/sign-in-schema";
+import { useRouter } from "expo-router";
 
 const styles = StyleSheet.create({
   container: {
@@ -15,7 +16,6 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    gap: 20,
   },
   logo: {
     width: 295,
@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
     width: "100%",
     gap: 20,
     position: "absolute",
-    bottom: 30,
+    bottom: 25,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -55,12 +55,16 @@ const SignInScreen: FC = () => {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState(false);
   const [isSecure, setIsSecure] = useState(true);
+  const router = useRouter();
   const handleOnInputChange = (callBack: (e: string | ChangeEvent<any>) => void, e: string | ChangeEvent<any>) => {
     setError(false);
     callBack(e);
   };
   const handleOnSubmit = async ({ nickname, code }: { nickname: string; code: string }) => {
     setPending(true);
+    setTimeout(() => {
+      router.push("/tabs/main");
+    }, 2000);
   };
 
   useEffect(() => {

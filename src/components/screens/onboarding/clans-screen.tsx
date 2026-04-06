@@ -4,6 +4,7 @@ import { StyleSheet, Text, View } from "react-native";
 import OnboardingButton from "@/components/buttons/onboarding-button";
 import COLORS from "@/constants/colors";
 import { Image } from "expo-image";
+import Stepper from "@/components/others/stepper";
 
 const styles = StyleSheet.create({
   container: {
@@ -33,7 +34,7 @@ const styles = StyleSheet.create({
   },
   buttons: {
     width: "100%",
-    gap: 20,
+    gap: 22,
     position: "absolute",
     bottom: 30,
     alignItems: "center",
@@ -52,6 +53,7 @@ const ClansScreen: FC = () => {
       <Text style={styles.title}>Объединяйся в кланы</Text>
       <Text style={styles.text}>Вступай в кланы, участвуй в активностях и соревнуйся с другими районами.</Text>
       <View style={styles.buttons}>
+        <Stepper count={3} current={1} />
         <OnboardingButton text="Далее" onPress={handleOnPress} />
       </View>
     </View>

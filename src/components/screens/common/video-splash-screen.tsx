@@ -18,6 +18,7 @@ const VideoSplashScreen = () => {
   const [videoStatus, setVideoStatus] = useState<VideoPlayerStatus>("loading");
   const player = useVideoPlayer({ uri: "intro" }, player => {
     player.loop = false;
+    player.volume = 1;
     player.play();
   });
   const router = useRouter();

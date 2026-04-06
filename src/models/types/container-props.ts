@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 
 type TContainerProps = {
-  children: ReactNode;
+  children?: ReactNode;
 };
 
 export default TContainerProps;

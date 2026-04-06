@@ -1,31 +1,33 @@
-import { FC, useEffect, useState } from "react";
-import { NativeSyntheticEvent, StyleSheet, Text, TextInput, TextInputFocusEventData, View } from "react-native";
+import { FC, useState } from "react";
+import { BlurEvent, StyleSheet, Text, TextInput, View } from "react-native";
 import COLORS from "@/constants/colors";
 import chroma from "chroma-js";
 
-type TProps = {
-  label?: string;
-  placeholder?: string;
-  value?: string;
-  inputMode?: "none" | "text" | "decimal" | "numeric" | "tel" | "search" | "email" | "url";
-  multiline?: boolean;
-  autoCapitalize?: "characters" | "words" | "sentences" | "none";
-  keyboardType?: "default" | "number-pad" | "decimal-pad" | "numeric" | "email-address" | "phone-pad" | "url";
-  isSecure?: boolean;
-  disabled?: boolean;
-  error?: string;
-  onFocus?: () => void;
-  onChange?: (text: string) => void;
-  onBlur?: (e: NativeSyntheticEvent<TextInputFocusEventData>) => void;
-  onButtonPress?: () => void;
-};
+type TProps = Partial<{
+  label: string;
+  placeholder: string;
+  value: string;
+  inputMode: "none" | "text" | "decimal" | "numeric" | "tel" | "search" | "email" | "url";
+  multiline: boolean;
+  autoCapitalize: "characters" | "words" | "sentences" | "none";
+  keyboardType: "default" | "number-pad" | "decimal-pad" | "numeric" | "email-address" | "phone-pad" | "url";
+  isSecure: boolean;
+  disabled: boolean;
+  unit: string;
+  error: string;
+  onFocus: () => void;
+  onChange: (text: string) => void;
+  onBlur: (e: BlurEvent) => void;
+  onButtonPress: () => void;
+}>;
 
 const styles = StyleSheet.create({
   container: {
     width: "100%",
+    gap: 4,
   },
   content: {
-    gap: 4,
+    justifyContent: "center",
   },
   label: {
     fontFamily: "LexendDeca-Regular",
@@ -43,6 +45,14 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: COLORS.text,
   },
+  unit: {
+    position: "absolute",
+    right: 12,
+    fontFamily: "LexendDeca-Regular",
+    fontSize: 18,
+    color: COLORS.text,
+    opacity: 0.25,
+  },
   error: {
     fontFamily: "LexendDeca-Regular",
     fontSize: 12,
@@ -59,42 +69,31 @@ const Input: FC<TProps> = ({
   autoCapitalize,
   keyboardType,
   disabled,
+  unit,
   error,
   onFocus,
   onChange,
   onBlur,
   onButtonPress,
 }) => {
-  const [status, setStatus] = useState<"unfocused" | "focused" | "error">("unfocused");
+  const [focused, setFocused] = useState(false);
   const handleOnFocus = () => {
-    if (!error) {
-      setStatus("focused");
-    }
-
+    setFocused(true);
     onFocus?.();
   };
-  const handleOnBlur = (e: NativeSyntheticEvent<any>) => {
-    if (!error) {
-      setStatus("unfocused");
-    }
-
+  const handleOnBlur = (e: BlurEvent) => {
+    setFocused(false);
     onBlur?.(e);
   };
   const handleOnChange = (text: string, onChange?: (text: string) => void) => {
-    setStatus("focused");
+    setFocused(true);
     onChange?.(text);
   };
 
-  useEffect(() => {
-    if (error) {
-      setStatus("error");
-    }
-  }, [error]);
-
   return (
     <View style={styles.container}>
+      {!!label && <Text style={styles.label}>{label}</Text>}
       <View style={styles.content}>
-        {!!label && <Text style={styles.label}>{label}</Text>}
         <TextInput
           placeholder={placeholder}
           placeholderTextColor={chroma(COLORS.label).alpha(0.5).hex()}
@@ -106,18 +105,16 @@ const Input: FC<TProps> = ({
           readOnly={disabled}
           style={[
             styles.input,
-            status === "focused"
-              ? { borderColor: COLORS.active, backgroundColor: "white" }
-              : status === "error"
-                ? { borderColor: COLORS.error, backgroundColor: chroma(COLORS.error).alpha(0.1).hex() }
-                : null,
+            focused ? { borderColor: COLORS.active, backgroundColor: "white" } : null,
+            error ? { borderColor: COLORS.error, backgroundColor: chroma(COLORS.error).alpha(0.1).hex() } : null,
           ]}
           onChangeText={(text: string) => handleOnChange(text, onChange)}
           onFocus={handleOnFocus}
           onBlur={handleOnBlur}
         />
-        {!!error && <Text style={styles.error}>{error}</Text>}
+        {!!unit && <Text style={styles.unit}>{unit}</Text>}
       </View>
+      {!!error && <Text style={styles.error}>{error}</Text>}
     </View>
   );
 };

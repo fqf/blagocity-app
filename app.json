@@ -48,7 +48,15 @@
             "./assets/images/logo.png",
             "./assets/images/onboarding/places.png",
             "./assets/images/onboarding/clans.png",
-            "./assets/images/onboarding/discounts.png"
+            "./assets/images/onboarding/discounts.png",
+            "./assets/images/avatars/avatar_1.png",
+            "./assets/images/avatars/avatar_2.png",
+            "./assets/images/avatars/avatar_3.png",
+            "./assets/images/avatars/avatar_4.png",
+            "./assets/images/avatars/avatar_5.png",
+            "./assets/images/avatars/avatar_6.png",
+            "./assets/images/avatars/avatar_7.png",
+            "./assets/images/avatars/avatar_8.png"
           ]
         }
       ],
@@ -59,7 +67,21 @@
           "supportsBackgroundPlayback": true,
           "supportsPictureInPicture": true
         }
-      ]
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location"
+        }
+      ],
+      [
+        "expo-maps",
+        {
+          "requestLocationPermission": true,
+          "locationPermission": "Allow $(PRODUCT_NAME) to use your location"
+        }
+      ],
+      "@rnmapbox/maps"
     ],
     "experiments": {
       "typedRoutes": true,

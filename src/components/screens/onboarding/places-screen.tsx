@@ -4,6 +4,7 @@ import OnboardingButton from "@/components/buttons/onboarding-button";
 import { useRouter } from "expo-router";
 import { Image } from "expo-image";
 import COLORS from "@/constants/colors";
+import Stepper from "@/components/others/stepper";
 
 const styles = StyleSheet.create({
   container: {
@@ -33,9 +34,9 @@ const styles = StyleSheet.create({
   },
   buttons: {
     width: "100%",
-    gap: 20,
+    gap: 22,
     position: "absolute",
-    bottom: 30,
+    bottom: 25,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -52,6 +53,7 @@ const PlacesScreen: FC = () => {
       <Text style={styles.title}>Открывай новые места</Text>
       <Text style={styles.text}>Находи интересные локации, кафе и парки в своем городе на интерактивной карте.</Text>
       <View style={styles.buttons}>
+        <Stepper count={3} current={0} />
         <OnboardingButton text="Далее" onPress={handleOnPress} />
       </View>
     </View>
