@@ -8,6 +8,7 @@ const COLORS = {
   activeBackground: "#F5F3FF",
   error: "#DC2626",
   errorBackground: "#FEF2F2",
+  tabBar: "#EEE9FF",
 };
 
 export default COLORS;

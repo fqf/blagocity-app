@@ -21,6 +21,10 @@ const RootLayout = () => {
           <Stack.Screen name="auth/sign-in" options={{ animation: "none" }} />
           <Stack.Screen name="auth/sign-up" options={{ animation: "none" }} />
           <Stack.Screen name="auth/restore" options={{ animation: "none" }} />
+          <Stack.Screen name="tabs/main/index" options={{ animation: "none" }} />
+          <Stack.Screen name="tabs/discounts/index" options={{ animation: "none" }} />
+          <Stack.Screen name="tabs/clan/index" options={{ animation: "none" }} />
+          <Stack.Screen name="tabs/search/index" options={{ animation: "none" }} />
         </Stack>
       </GestureHandlerRootView>
     </>

@@ -1,5 +1,5 @@
 import * as SplashScreen from "expo-splash-screen";
-import VideoSplashScreen from "@/components/screens/common/video-splash-screen";
+import { Redirect } from "expo-router";
 
 SplashScreen.setOptions({
   duration: 1000,
@@ -7,7 +7,8 @@ SplashScreen.setOptions({
 });
 
 const Index = () => {
-  return <VideoSplashScreen />;
+  //return <VideoSplashScreen />;
+  return <Redirect href="/tabs/main" />;
 };
 
 export default Index;
