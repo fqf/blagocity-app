@@ -25,6 +25,7 @@ const RootLayout = () => {
           <Stack.Screen name="tabs/discounts/index" options={{ animation: "none" }} />
           <Stack.Screen name="tabs/clan/index" options={{ animation: "none" }} />
           <Stack.Screen name="tabs/search/index" options={{ animation: "none" }} />
+          <Stack.Screen name="tabs/others/profile/index" options={{ animation: "none" }} />
         </Stack>
       </GestureHandlerRootView>
     </>
