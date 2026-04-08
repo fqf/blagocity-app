@@ -29,6 +29,7 @@ const styles = StyleSheet.create({
   },
   outlined: {
     borderColor: COLORS.inputBorder,
+    backgroundColor: "white",
   },
   text: {
     fontFamily: "LexendDeca-Medium",
