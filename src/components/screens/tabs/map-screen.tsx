@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
     marginTop: 60,
   },
 });
-const MainScreen: FC = () => {
+const MapScreen: FC = () => {
   const [zoomLevel, setZoomLevel] = useState(16);
   const [location, setLocation] = useState<[number, number]>(defaultLocation);
   const router = useRouter();
@@ -63,7 +63,7 @@ const MainScreen: FC = () => {
     setLocation(mapState.properties.center as [number, number]);
   }, 150);
   const handleOnAvatarPress = () => {
-    router.push("/tabs/others/profile");
+    router.push("/tabs/map/settings");
   };
 
   useEffect(() => {
@@ -103,4 +103,4 @@ const MainScreen: FC = () => {
   );
 };
 
-export default MainScreen;
+export default MapScreen;

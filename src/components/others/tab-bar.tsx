@@ -48,7 +48,7 @@ const TabBar: FC = () => {
         />
       </Svg>
       <View style={styles.left}>
-        <TabButton icon={EIcon.Map} href="/tabs/main" />
+        <TabButton icon={EIcon.Map} href="/tabs/map" />
         <TabButton icon={EIcon.Percent} href="/tabs/discounts" />
       </View>
       <View style={styles.right}>

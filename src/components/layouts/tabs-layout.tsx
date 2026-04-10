@@ -1,12 +1,13 @@
 import { FC } from "react";
 import TContainerProps from "@/models/types/container-props";
-import GlobalLayout from "@/components/layouts/global-layout";
 import { StyleSheet, View } from "react-native";
 import TabBar from "@/components/others/tab-bar";
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    width: "100%",
+    height: "100%",
   },
   tabBarContainer: {
     width: "100%",
@@ -15,14 +16,12 @@ const styles = StyleSheet.create({
 });
 const TabsLayout: FC<TContainerProps> = ({ children }) => {
   return (
-    <GlobalLayout>
-      <View style={styles.container}>
-        {children}
-        <View style={styles.tabBarContainer}>
-          <TabBar />
-        </View>
+    <View style={styles.container}>
+      {children}
+      <View style={styles.tabBarContainer}>
+        <TabBar />
       </View>
-    </GlobalLayout>
+    </View>
   );
 };
 

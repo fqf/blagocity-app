@@ -5,6 +5,7 @@ import { Image } from "expo-image";
 import COLORS from "@/constants/colors";
 import EIcon from "@/models/enums/icon";
 import Icon from "@/components/icons/icon";
+import { useRouter } from "expo-router";
 
 const styles = StyleSheet.create({
   container: {
@@ -42,6 +43,11 @@ const styles = StyleSheet.create({
   },
 });
 const ProfileBlock: FC = () => {
+  const router = useRouter();
+  const handleOnButtonPress = () => {
+    router.push("/tabs/map/settings/profile");
+  };
+
   return (
     <ShadowBlock>
       <View style={styles.container}>
@@ -49,7 +55,7 @@ const ProfileBlock: FC = () => {
           <Image source={{ uri: "avatar_1" }} style={styles.avatar} />
           <Text style={styles.text}>Вася В.</Text>
         </View>
-        <TouchableOpacity activeOpacity={0.5} style={styles.button}>
+        <TouchableOpacity activeOpacity={0.5} style={styles.button} onPress={handleOnButtonPress}>
           <Icon icon={EIcon.Gear} fill={COLORS.label} style={styles.icon} />
         </TouchableOpacity>
       </View>

@@ -1,5 +1,4 @@
 import { FC, useEffect, useState } from "react";
-import AuthLayout from "@/components/layouts/auth-layout";
 import { Dimensions, Keyboard, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from "react-native";
 import TContainerProps from "@/models/types/container-props";
 import COLORS from "@/constants/colors";
@@ -59,19 +58,17 @@ const AboutStepsLayout: FC<TProps> = ({ children, step, title }) => {
   }, []);
 
   return (
-    <AuthLayout>
-      <KeyboardAvoidingView behavior={Platform.OS === "android" ? behavior : "height"} style={styles.container}>
-        <View style={styles.content}>
-          <ScrollView showsVerticalScrollIndicator={false}>
-            <View style={styles.form}>
-              <Text style={styles.step}>ШАГ {step}</Text>
-              <Text style={styles.title}>{title}</Text>
-              {children}
-            </View>
-          </ScrollView>
-        </View>
-      </KeyboardAvoidingView>
-    </AuthLayout>
+    <KeyboardAvoidingView behavior={Platform.OS === "android" ? behavior : "height"} style={styles.container}>
+      <View style={styles.content}>
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <View style={styles.form}>
+            <Text style={styles.step}>ШАГ {step}</Text>
+            <Text style={styles.title}>{title}</Text>
+            {children}
+          </View>
+        </ScrollView>
+      </View>
+    </KeyboardAvoidingView>
   );
 };
 

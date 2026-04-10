@@ -6,6 +6,7 @@ import IconBlock from "@/components/others/icon-block";
 import COLORS from "@/constants/colors";
 import chroma from "chroma-js";
 import { Href, useRouter } from "expo-router";
+import Icon from "@/components/icons/icon";
 import hairlineWidth = StyleSheet.hairlineWidth;
 
 type TButtonProps = {
@@ -22,6 +23,11 @@ const styles = StyleSheet.create({
     padding: 16,
     borderBottomWidth: hairlineWidth,
     borderBottomColor: chroma(COLORS.label).alpha(0.5).hex(),
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  buttonContent: {
+    flexDirection: "row",
     gap: 12,
   },
   title: {
@@ -34,6 +40,10 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: COLORS.label,
   },
+  chevronIcon: {
+    width: 20,
+    height: 20,
+  },
   menuContainer: {
     backgroundColor: "white",
     width: "100%",
@@ -43,27 +53,27 @@ const styles = StyleSheet.create({
 const items: { icon: EIcon; title: string; description: string; href: Href }[] = [
   {
     icon: EIcon.Profile,
-    title: "Данные профиля",
+    title: "Доступность",
     description: "Изменить особенности и доступность",
-    href: "/tabs/others/profile/accessibility",
+    href: "/tabs/map/settings/accessibility",
   },
   {
     icon: EIcon.Ring,
     title: "Уведомления",
     description: "Настроить пуши и рассылки",
-    href: "/tabs/others/profile/notifications",
+    href: "/tabs/map/settings/notifications",
   },
   {
     icon: EIcon.Shield,
     title: "Приватность",
     description: "Кто видит вашу активность",
-    href: "/tabs/others/profile/privacy",
+    href: "/tabs/map/settings/privacy",
   },
   {
     icon: EIcon.Question,
     title: "Помощь и поддержка",
     description: "FAQ и связь с разработчиками",
-    href: "/tabs/others/profile/support",
+    href: "/tabs/map/settings/support",
   },
 ];
 const NavigationMenuButton: FC<TButtonProps> = ({ icon, title, description, href, isLast }) => {
@@ -77,11 +87,14 @@ const NavigationMenuButton: FC<TButtonProps> = ({ icon, title, description, href
       style={[styles.buttonContainer, isLast ? { borderBottomColor: "transparent" } : null]}
       activeOpacity={0.5}
       onPress={handleOnPress}>
-      <IconBlock icon={icon} />
-      <View>
-        <Text style={styles.title}>{title}</Text>
-        <Text style={styles.description}>{description}</Text>
+      <View style={styles.buttonContent}>
+        <IconBlock icon={icon} />
+        <View>
+          <Text style={styles.title}>{title}</Text>
+          <Text style={styles.description}>{description}</Text>
+        </View>
       </View>
+      <Icon icon={EIcon.Chevron} fill={COLORS.label} variant="right" style={styles.chevronIcon} />
     </TouchableOpacity>
   );
 };

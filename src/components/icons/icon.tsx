@@ -30,16 +30,14 @@ import ShieldIcon from "@/components/icons/shield-icon";
 import StarIcon from "@/components/icons/star-icon";
 import StepArrowIcon from "@/components/icons/step-arrow-icon";
 import UploadIcon from "@/components/icons/upload-icon";
+import TIconProps from "@/models/types/icon-props";
 
 type TProps = {
   icon: EIcon;
-  fill?: string;
   opened?: boolean;
   gender?: EGender;
   direction?: "left" | "right" | "down";
-  variant?: "active-filled" | "outlined";
-  style?: object;
-};
+} & TIconProps;
 
 const Icon: FC<TProps> = ({ icon, fill, opened, gender, direction, variant, style }) => {
   switch (icon) {
@@ -50,7 +48,7 @@ const Icon: FC<TProps> = ({ icon, fill, opened, gender, direction, variant, styl
       return <CheckedIcon fill={fill} style={style} />;
 
     case EIcon.Chevron:
-      return <ChevronIcon fill={fill} style={style} />;
+      return <ChevronIcon fill={fill} variant={variant} style={style} />;
 
     case EIcon.Clans:
       return <ClansIcon fill={fill} style={style} />;

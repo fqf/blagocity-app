@@ -1,13 +1,8 @@
 import { FC } from "react";
-import AuthLayout from "@/components/layouts/auth-layout";
 import PlacesScreen from "@/components/screens/onboarding/places-screen";
 
 const Places: FC = () => {
-  return (
-    <AuthLayout>
-      <PlacesScreen />
-    </AuthLayout>
-  );
+  return <PlacesScreen />;
 };
 
 export default Places;

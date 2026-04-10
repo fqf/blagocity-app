@@ -63,7 +63,7 @@ const SignInScreen: FC = () => {
   const handleOnSubmit = async ({ nickname, code }: { nickname: string; code: string }) => {
     setPending(true);
     setTimeout(() => {
-      router.push("/tabs/main");
+      router.push("/tabs/map");
     }, 2000);
   };
 
