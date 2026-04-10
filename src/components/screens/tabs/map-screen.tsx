@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react";
-import Mapbox, { Camera, MapState, MapView } from "@rnmapbox/maps";
+import Mapbox, { Camera, MapState, MapView, MarkerView } from "@rnmapbox/maps";
 import { StyleSheet, View } from "react-native";
 import TabsLayout from "@/components/layouts/tabs-layout";
 import MapButton from "@/components/buttons/map-button";
@@ -10,10 +10,12 @@ import AssistButton from "@/components/buttons/assist-button";
 import * as Location from "expo-location";
 import { debounce } from "lodash";
 import { useRouter } from "expo-router";
+import PinButton from "@/components/buttons/pin-button";
+import { Feature, Point } from "geojson";
 
 Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_TOKEN!).then();
 
-const defaultLocation: [number, number] = [37.6242786831254, 55.750175936150875];
+const defaultLocation: [number, number] = [37.616371, 55.757537];
 const styles = StyleSheet.create({
   map: {
     flex: 1,
@@ -65,6 +67,10 @@ const MapScreen: FC = () => {
   const handleOnAvatarPress = () => {
     router.push("/tabs/map/settings");
   };
+  const handleOnMapLongPress = async ({ geometry }: Feature<Point>) => {
+    const { coordinates } = geometry;
+    router.push(`/tabs/map/location/edit/-1?coords=${coordinates}`);
+  };
 
   useEffect(() => {
     handleOnSetCurrentLocationPress().then();
@@ -77,14 +83,19 @@ const MapScreen: FC = () => {
         attributionEnabled={false}
         scaleBarEnabled={false}
         localizeLabels={{ locale: "ru" }}
+        projection="globe"
         style={styles.map}
-        onCameraChanged={handleOnMapDrag}>
+        onCameraChanged={handleOnMapDrag}
+        onLongPress={handleOnMapLongPress}>
         <Camera
           defaultSettings={{ centerCoordinate: location, zoomLevel: 15 }}
           zoomLevel={zoomLevel}
           centerCoordinate={location}
           animationDuration={5}
         />
+        <MarkerView coordinate={[37.390489, 55.869463]}>
+          <PinButton href="/tabs/map/location/117" />
+        </MarkerView>
       </MapView>
       <View style={styles.header}>
         <MapButton icon={EIcon.List} />

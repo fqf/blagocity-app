@@ -8,8 +8,16 @@ const MapLayout: FC = () => {
       screenOptions={{
         headerShown: false,
         animation: Platform.OS === "android" ? "slide_from_right" : "ios_from_right",
-      }}
-    />
+      }}>
+      <Stack.Screen
+        name="(modals)/location/[id]"
+        options={{ presentation: "transparentModal", animation: "slide_from_bottom", animationDuration: 250 }}
+      />
+      <Stack.Screen
+        name="(modals)/location/edit/[id]"
+        options={{ presentation: "transparentModal", animation: "slide_from_bottom", animationDuration: 250 }}
+      />
+    </Stack>
   );
 };
 

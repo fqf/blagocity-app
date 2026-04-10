@@ -46,7 +46,7 @@ const AssistButton: FC = () => {
     <TouchableOpacity activeOpacity={0.65} style={styles.container} onPress={handleOnPress}>
       <DropShadow style={styles.shadow}>
         <View style={styles.content}>
-          <Icon icon={EIcon.Ring} variant="active-filled" fill="white" style={styles.icon} />
+          <Icon icon={EIcon.Ring} fill="white" style={styles.icon} />
           <Text style={styles.text}>Позвать</Text>
         </View>
       </DropShadow>
