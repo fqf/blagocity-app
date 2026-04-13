@@ -1,12 +1,8 @@
 import { FC } from "react";
-import Header from "@/components/others/header";
+import InnerLayout from "@/components/layouts/inner-layout";
 
 const SupportScreen: FC = () => {
-  return (
-    <>
-      <Header withBack title="Помощь и поддержка" />
-    </>
-  );
+  return <InnerLayout withBack title="Помощь и поддержка" />;
 };
 
 export default SupportScreen;

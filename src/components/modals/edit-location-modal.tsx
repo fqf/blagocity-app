@@ -1,13 +1,26 @@
 import { FC, useEffect, useState } from "react";
 import ModalLayout from "@/components/layouts/modal-layout";
-import { Text } from "react-native";
+import { ScrollView, StyleSheet } from "react-native";
 import { getAddressByCoords } from "@/actions/mapbox-actions";
+import OnboardingButton from "@/components/buttons/onboarding-button";
+import GeoPositionBlock from "@/components/blocks/geo-position-block";
+import PlaceNameBlock from "@/components/blocks/place-name-block";
+import PhotoUploadBlock from "@/components/blocks/photo-upload-block";
+import PlaceTypeBlock from "@/components/blocks/place-type-block";
+import ReviewBlock from "@/components/blocks/review-block";
+import AccessibleEnvironmentBlock from "@/components/blocks/accessible-environment-block";
 
 type TProps = {
   id: string;
   coords?: string;
 };
 
+const styles = StyleSheet.create({
+  scrollable: {
+    gap: 24,
+    padding: 20,
+  },
+});
 const EditLocationModal: FC<TProps> = ({ id, coords }) => {
   const [address, setAddress] = useState("");
 
@@ -25,7 +38,19 @@ const EditLocationModal: FC<TProps> = ({ id, coords }) => {
   }, [id]);
 
   if (id === "-1") {
-    return <ModalLayout title="Добавление локации">{!!address && <Text>{address}</Text>}</ModalLayout>;
+    return (
+      <ModalLayout title="Добавление локации">
+        <ScrollView contentContainerStyle={styles.scrollable}>
+          <GeoPositionBlock />
+          <PlaceNameBlock />
+          <PhotoUploadBlock />
+          <PlaceTypeBlock />
+          <AccessibleEnvironmentBlock />
+          <ReviewBlock />
+          <OnboardingButton text="Добавить" />
+        </ScrollView>
+      </ModalLayout>
+    );
   }
 
   return <ModalLayout title="Редактирование локации"></ModalLayout>;

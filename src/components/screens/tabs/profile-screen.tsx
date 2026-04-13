@@ -1,12 +1,8 @@
 import { FC } from "react";
-import Header from "@/components/others/header";
+import InnerLayout from "@/components/layouts/inner-layout";
 
 const ProfileScreen: FC = () => {
-  return (
-    <>
-      <Header withBack title="Настройки профиля" />
-    </>
-  );
+  return <InnerLayout withBack title="Настройки профиля" />;
 };
 
 export default ProfileScreen;

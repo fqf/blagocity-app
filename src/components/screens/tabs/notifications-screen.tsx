@@ -1,12 +1,8 @@
 import { FC } from "react";
-import Header from "@/components/others/header";
+import InnerLayout from "@/components/layouts/inner-layout";
 
 const NotificationsScreen: FC = () => {
-  return (
-    <>
-      <Header withBack title="Уведомления" />
-    </>
-  );
+  return <InnerLayout withBack title="Уведомления" />;
 };
 
 export default NotificationsScreen;

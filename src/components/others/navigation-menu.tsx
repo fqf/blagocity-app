@@ -1,8 +1,8 @@
 import { FC } from "react";
-import ShadowBlock from "@/components/others/shadow-block";
+import ShadowBlock from "@/components/blocks/shadow-block";
 import EIcon from "@/models/enums/icon";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import IconBlock from "@/components/others/icon-block";
+import IconBlock from "@/components/blocks/icon-block";
 import COLORS from "@/constants/colors";
 import chroma from "chroma-js";
 import { Href, useRouter } from "expo-router";

@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import ShadowBlock from "@/components/others/shadow-block";
+import ShadowBlock from "@/components/blocks/shadow-block";
 import Icon from "@/components/icons/icon";
 import EIcon from "@/models/enums/icon";
 import COLORS from "@/constants/colors";

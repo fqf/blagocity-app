@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import ShadowBlock from "@/components/others/shadow-block";
+import ShadowBlock from "@/components/blocks/shadow-block";
 import { Image } from "expo-image";
 import COLORS from "@/constants/colors";
 import EIcon from "@/models/enums/icon";
@@ -9,7 +9,6 @@ import { useRouter } from "expo-router";
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: "white",
     borderRadius: 16,
     height: 98,

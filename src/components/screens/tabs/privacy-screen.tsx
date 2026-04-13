@@ -1,12 +1,8 @@
 import { FC } from "react";
-import Header from "@/components/others/header";
+import InnerLayout from "@/components/layouts/inner-layout";
 
 const PrivacyScreen: FC = () => {
-  return (
-    <>
-      <Header withBack title="Приватность" />
-    </>
-  );
+  return <InnerLayout withBack title="Приватность" />;
 };
 
 export default PrivacyScreen;

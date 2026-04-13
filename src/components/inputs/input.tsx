@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: COLORS.inputBorder,
     fontFamily: "LexendDeca-Regular",
-    fontSize: 18,
+    fontSize: 16,
     color: COLORS.text,
   },
   unit: {
@@ -106,6 +106,7 @@ const Input: FC<TProps> = ({
           style={[
             styles.input,
             focused ? { borderColor: COLORS.active, backgroundColor: "white" } : null,
+            multiline ? { height: 122, verticalAlign: "top" } : null,
             error ? { borderColor: COLORS.error, backgroundColor: chroma(COLORS.error).alpha(0.1).hex() } : null,
           ]}
           onChangeText={(text: string) => handleOnChange(text, onChange)}

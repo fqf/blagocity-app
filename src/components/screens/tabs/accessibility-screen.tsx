@@ -1,12 +1,8 @@
 import { FC } from "react";
-import Header from "@/components/others/header";
+import InnerLayout from "@/components/layouts/inner-layout";
 
 const AccessibilityScreen: FC = () => {
-  return (
-    <>
-      <Header withBack title="Доступность" />
-    </>
-  );
+  return <InnerLayout withBack title="Доступность" />;
 };
 
 export default AccessibilityScreen;
