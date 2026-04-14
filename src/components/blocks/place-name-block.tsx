@@ -2,6 +2,7 @@ import { FC } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import ShadowBlock from "@/components/blocks/shadow-block";
 import COLORS from "@/constants/colors";
+import Input from "@/components/inputs/input";
 
 const styles = StyleSheet.create({
   container: {
@@ -22,6 +23,7 @@ const PlaceNameBlock: FC = () => {
     <ShadowBlock>
       <View style={styles.container}>
         <Text style={styles.label}>Название места</Text>
+        <Input placeholder="Введите название места..." />
       </View>
     </ShadowBlock>
   );

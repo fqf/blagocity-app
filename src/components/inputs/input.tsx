@@ -36,13 +36,13 @@ const styles = StyleSheet.create({
   },
   input: {
     backgroundColor: COLORS.inputBackground,
-    borderRadius: 15,
-    height: 63,
-    paddingHorizontal: 16,
+    borderRadius: 12,
+    height: 42,
+    paddingHorizontal: 12,
     borderWidth: 2,
     borderColor: COLORS.inputBorder,
     fontFamily: "LexendDeca-Regular",
-    fontSize: 16,
+    fontSize: 14,
     color: COLORS.text,
   },
   unit: {

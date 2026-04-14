@@ -16,25 +16,34 @@ type TProps = {
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: 15,
-    height: 63,
+    borderRadius: 12,
+    height: 42,
+    paddingHorizontal: 12,
     borderWidth: 2,
     borderColor: "transparent",
     justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: 16,
   },
   fullwidth: {
     flex: 1,
+  },
+  primary: {
+    backgroundColor: COLORS.active,
+  },
+  secondary: {
+    backgroundColor: COLORS.inputBackground,
   },
   outlined: {
     borderColor: COLORS.inputBorder,
     backgroundColor: "white",
   },
   text: {
-    fontFamily: "LexendDeca-Medium",
-    fontSize: 16,
+    fontFamily: "LexendDeca-Regular",
+    fontSize: 14,
     color: COLORS.text,
+  },
+  primaryText: {
+    color: "white",
   },
   active: {
     borderColor: COLORS.active,
@@ -62,13 +71,27 @@ const Button: FC<TProps> = ({ type = "primary", text, icon, active, error, fullW
       style={[
         styles.container,
         fullWidth ? styles.fullwidth : null,
-        type === "outlined" ? styles.outlined : null,
+        type === "primary"
+          ? styles.primary
+          : type === "secondary"
+            ? styles.secondary
+            : type === "outlined"
+              ? styles.outlined
+              : null,
         active ? styles.active : null,
         error ? styles.error : null,
         disabled ? styles.disabled : null,
       ]}
       onPress={onPress}>
-      <Text style={[styles.text, active ? styles.activeText : null, error ? styles.errorText : null]}>{text}</Text>
+      <Text
+        style={[
+          styles.text,
+          type === "primary" ? styles.primaryText : null,
+          active ? styles.activeText : null,
+          error ? styles.errorText : null,
+        ]}>
+        {text}
+      </Text>
     </TouchableOpacity>
   );
 };

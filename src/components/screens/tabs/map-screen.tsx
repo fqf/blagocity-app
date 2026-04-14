@@ -15,7 +15,7 @@ import { Feature, Point } from "geojson";
 
 Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_TOKEN!).then();
 
-const defaultLocation: [number, number] = [37.616371, 55.757537];
+export const defaultLocation: [number, number] = [37.616371, 55.757537];
 const styles = StyleSheet.create({
   map: {
     flex: 1,
