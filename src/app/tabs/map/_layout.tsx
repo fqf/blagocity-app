@@ -10,11 +10,11 @@ const MapLayout: FC = () => {
         animation: Platform.OS === "android" ? "slide_from_right" : "ios_from_right",
       }}>
       <Stack.Screen
-        name="(modals)/location/[id]"
+        name="(modals)/location/edit/[id]"
         options={{ presentation: "transparentModal", animation: "slide_from_bottom", animationDuration: 250 }}
       />
       <Stack.Screen
-        name="(modals)/location/edit/[id]"
+        name="(modals)/location/outgoing-help-request"
         options={{ presentation: "transparentModal", animation: "slide_from_bottom", animationDuration: 250 }}
       />
     </Stack>

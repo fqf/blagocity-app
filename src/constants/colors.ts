@@ -7,7 +7,7 @@ const COLORS = {
   label: "#A1A4B2",
   active: "#5F33E1",
   activeBackground: "#F5F3FF",
-  error: "#DC2626",
+  error: "#EF4444",
   errorBackground: "#FEF2F2",
   tabBar: "#EEE9FF",
 };

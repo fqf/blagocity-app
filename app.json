@@ -33,6 +33,7 @@
         {
           "fonts": [
             "./assets/fonts/LexendDeca-Bold.ttf",
+            "./assets/fonts/LexendDeca-ExtraBold.ttf",
             "./assets/fonts/LexendDeca-ExtraLight.ttf",
             "./assets/fonts/LexendDeca-Medium.ttf",
             "./assets/fonts/LexendDeca-Regular.ttf",
