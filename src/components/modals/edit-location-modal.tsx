@@ -7,7 +7,7 @@ import GeoPositionBlock from "@/components/blocks/geo-position-block";
 import PlaceNameBlock from "@/components/blocks/place-name-block";
 import PhotoUploadBlock from "@/components/blocks/photo-upload-block";
 import PlaceTypeBlock from "@/components/blocks/place-type-block";
-import ReviewBlock from "@/components/blocks/review-block";
+import ReviewFormBlock from "@/components/blocks/review-form-block";
 import AccessibleEnvironmentBlock from "@/components/blocks/accessible-environment-block";
 import { defaultLocation } from "@/components/screens/tabs/map-screen";
 import { Formik } from "formik";
@@ -77,7 +77,7 @@ const EditLocationModal: FC<TProps> = ({ id, coords }) => {
                     <PhotoUploadBlock />
                     <PlaceTypeBlock />
                     <AccessibleEnvironmentBlock />
-                    <ReviewBlock />
+                    <ReviewFormBlock />
                     <OnboardingButton text="Добавить" />
                   </View>
                 </ScrollView>

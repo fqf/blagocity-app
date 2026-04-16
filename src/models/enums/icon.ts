@@ -1,5 +1,5 @@
 const enum EIcon {
-  Bubble,
+  Bubble = 1,
   Checked,
   Chevron,
   Clans,
@@ -26,6 +26,7 @@ const enum EIcon {
   Search,
   Shield,
   Star,
+  StarFilled,
   StepArrow,
   Upload,
 }

@@ -21,3 +21,5 @@ const declOfNum =
   };
 
 export const declOfYears = declOfNum(["год", "года", "лет"]);
+
+export const declOfReviews = declOfNum(["отзыв", "отзыва", "отзывов"]);

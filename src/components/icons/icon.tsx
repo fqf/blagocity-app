@@ -1,5 +1,4 @@
 import { FC } from "react";
-import EGender from "@/models/enums/gender";
 import EIcon from "@/models/enums/icon";
 import MapIcon from "@/components/icons/map-icon";
 import PercentIcon from "@/components/icons/percent-icon";
@@ -34,12 +33,9 @@ import TIconProps from "@/models/types/icon-props";
 
 type TProps = {
   icon: EIcon;
-  opened?: boolean;
-  gender?: EGender;
-  direction?: "left" | "right" | "down";
 } & TIconProps;
 
-const Icon: FC<TProps> = ({ icon, fill, opened, gender, direction, variant, style }) => {
+const Icon: FC<TProps> = ({ icon, fill, style }) => {
   switch (icon) {
     case EIcon.Bubble:
       return <BubbleIcon fill={fill} style={style} />;
@@ -48,7 +44,7 @@ const Icon: FC<TProps> = ({ icon, fill, opened, gender, direction, variant, styl
       return <CheckedIcon fill={fill} style={style} />;
 
     case EIcon.Chevron:
-      return <ChevronIcon fill={fill} variant={variant} style={style} />;
+      return <ChevronIcon fill={fill} style={style} />;
 
     case EIcon.Clans:
       return <ClansIcon fill={fill} style={style} />;
@@ -111,7 +107,7 @@ const Icon: FC<TProps> = ({ icon, fill, opened, gender, direction, variant, styl
       return <QuitIcon fill={fill} style={style} />;
 
     case EIcon.Ring:
-      return <RingIcon fill={fill} variant={variant} style={style} />;
+      return <RingIcon fill={fill} style={style} />;
 
     case EIcon.Search:
       return <SearchIcon fill={fill} style={style} />;
@@ -121,6 +117,9 @@ const Icon: FC<TProps> = ({ icon, fill, opened, gender, direction, variant, styl
 
     case EIcon.Star:
       return <StarIcon fill={fill} style={style} />;
+
+    case EIcon.StarFilled:
+      return <StarIcon filled fill={fill} style={style} />;
 
     case EIcon.StepArrow:
       return <StepArrowIcon fill={fill} style={style} />;

@@ -1,8 +1,8 @@
 import { FC } from "react";
 import { StyleSheet, TouchableOpacity } from "react-native";
-import { Image } from "expo-image";
 import COLORS from "@/constants/colors";
 import chroma from "chroma-js";
+import Avatar from "@/components/others/avatar";
 
 export type TAvatarType = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 type TProps = {
@@ -75,7 +75,7 @@ const AvatarButton: FC<TProps> = ({ type = 1, active, disabled, size = "large", 
         activeOpacity={0.75}
         style={[styles.container, styles.smallContainer, styles[`smallContainer_${type}`]]}
         onPress={onPress}>
-        <Image source={{ uri: `avatar_${type}` }} style={styles.smallImage} />
+        <Avatar type={type} size={size} />
       </TouchableOpacity>
     );
   }
@@ -86,7 +86,7 @@ const AvatarButton: FC<TProps> = ({ type = 1, active, disabled, size = "large", 
       activeOpacity={0.75}
       style={[styles.container, styles[`container_${type}`], active ? styles.active : null]}
       onPress={onPress}>
-      <Image source={{ uri: `avatar_${type}` }} style={styles.image} />
+      <Avatar type={type} size={size} />
     </TouchableOpacity>
   );
 };

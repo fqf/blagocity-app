@@ -10,6 +10,10 @@ const COLORS = {
   error: "#EF4444",
   errorBackground: "#FEF2F2",
   tabBar: "#EEE9FF",
+  rating: "#EA580C",
+  ratingBackground: "#FFEDD5",
+  success: "#15803D",
+  successBackground: "#F0FDF4",
 };
 
 export default COLORS;

@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { StyleSheet, Text, TouchableOpacity, View, ViewStyle } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import DropShadow from "react-native-drop-shadow";
 import Constants from "expo-constants";
 import COLORS from "@/constants/colors";
@@ -12,7 +12,7 @@ export type THeaderProps = {
   title: string;
   withBack?: boolean;
   withClose?: boolean;
-  headerStyle?: ViewStyle;
+  headerStyle?: ReturnType<typeof StyleSheet.create>;
   onBackPress?: () => void;
   onClosePress?: () => void;
 };

@@ -1,21 +1,25 @@
 import { FC } from "react";
-import Icon from "@/models/enums/icon";
-import { StyleSheet, Text, TouchableOpacity } from "react-native";
+import EIcon from "@/models/enums/icon";
+import { StyleSheet, Text, TouchableOpacity, ViewStyle } from "react-native";
 import COLORS from "@/constants/colors";
+import Icon from "@/components/icons/icon";
 
 type TProps = {
   type: "primary" | "secondary" | "outlined";
   text: string;
-  icon?: Icon;
+  icon?: EIcon;
   active?: boolean;
   error?: boolean;
   fullWidth?: boolean;
   disabled?: boolean;
+  style?: ViewStyle;
+  accented?: boolean;
   onPress?: () => void;
 };
 
 const styles = StyleSheet.create({
   container: {
+    flexDirection: "row",
     borderRadius: 12,
     height: 42,
     paddingHorizontal: 12,
@@ -23,6 +27,7 @@ const styles = StyleSheet.create({
     borderColor: "transparent",
     justifyContent: "center",
     alignItems: "center",
+    gap: 8,
   },
   fullwidth: {
     width: "100%",
@@ -42,6 +47,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: COLORS.text,
   },
+  accentedText: {
+    fontFamily: "LexendDeca-Bold",
+  },
   primaryText: {
     color: "white",
   },
@@ -53,7 +61,6 @@ const styles = StyleSheet.create({
     color: COLORS.active,
   },
   error: {
-    borderColor: COLORS.error,
     backgroundColor: COLORS.errorBackground,
   },
   errorText: {
@@ -62,12 +69,27 @@ const styles = StyleSheet.create({
   disabled: {
     opacity: 0.5,
   },
+  icon: {
+    width: 18,
+    height: 18,
+  },
 });
-const Button: FC<TProps> = ({ type = "primary", text, icon, active, error, fullWidth, disabled, onPress }) => {
+const Button: FC<TProps> = ({
+  type = "primary",
+  text,
+  icon,
+  active,
+  error,
+  fullWidth,
+  disabled,
+  style,
+  accented,
+  onPress,
+}) => {
   return (
     <TouchableOpacity
       disabled={disabled}
-      activeOpacity={0.5}
+      activeOpacity={0.65}
       style={[
         styles.container,
         fullWidth ? styles.fullwidth : null,
@@ -81,14 +103,23 @@ const Button: FC<TProps> = ({ type = "primary", text, icon, active, error, fullW
         active ? styles.active : null,
         error ? styles.error : null,
         disabled ? styles.disabled : null,
+        style,
       ]}
       onPress={onPress}>
+      {!!icon && (
+        <Icon
+          icon={icon}
+          fill={type === "primary" ? "white" : error ? COLORS.error : COLORS.text}
+          style={styles.icon}
+        />
+      )}
       <Text
         style={[
           styles.text,
           type === "primary" ? styles.primaryText : null,
           active ? styles.activeText : null,
           error ? styles.errorText : null,
+          accented ? styles.accentedText : null,
         ]}>
         {text}
       </Text>
