@@ -1,13 +1,24 @@
 import { FC, useEffect, useState } from "react";
 import CloseButton from "@/components/buttons/close-button";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { Keyboard, KeyboardAvoidingView, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { useRouter } from "expo-router";
 import COLORS from "@/constants/colors";
 import Input from "@/components/inputs/input";
 import UploadButton from "@/components/buttons/upload-button";
 import Icon from "@/components/icons/icon";
 import EIcon from "@/models/enums/icon";
+import FeaturePicker from "@/components/pickers/feature-picker";
+import OnboardingButton from "@/components/buttons/onboarding-button";
 import hairlineWidth = StyleSheet.hairlineWidth;
 
 const styles = StyleSheet.create({
@@ -19,7 +30,11 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
+  },
+  content: {
     gap: 38,
+    paddingTop: 20,
+    paddingBottom: 30,
   },
   close: {
     position: "absolute",
@@ -54,7 +69,6 @@ const styles = StyleSheet.create({
   ratingForm: {
     alignSelf: "center",
     gap: 20,
-    marginTop: -20,
   },
   ratingTitle: {
     fontFamily: "LexendDeca-ExtraLight",
@@ -77,7 +91,57 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: COLORS.text,
   },
+  featuresContainer: {
+    gap: 16,
+  },
 });
+const featureItems = [
+  {
+    title: "Доступ на механической коляске",
+  },
+  {
+    title: "Доступ на механической коляске с электроприставкой",
+  },
+  {
+    title: "Доступ на электрической коляске",
+  },
+  {
+    title: "Санузел для людей с инвалидностью",
+  },
+  {
+    title: "Лифт",
+  },
+  {
+    title: "Пандус",
+  },
+  {
+    title: "Тактильные указатели",
+  },
+  {
+    title: "Оборудованное место для человека с инвалидностью",
+  },
+  {
+    title: "Световая/Цветовая индикация",
+  },
+  {
+    title: "Звуковая индикация (например, меню)",
+  },
+  {
+    title: "Меню со штрифтом Брайля",
+  },
+  {
+    title: "Доступ с собакой-поводырем",
+  },
+  {
+    title: "Подарки Дону",
+  },
+  {
+    title: "Бронирование и предварительная подготовка",
+  },
+  {
+    title: "Помощник (приложение/премиум)",
+  },
+];
 const CheckInModal: FC = () => {
   const [behavior, setBehavior] = useState<"height" | undefined>();
   const router = useRouter();
@@ -111,30 +175,38 @@ const CheckInModal: FC = () => {
             <Text style={styles.title}>Отметиться и оценить</Text>
           </View>
           <CloseButton style={styles.close} onPress={handleOnClosePress} />
-          <View style={styles.ratingForm}>
-            <Text style={styles.ratingTitle}>Как вам Доброе Утро?</Text>
-            <View style={styles.ratingButtons}>
-              {new Array(10).fill("").map((_, i) => (
-                <TouchableOpacity key={i}>
-                  <Icon icon={EIcon.Star} style={styles.star} />
-                </TouchableOpacity>
-              ))}
+          <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
+            <View style={styles.ratingForm}>
+              <Text style={styles.ratingTitle}>Как вам Доброе Утро?</Text>
+              <View style={styles.ratingButtons}>
+                {new Array(10).fill("").map((_, i) => (
+                  <TouchableOpacity key={i}>
+                    <Icon icon={EIcon.Star} style={styles.star} />
+                  </TouchableOpacity>
+                ))}
+              </View>
             </View>
-          </View>
-          <View style={styles.block}>
-            <Text style={styles.label}>Отзыв</Text>
-            <Input multiline placeholder="Опишите ваши впечатления о доступности этого места..." />
-          </View>
-          <View style={styles.block}>
-            <Text style={styles.label}>Фотографии</Text>
-            <UploadButton />
-          </View>
-          <View style={styles.block}>
-            <Text style={[styles.ratingTitle, { textAlign: "left" }]}>Оцените доступность</Text>
-            <Text style={styles.description}>
-              Помогите другим пользователям, оценив наличие следующих элементов доступной среды.
-            </Text>
-          </View>
+            <View style={styles.block}>
+              <Text style={styles.label}>Отзыв</Text>
+              <Input multiline placeholder="Опишите ваши впечатления о доступности этого места..." />
+            </View>
+            <View style={styles.block}>
+              <Text style={styles.label}>Фотографии</Text>
+              <UploadButton />
+            </View>
+            <View style={styles.block}>
+              <Text style={[styles.ratingTitle, { textAlign: "left" }]}>Оцените доступность</Text>
+              <Text style={styles.description}>
+                Помогите другим пользователям, оценив наличие следующих элементов доступной среды.
+              </Text>
+              <View style={styles.featuresContainer}>
+                {featureItems.map(({ title }, i) => (
+                  <FeaturePicker key={i} title={title} />
+                ))}
+              </View>
+            </View>
+            <OnboardingButton text="Опубликовать отзыв" />
+          </ScrollView>
         </KeyboardAvoidingView>
       </SafeAreaView>
     </SafeAreaProvider>
