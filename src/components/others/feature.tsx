@@ -5,7 +5,9 @@ import EIcon from "@/models/enums/icon";
 import COLORS from "@/constants/colors";
 
 type TProps = {
+  icon: EIcon;
   title: string;
+  variant?: "default" | "success";
 };
 
 const styles = StyleSheet.create({
@@ -28,11 +30,15 @@ const styles = StyleSheet.create({
     color: COLORS.active,
   },
 });
-const Feature: FC<TProps> = ({ title }) => {
+const Feature: FC<TProps> = ({ icon, title, variant = "default" }) => {
   return (
-    <View style={styles.container}>
-      <Icon icon={EIcon.Checked} style={styles.icon} />
-      <Text style={styles.text}>{title}</Text>
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: variant === "success" ? COLORS.successBackground : COLORS.activeBackground },
+      ]}>
+      <Icon icon={icon} fill={variant === "success" ? COLORS.success : COLORS.active} style={styles.icon} />
+      <Text style={[styles.text, { color: variant === "success" ? COLORS.success : COLORS.active }]}>{title}</Text>
     </View>
   );
 };

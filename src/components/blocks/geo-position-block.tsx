@@ -88,7 +88,7 @@ const GeoPositionBlock: FC<TProps> = ({ coords, address }) => {
               <Text style={styles.text}>{address}</Text>
             </View>
           </DropShadow>
-          <Icon icon={EIcon.Pin} style={styles.icon} />
+          <Icon icon={EIcon.PinFilled} fill="white" style={styles.icon} />
         </View>
       </View>
     </ShadowBlock>

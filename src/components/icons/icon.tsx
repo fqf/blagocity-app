@@ -43,8 +43,11 @@ const Icon: FC<TProps> = ({ icon, fill, style }) => {
     case EIcon.Checked:
       return <CheckedIcon fill={fill} style={style} />;
 
-    case EIcon.Chevron:
-      return <ChevronIcon fill={fill} style={style} />;
+    case EIcon.ChevronLeft:
+      return <ChevronIcon fill={fill} style={style} direction="left" />;
+
+    case EIcon.ChevronRight:
+      return <ChevronIcon fill={fill} style={style} direction="right" />;
 
     case EIcon.Clans:
       return <ClansIcon fill={fill} style={style} />;
@@ -88,8 +91,11 @@ const Icon: FC<TProps> = ({ icon, fill, style }) => {
     case EIcon.Photo:
       return <PhotoIcon fill={fill} style={style} />;
 
-    case EIcon.Pin:
-      return <PinIcon fill={fill} style={style} />;
+    case EIcon.PinFilled:
+      return <PinIcon fill={fill} variant="filled" style={style} />;
+
+    case EIcon.PinOutlined:
+      return <PinIcon fill={fill} variant="outlined" style={style} />;
 
     case EIcon.Plus:
       return <PlusIcon fill={fill} style={style} />;

@@ -17,6 +17,10 @@ const MapLayout: FC = () => {
         name="(modals)/location/outgoing-help-request"
         options={{ presentation: "transparentModal", animation: "slide_from_bottom", animationDuration: 250 }}
       />
+      <Stack.Screen
+        name="(modals)/location/check-in"
+        options={{ presentation: "transparentModal", animation: "slide_from_bottom", animationDuration: 250 }}
+      />
     </Stack>
   );
 };

@@ -12,8 +12,8 @@ type TProps = {
   error?: boolean;
   fullWidth?: boolean;
   disabled?: boolean;
+  size?: "default" | "large";
   style?: ViewStyle;
-  accented?: boolean;
   onPress?: () => void;
 };
 
@@ -43,12 +43,9 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   text: {
-    fontFamily: "LexendDeca-Regular",
+    fontFamily: "LexendDeca-Bold",
     fontSize: 14,
     color: COLORS.text,
-  },
-  accentedText: {
-    fontFamily: "LexendDeca-Bold",
   },
   primaryText: {
     color: "white",
@@ -73,6 +70,13 @@ const styles = StyleSheet.create({
     width: 18,
     height: 18,
   },
+  largeContainer: {
+    borderRadius: 16,
+    height: 60,
+  },
+  largeText: {
+    fontSize: 18,
+  },
 });
 const Button: FC<TProps> = ({
   type = "primary",
@@ -82,8 +86,8 @@ const Button: FC<TProps> = ({
   error,
   fullWidth,
   disabled,
+  size = "default",
   style,
-  accented,
   onPress,
 }) => {
   return (
@@ -100,6 +104,7 @@ const Button: FC<TProps> = ({
             : type === "outlined"
               ? styles.outlined
               : null,
+        size === "large" ? styles.largeContainer : null,
         active ? styles.active : null,
         error ? styles.error : null,
         disabled ? styles.disabled : null,
@@ -117,9 +122,9 @@ const Button: FC<TProps> = ({
         style={[
           styles.text,
           type === "primary" ? styles.primaryText : null,
+          size === "large" ? styles.largeText : null,
           active ? styles.activeText : null,
           error ? styles.errorText : null,
-          accented ? styles.accentedText : null,
         ]}>
         {text}
       </Text>

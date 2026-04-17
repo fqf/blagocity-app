@@ -82,7 +82,7 @@ const Header: FC<THeaderProps> = ({ title, withBack, withClose, headerStyle, onB
       <View style={[styles.container, headerStyle]}>
         {withBack && (
           <TouchableOpacity activeOpacity={0.75} onPress={handleOnBackPress} style={styles.backButton}>
-            <Icon icon={EIcon.Chevron} fill={COLORS.label} style={styles.icon} />
+            <Icon icon={EIcon.ChevronLeft} fill={COLORS.label} style={styles.icon} />
           </TouchableOpacity>
         )}
         <Text style={styles.title}>{title}</Text>

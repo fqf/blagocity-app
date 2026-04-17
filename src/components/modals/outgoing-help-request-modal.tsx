@@ -103,7 +103,7 @@ const OutgoingHelpRequestModal: FC = () => {
           </View>
           <Text style={styles.title}>Вызов отправлен</Text>
           <Text style={styles.description}>
-            Сотрудники <Text style={styles.name}>СпортЗал 24</Text> получили ваше уведомление и скоро подойдут.
+            Сотрудники <Text style={styles.name}>Доброе утро</Text> получили ваше уведомление и скоро подойдут.
           </Text>
           <View style={styles.timerBlock}>
             <Icon icon={EIcon.Clock} style={styles.icon} />
@@ -112,7 +112,7 @@ const OutgoingHelpRequestModal: FC = () => {
               <Text style={styles.time}>00:03</Text>
             </View>
           </View>
-          <Button fullWidth type="secondary" text="Отменить вызов" />
+          <Button fullWidth size="large" type="secondary" text="Отменить вызов" />
         </View>
       </SafeAreaView>
     </SafeAreaProvider>

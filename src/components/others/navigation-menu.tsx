@@ -94,7 +94,7 @@ const NavigationMenuButton: FC<TButtonProps> = ({ icon, title, description, href
           <Text style={styles.description}>{description}</Text>
         </View>
       </View>
-      <Icon icon={EIcon.Chevron} fill={COLORS.label} variant="right" style={styles.chevronIcon} />
+      <Icon icon={EIcon.ChevronRight} fill={COLORS.label} style={styles.chevronIcon} />
     </TouchableOpacity>
   );
 };

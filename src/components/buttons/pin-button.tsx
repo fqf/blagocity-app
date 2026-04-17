@@ -12,6 +12,7 @@ const styles = StyleSheet.create({
   icon: {
     width: 48,
     height: 48,
+    marginBottom: 30,
   },
 });
 const PinButton: FC<TProps> = ({ href }) => {
@@ -22,7 +23,7 @@ const PinButton: FC<TProps> = ({ href }) => {
 
   return (
     <TouchableOpacity activeOpacity={0.75} onPress={handleOnPress}>
-      <Icon icon={EIcon.Pin} style={styles.icon} />
+      <Icon icon={EIcon.PinFilled} fill="white" style={styles.icon} />
     </TouchableOpacity>
   );
 };
