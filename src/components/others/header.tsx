@@ -12,7 +12,7 @@ export type THeaderProps = {
   title: string;
   withBack?: boolean;
   withClose?: boolean;
-  headerStyle?: ReturnType<typeof StyleSheet.create>;
+  headerStyle?: object;
   onBackPress?: () => void;
   onClosePress?: () => void;
 };

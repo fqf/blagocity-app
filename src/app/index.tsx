@@ -1,8 +1,7 @@
-import { Redirect } from "expo-router";
+import VideoSplashScreen from "@/components/screens/common/video-splash-screen";
 
 const Index = () => {
-  //return <VideoSplashScreen />;
-  return <Redirect href="/tabs/map" />;
+  return <VideoSplashScreen />;
 };
 
 export default Index;

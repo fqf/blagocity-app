@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
 const DiscountsScreen: FC = () => {
   const router = useRouter();
   const handleOnPress = () => {
-    router.push("/tabs/main");
+    router.push("/tabs/map");
   };
 
   return (
