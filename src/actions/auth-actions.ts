@@ -7,3 +7,7 @@ export const signUp = async () => {
 export const signIn = async () => {
   return await blagocityApi.post("/auth/login").json();
 };
+
+export const refreshToken = async () => {
+  return await blagocityApi.post("/token/refresh").json();
+};

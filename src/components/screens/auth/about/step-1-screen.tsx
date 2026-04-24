@@ -1,4 +1,4 @@
-import { ChangeEvent, FC, useState } from "react";
+import { ChangeEvent, FC } from "react";
 import { StyleSheet, View } from "react-native";
 import Input from "@/components/inputs/input";
 import AvatarPicker from "@/components/pickers/avatar-picker";
@@ -11,6 +11,8 @@ import aboutStep1Schema from "@/schemes/auth/about-step-1-schema";
 import { declOfYears } from "@/lib/decl-of-num";
 import { TAvatarType } from "@/components/buttons/avatar-button";
 import { useRouter } from "expo-router";
+import useSignUpStore from "@/stores/sign-up-store";
+import dayjs from "dayjs";
 
 const styles = StyleSheet.create({
   container: {
@@ -31,16 +33,25 @@ const styles = StyleSheet.create({
   },
 });
 const Step1Screen: FC = () => {
-  const [pending, setPending] = useState(false);
+  const { setAvatar, setGender, setDOB } = useSignUpStore();
   const router = useRouter();
   const handleOnInputChange = (callBack: (e: string | ChangeEvent<any>) => void, e: string | ChangeEvent<any>) => {
     callBack(e);
   };
   const handleOnSubmit = async ({ avatar, gender, age }: { avatar?: TAvatarType; gender?: EGender; age: string }) => {
-    setPending(true);
-    setTimeout(() => {
-      router.push("/auth/about/step-2");
-    }, 1000);
+    if (avatar) {
+      setAvatar(avatar);
+    }
+
+    if (gender) {
+      setGender(gender);
+    }
+
+    if (age) {
+      setDOB(dayjs().subtract(+age, "year").startOf("day"));
+    }
+
+    router.push("/auth/about/step-2");
   };
 
   return (
@@ -58,14 +69,12 @@ const Step1Screen: FC = () => {
             <AvatarPicker
               value={values.avatar}
               error={touched.avatar && !!errors.avatar ? errors.avatar : ""}
-              disabled={pending}
               onPick={handleChange("avatar")}
             />
             <View style={styles.content}>
               <GenderPicker
                 value={values.gender}
                 error={touched.gender && !!errors.gender ? errors.gender : ""}
-                disabled={pending}
                 onPick={handleChange("gender")}
               />
               <Input
@@ -74,7 +83,6 @@ const Step1Screen: FC = () => {
                 inputMode="decimal"
                 keyboardType="decimal-pad"
                 value={values.age}
-                disabled={pending}
                 unit={declOfYears(+(values.age ?? 0))}
                 error={touched.age && !!errors.age ? errors.age : ""}
                 onChange={e => handleOnInputChange(handleChange("age"), e)}
@@ -83,12 +91,7 @@ const Step1Screen: FC = () => {
             </View>
           </View>
           <View style={styles.buttons}>
-            <OnboardingButton
-              text="Далее"
-              pendingText="Сохранение данных..."
-              pending={pending}
-              onPress={handleSubmit}
-            />
+            <OnboardingButton text="Далее" pendingText="Сохранение данных..." onPress={handleSubmit} />
           </View>
         </>
       )}

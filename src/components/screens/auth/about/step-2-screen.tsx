@@ -7,6 +7,7 @@ import { useRouter } from "expo-router";
 import OnboardingButton from "@/components/buttons/onboarding-button";
 import aboutStep2Schema from "@/schemes/auth/about-step-2-schema";
 import COLORS from "@/constants/colors";
+import useSignUpStore from "@/stores/sign-up-store";
 
 const styles = StyleSheet.create({
   container: {
@@ -31,6 +32,7 @@ const styles = StyleSheet.create({
 });
 const Step2Screen: FC = () => {
   const [pending, setPending] = useState(false);
+  const { name, password, avatar, gender, dob } = useSignUpStore();
   const router = useRouter();
   const handleOnPress = (values: number[], value: number, setFieldValue: (field: string, value: number[]) => void) => {
     if (values.includes(value)) {
@@ -41,9 +43,11 @@ const Step2Screen: FC = () => {
   };
   const handleOnSubmit = async ({ features }: { features: number[] }) => {
     setPending(true);
-    setTimeout(() => {
-      router.push("/onboarding/places");
-    }, 1000);
+    console.log(name);
+    console.log(password);
+    console.log(avatar);
+    console.log(gender);
+    console.log(dob);
   };
 
   return (
@@ -100,7 +104,6 @@ const Step2Screen: FC = () => {
             />
             {!!errors.features && <Text style={styles.error}>{errors.features}</Text>}
           </View>
-
           <View style={styles.buttons}>
             <OnboardingButton
               text="Далее"

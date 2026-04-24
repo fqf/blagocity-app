@@ -12,15 +12,16 @@ const styles = StyleSheet.create({
   image: {
     width: 145,
     height: 145,
-    position: "absolute",
   },
   smallImage: {
     width: 44,
     height: 44,
   },
 });
-const Avatar: FC<TProps> = ({ type }) => {
-  return <Image source={{ uri: `avatar_${type}` }} style={styles.smallImage} />;
+const Avatar: FC<TProps> = ({ type, size }) => {
+  return (
+    <Image source={{ uri: `avatar_${type}` }} style={[styles.image, size === "small" ? styles.smallImage : null]} />
+  );
 };
 
 export default Avatar;

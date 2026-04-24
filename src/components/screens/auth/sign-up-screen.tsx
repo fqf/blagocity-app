@@ -9,6 +9,7 @@ import { Image } from "expo-image";
 import { toFormikValidationSchema } from "zod-formik-adapter";
 import signUpSchema from "@/schemes/auth/sign-up-schema";
 import { useRouter } from "expo-router";
+import useSignUpStore from "@/stores/sign-up-store";
 
 const styles = StyleSheet.create({
   container: {
@@ -54,20 +55,16 @@ const styles = StyleSheet.create({
 });
 const SignUpScreen: FC = () => {
   const [behavior, setBehavior] = useState<"height" | undefined>();
-  const [pending, setPending] = useState(false);
-  const [error, setError] = useState(false);
   const [isSecure, setIsSecure] = useState(true);
+  const { setName, setPassword } = useSignUpStore();
   const router = useRouter();
   const handleOnInputChange = (callBack: (e: string | ChangeEvent<any>) => void, e: string | ChangeEvent<any>) => {
-    setError(false);
     callBack(e);
   };
-  const handleOnSubmit = async ({ nickname, code, code2 }: { nickname: string; code: string; code2: string }) => {
-    setPending(true);
-
-    setTimeout(() => {
-      router.push("/auth/about/step-1");
-    }, 2000);
+  const handleOnSubmit = async ({ nickname, code }: { nickname: string; code: string }) => {
+    setName(nickname);
+    setPassword(code);
+    router.push("/auth/about/step-1");
   };
 
   useEffect(() => {
@@ -106,7 +103,6 @@ const SignUpScreen: FC = () => {
                   placeholder="Придумайте ваш никнейм"
                   value={values.nickname}
                   error={touched.nickname && !!errors.nickname ? errors.nickname : ""}
-                  disabled={pending}
                   onChange={e => handleOnInputChange(handleChange("nickname"), e)}
                   onBlur={handleBlur("nickname")}
                 />
@@ -116,7 +112,6 @@ const SignUpScreen: FC = () => {
                   value={values.code}
                   isSecure={isSecure}
                   error={touched.code && !!errors.code ? errors.code : ""}
-                  disabled={pending}
                   onChange={e => handleOnInputChange(handleChange("code"), e)}
                   onBlur={handleBlur("code")}
                 />
@@ -125,7 +120,6 @@ const SignUpScreen: FC = () => {
                   value={values.code2}
                   isSecure={isSecure}
                   error={touched.code2 && !!errors.code2 ? errors.code2 : ""}
-                  disabled={pending}
                   onChange={e => handleOnInputChange(handleChange("code2"), e)}
                   onBlur={handleBlur("code2")}
                 />
@@ -139,7 +133,6 @@ const SignUpScreen: FC = () => {
                   <OnboardingButton
                     text="Зарегистрироваться"
                     pendingText="Регистрация в приложении..."
-                    pending={pending}
                     onPress={handleSubmit}
                   />
                   <View style={styles.footer}>

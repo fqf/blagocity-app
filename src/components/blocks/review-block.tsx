@@ -67,7 +67,7 @@ const ReviewBlock: FC<TProps> = ({ user, avatar, rating, date, text, features })
       <View style={styles.container}>
         <View style={styles.header}>
           <View style={styles.headerSection}>
-            <Avatar type={avatar} />
+            <Avatar type={avatar} size="small" />
             <View>
               <Text style={styles.userName}>{user}</Text>
               <Text style={styles.date}>{dayjs(date).locale("ru").format("DD MMMM YYYY")}</Text>

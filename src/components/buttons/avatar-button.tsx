@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import COLORS from "@/constants/colors";
 import chroma from "chroma-js";
 import Avatar from "@/components/others/avatar";
@@ -15,11 +15,20 @@ type TProps = {
 
 const styles = StyleSheet.create({
   container: {
-    width: 150,
-    height: 150,
+    width: 157,
+    height: 157,
     borderRadius: "50%",
     alignItems: "center",
     justifyContent: "center",
+  },
+  content: {
+    width: 145,
+    height: 145,
+    position: "absolute",
+  },
+  smallContent: {
+    width: 44,
+    height: 44,
   },
   smallContainer: {
     width: 50,
@@ -29,43 +38,34 @@ const styles = StyleSheet.create({
   active: {
     backgroundColor: chroma(COLORS.active).alpha(0.5).hex(),
   },
-  container_1: {
-    paddingBottom: 10,
+  content_1: {
+    bottom: 12,
   },
-  smallContainer_1: {
-    paddingBottom: 2,
+  smallContent_1: {
+    bottom: 5,
   },
-  container_2: {
-    paddingBottom: 12,
+  content_2: {
+    bottom: 12,
   },
-  smallContainer_2: {
-    paddingBottom: 3,
+  smallContent_2: {
+    bottom: 5,
   },
-  container_3: {
-    paddingBottom: 6,
+  content_3: {
+    bottom: 9,
   },
-  smallContainer_3: {
-    paddingBottom: 1.5,
+  smallContent_3: {
+    bottom: 4,
   },
-  container_4: {},
-  smallContainer_4: {},
-  container_5: {},
-  smallContainer_5: {},
-  container_6: {},
-  smallContainer_6: {},
-  container_7: {},
-  smallContainer_7: {},
-  container_8: {},
-  smallContainer_8: {},
-  image: {
-    width: 145,
-    height: 145,
-    position: "absolute",
-  },
-  smallImage: {
-    width: 44,
-    height: 44,
-  },
+  content_4: {},
+  smallContent_4: {},
+  content_5: {},
+  smallContent_5: {},
+  content_6: {},
+  smallContent_6: {},
+  content_7: {},
+  smallContent_7: {},
+  content_8: {},
+  smallContent_8: {},
 });
 const AvatarButton: FC<TProps> = ({ type = 1, active, disabled, size = "large", onPress }) => {
   if (size === "small") {
@@ -73,9 +73,11 @@ const AvatarButton: FC<TProps> = ({ type = 1, active, disabled, size = "large", 
       <TouchableOpacity
         disabled={disabled}
         activeOpacity={0.75}
-        style={[styles.container, styles.smallContainer, styles[`smallContainer_${type}`]]}
+        style={[styles.container, styles.smallContainer]}
         onPress={onPress}>
-        <Avatar type={type} size={size} />
+        <View style={[styles.content, styles.smallContent, styles[`smallContent_${type}`]]}>
+          <Avatar type={type} size={size} />
+        </View>
       </TouchableOpacity>
     );
   }
@@ -84,9 +86,11 @@ const AvatarButton: FC<TProps> = ({ type = 1, active, disabled, size = "large", 
     <TouchableOpacity
       disabled={disabled}
       activeOpacity={0.75}
-      style={[styles.container, styles[`container_${type}`], active ? styles.active : null]}
+      style={[styles.container, active ? styles.active : null]}
       onPress={onPress}>
-      <Avatar type={type} size={size} />
+      <View style={[styles.content, styles[`content_${type}`]]}>
+        <Avatar type={type} size={size} />
+      </View>
     </TouchableOpacity>
   );
 };

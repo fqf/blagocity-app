@@ -37,6 +37,7 @@ const AvatarPicker: FC<TProps> = ({ value, error, disabled, onPick }) => {
         renderItem={({ item }) => (
           <AvatarButton
             type={item}
+            size="large"
             active={value === item.toString()}
             disabled={disabled}
             onPress={() => onPick?.(item.toString())}

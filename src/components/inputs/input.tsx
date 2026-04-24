@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: 12,
     fontFamily: "LexendDeca-Regular",
-    fontSize: 18,
+    fontSize: 14,
     color: COLORS.text,
     opacity: 0.25,
   },
@@ -96,7 +96,7 @@ const Input: FC<TProps> = ({
       <View style={styles.content}>
         <TextInput
           placeholder={placeholder}
-          placeholderTextColor={chroma(COLORS.label).alpha(0.5).hex()}
+          placeholderTextColor={error ? chroma(COLORS.error).alpha(0.5).hex() : chroma(COLORS.label).alpha(0.5).hex()}
           value={value}
           inputMode={inputMode}
           multiline={multiline}

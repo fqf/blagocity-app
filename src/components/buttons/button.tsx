@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   fullwidth: {
-    width: "100%",
+    flex: 1,
   },
   primary: {
     backgroundColor: COLORS.active,
