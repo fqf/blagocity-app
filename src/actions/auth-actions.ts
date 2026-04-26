@@ -1,11 +1,17 @@
 import blagocityApi from "@/api/blagocity-api";
+import TSignIResponse from "@/models/contracts/auth/signInResponse";
+import TSignInRequest from "@/models/contracts/auth/signInRequest";
 
 export const signUp = async () => {
   return await blagocityApi.post("/auth/login").json();
 };
 
-export const signIn = async () => {
-  return await blagocityApi.post("/auth/login").json();
+export const signIn = async (request: TSignInRequest) => {
+  return await blagocityApi
+    .post<TSignIResponse>("/auth/login", {
+      json: request,
+    })
+    .json();
 };
 
 export const refreshToken = async () => {

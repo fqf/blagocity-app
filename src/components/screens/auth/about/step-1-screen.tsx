@@ -8,11 +8,11 @@ import { Formik } from "formik";
 import OnboardingButton from "@/components/buttons/onboarding-button";
 import EGender from "@/models/enums/gender";
 import aboutStep1Schema from "@/schemes/auth/about-step-1-schema";
-import { declOfYears } from "@/lib/decl-of-num";
 import { TAvatarType } from "@/components/buttons/avatar-button";
 import { useRouter } from "expo-router";
 import useSignUpStore from "@/stores/sign-up-store";
 import dayjs from "dayjs";
+import "dayjs/plugin/customParseFormat";
 
 const styles = StyleSheet.create({
   container: {
@@ -38,7 +38,7 @@ const Step1Screen: FC = () => {
   const handleOnInputChange = (callBack: (e: string | ChangeEvent<any>) => void, e: string | ChangeEvent<any>) => {
     callBack(e);
   };
-  const handleOnSubmit = async ({ avatar, gender, age }: { avatar?: TAvatarType; gender?: EGender; age: string }) => {
+  const handleOnSubmit = async ({ avatar, gender, dob }: { avatar?: TAvatarType; gender?: EGender; dob: string }) => {
     if (avatar) {
       setAvatar(avatar);
     }
@@ -47,8 +47,8 @@ const Step1Screen: FC = () => {
       setGender(gender);
     }
 
-    if (age) {
-      setDOB(dayjs().subtract(+age, "year").startOf("day"));
+    if (dob) {
+      setDOB(dayjs(dob, "DD.MM.YYYY").startOf("day"));
     }
 
     router.push("/auth/about/step-2");
@@ -59,7 +59,7 @@ const Step1Screen: FC = () => {
       initialValues={{
         avatar: undefined,
         gender: undefined,
-        age: "",
+        dob: "",
       }}
       validationSchema={toFormikValidationSchema(aboutStep1Schema)}
       onSubmit={handleOnSubmit}>
@@ -78,15 +78,14 @@ const Step1Screen: FC = () => {
                 onPick={handleChange("gender")}
               />
               <Input
-                label="Возраст"
-                placeholder="Например, 25"
+                label="Дата рождения"
+                placeholder="Например, 25.05.1975"
                 inputMode="decimal"
                 keyboardType="decimal-pad"
-                value={values.age}
-                unit={declOfYears(+(values.age ?? 0))}
-                error={touched.age && !!errors.age ? errors.age : ""}
-                onChange={e => handleOnInputChange(handleChange("age"), e)}
-                onBlur={handleBlur("age")}
+                value={values.dob}
+                error={touched.dob && !!errors.dob ? errors.dob : ""}
+                onChange={e => handleOnInputChange(handleChange("dob"), e)}
+                onBlur={handleBlur("dob")}
               />
             </View>
           </View>

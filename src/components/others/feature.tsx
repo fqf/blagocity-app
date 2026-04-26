@@ -7,15 +7,15 @@ import COLORS from "@/constants/colors";
 type TProps = {
   icon: EIcon;
   title: string;
-  variant?: "default" | "success";
+  variant?: "default" | "success" | "error";
 };
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: 12,
+    borderRadius: 8,
     backgroundColor: COLORS.activeBackground,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
@@ -35,10 +35,24 @@ const Feature: FC<TProps> = ({ icon, title, variant = "default" }) => {
     <View
       style={[
         styles.container,
-        { backgroundColor: variant === "success" ? COLORS.successBackground : COLORS.activeBackground },
+        variant === "default" ? { backgroundColor: COLORS.activeBackground } : null,
+        variant === "success" ? { backgroundColor: COLORS.successBackground } : null,
+        variant === "error" ? { backgroundColor: COLORS.error } : null,
       ]}>
-      <Icon icon={icon} fill={variant === "success" ? COLORS.success : COLORS.active} style={styles.icon} />
-      <Text style={[styles.text, { color: variant === "success" ? COLORS.success : COLORS.active }]}>{title}</Text>
+      <Icon
+        icon={icon}
+        fill={variant === "success" ? COLORS.success : variant === "error" ? "white" : COLORS.active}
+        style={styles.icon}
+      />
+      <Text
+        style={[
+          styles.text,
+          variant === "default" ? { color: COLORS.active } : null,
+          variant === "success" ? { color: COLORS.success } : null,
+          variant === "error" ? { color: "white" } : null,
+        ]}>
+        {title}
+      </Text>
     </View>
   );
 };

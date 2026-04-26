@@ -30,6 +30,18 @@ import StarIcon from "@/components/icons/star-icon";
 import StepArrowIcon from "@/components/icons/step-arrow-icon";
 import UploadIcon from "@/components/icons/upload-icon";
 import TIconProps from "@/models/types/icon-props";
+import BookIcon from "@/components/icons/book-icon";
+import LabelIcon from "@/components/icons/label-icon";
+import CherryIcon from "@/components/icons/cherry-icon";
+import CouponIcon from "@/components/icons/coupon-icon";
+import KidIcon from "@/components/icons/kid-icon";
+import ElectronicsIcon from "@/components/icons/electronics-icon";
+import FoodIcon from "@/components/icons/food-icon";
+import GoodsIcon from "@/components/icons/goods-icon";
+import NewIcon from "@/components/icons/new-icon";
+import PalmIcon from "@/components/icons/palm-icon";
+import SportIcon from "@/components/icons/sport-icon";
+import ServiceIcon from "@/components/icons/service-icon";
 
 type TProps = {
   icon: EIcon;
@@ -37,11 +49,17 @@ type TProps = {
 
 const Icon: FC<TProps> = ({ icon, fill, style }) => {
   switch (icon) {
+    case EIcon.Book:
+      return <BookIcon fill={fill} style={style} />;
+
     case EIcon.Bubble:
       return <BubbleIcon fill={fill} style={style} />;
 
     case EIcon.Checked:
       return <CheckedIcon fill={fill} style={style} />;
+
+    case EIcon.Cherry:
+      return <CherryIcon fill={fill} style={style} />;
 
     case EIcon.ChevronLeft:
       return <ChevronIcon fill={fill} style={style} direction="left" />;
@@ -58,17 +76,35 @@ const Icon: FC<TProps> = ({ icon, fill, style }) => {
     case EIcon.Close:
       return <CloseIcon fill={fill} style={style} />;
 
+    case EIcon.Coupon:
+      return <CouponIcon fill={fill} style={style} />;
+
     case EIcon.Discount:
       return <DiscountIcon fill={fill} style={style} />;
+
+    case EIcon.Electronics:
+      return <ElectronicsIcon fill={fill} style={style} />;
 
     case EIcon.Filter:
       return <FilterIcon fill={fill} style={style} />;
 
+    case EIcon.Food:
+      return <FoodIcon fill={fill} style={style} />;
+
     case EIcon.Gear:
       return <GearIcon fill={fill} style={style} />;
 
+    case EIcon.Goods:
+      return <GoodsIcon fill={fill} style={style} />;
+
     case EIcon.Info:
       return <InfoIcon fill={fill} style={style} />;
+
+    case EIcon.Kid:
+      return <KidIcon fill={fill} style={style} />;
+
+    case EIcon.Label:
+      return <LabelIcon fill={fill} style={style} />;
 
     case EIcon.Like:
       return <LikeIcon fill={fill} style={style} />;
@@ -84,6 +120,12 @@ const Icon: FC<TProps> = ({ icon, fill, style }) => {
 
     case EIcon.Minus:
       return <MinusIcon fill={fill} style={style} />;
+
+    case EIcon.New:
+      return <NewIcon fill={fill} style={style} />;
+
+    case EIcon.Palm:
+      return <PalmIcon fill={fill} style={style} />;
 
     case EIcon.Percent:
       return <PercentIcon fill={fill} style={style} />;
@@ -118,8 +160,14 @@ const Icon: FC<TProps> = ({ icon, fill, style }) => {
     case EIcon.Search:
       return <SearchIcon fill={fill} style={style} />;
 
+    case EIcon.Service:
+      return <ServiceIcon fill={fill} style={style} />;
+
     case EIcon.Shield:
       return <ShieldIcon fill={fill} style={style} />;
+
+    case EIcon.Sport:
+      return <SportIcon fill={fill} style={style} />;
 
     case EIcon.Star:
       return <StarIcon fill={fill} style={style} />;

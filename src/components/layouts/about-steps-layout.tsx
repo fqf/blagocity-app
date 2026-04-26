@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
     fontFamily: "LexendDeca-Bold",
     fontSize: 24,
     color: COLORS.text,
-    marginBottom: 32,
+    marginBottom: 24,
   },
 });
 const AboutStepsLayout: FC<TProps> = ({ children, step, title }) => {

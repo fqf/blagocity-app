@@ -5,7 +5,11 @@ import { Slot } from "expo-router";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import * as SplashScreen from "expo-splash-screen";
 import GlobalLayout from "@/components/layouts/global-layout";
+import dayjs from "dayjs";
 import "dayjs/locale/ru";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+
+dayjs.extend(customParseFormat);
 
 SplashScreen.setOptions({
   duration: 1000,

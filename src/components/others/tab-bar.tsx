@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { StyleSheet, View } from "react-native";
+import { Dimensions, StyleSheet, View } from "react-native";
 import TabButton from "@/components/buttons/tab-button";
 import EIcon from "@/models/enums/icon";
 import Svg, { Path } from "react-native-svg";
@@ -12,22 +12,20 @@ const styles = StyleSheet.create({
     bottom: 0,
     zIndex: 100,
     elevation: 100,
-    width: 375,
-    height: 56,
+    width: Dimensions.get("window").width - 40,
+    height: 64,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
     gap: 120,
+    backgroundColor: COLORS.tabBar,
+    paddingBottom: 8,
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
   },
   addContainer: {
     position: "absolute",
-    bottom: 26,
-  },
-  bar: {
-    width: 375,
-    height: 56,
-    position: "absolute",
-    bottom: 0,
+    bottom: 34,
   },
   left: {
     flexDirection: "row",
@@ -41,12 +39,6 @@ const styles = StyleSheet.create({
 const TabBar: FC = () => {
   return (
     <View style={styles.container}>
-      <Svg viewBox="0 0 375 56" style={styles.bar}>
-        <Path
-          fill={COLORS.tabBar}
-          d="M0 22C0 9.85 9.85 0 22 0h132c10.148 0 8 27 33.5 27 27 0 25.235-27 35-27H353c12.15 0 22 9.85 22 22v34H0z"
-        />
-      </Svg>
       <View style={styles.left}>
         <TabButton icon={EIcon.Map} href="/tabs/map" />
         <TabButton icon={EIcon.Percent} href="/tabs/discounts" />

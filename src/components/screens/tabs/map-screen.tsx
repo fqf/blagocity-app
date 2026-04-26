@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
   },
   mapTools: {
     position: "absolute",
-    bottom: 64,
+    bottom: 76,
     right: 20,
     gap: 10,
     alignItems: "flex-end",

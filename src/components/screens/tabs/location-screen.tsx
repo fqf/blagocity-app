@@ -84,8 +84,10 @@ const styles = StyleSheet.create({
     height: 16,
   },
   authorContainer: {
-    backgroundColor: COLORS.inputBackground,
+    backgroundColor: COLORS.blockBackground,
     borderRadius: 16,
+    borderWidth: 1,
+    borderColor: COLORS.inputBorder,
     padding: 16,
     gap: 12,
   },
@@ -157,7 +159,7 @@ const LocationScreen: FC<TProps> = ({ id }) => {
       <BlurTargetView ref={blurRef}>
         <Image
           source={{
-            uri: "https://fileshare.kaverafisha.ru/storage/origin/2023/08/22/3b2b89c1c60c45f983ea76e221a16ad7.webp",
+            uri: "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1b/15/7e/cf/artur-restorant.jpg?w=1000&h=-1&s=1",
           }}
           contentFit="cover"
           style={styles.image}

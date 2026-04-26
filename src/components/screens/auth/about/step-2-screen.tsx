@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import Button from "@/components/buttons/button";
 import { toFormikValidationSchema } from "zod-formik-adapter";
@@ -8,6 +8,10 @@ import OnboardingButton from "@/components/buttons/onboarding-button";
 import aboutStep2Schema from "@/schemes/auth/about-step-2-schema";
 import COLORS from "@/constants/colors";
 import useSignUpStore from "@/stores/sign-up-store";
+import Skeleton from "@/components/others/skeleton";
+import { getDisabilityTypesList } from "@/actions/disablity-types-actions";
+import TGetDisabilityTypesListResponse from "@/models/contracts/disabilityTypes/getDisabilityTypesListResponse";
+import { getRolesList } from "@/actions/roles-actions";
 
 const styles = StyleSheet.create({
   container: {
@@ -31,17 +35,20 @@ const styles = StyleSheet.create({
   },
 });
 const Step2Screen: FC = () => {
+  const [disabilityTypesPending, setDisabilityTypesPending] = useState(true);
+  const [disabilityTypes, setDisabilityTypes] = useState<TGetDisabilityTypesListResponse>([]);
+  const [role, setRole] = useState(null);
   const [pending, setPending] = useState(false);
   const { name, password, avatar, gender, dob } = useSignUpStore();
   const router = useRouter();
-  const handleOnPress = (values: number[], value: number, setFieldValue: (field: string, value: number[]) => void) => {
+  const handleOnPress = (values: string[], value: string, setFieldValue: (field: string, value: string[]) => void) => {
     if (values.includes(value)) {
-      setFieldValue("features", [...values.filter(item => item !== value)]);
+      setFieldValue("disabilityTypes", [...values.filter(item => item !== value)]);
     } else {
-      setFieldValue("features", [...new Set(values).add(value)]);
+      setFieldValue("disabilityTypes", [...new Set(values).add(value)]);
     }
   };
-  const handleOnSubmit = async ({ features }: { features: number[] }) => {
+  const handleOnSubmit = async ({ disabilityTypes }: { disabilityTypes: string[] }) => {
     setPending(true);
     console.log(name);
     console.log(password);
@@ -50,59 +57,56 @@ const Step2Screen: FC = () => {
     console.log(dob);
   };
 
+  useEffect(() => {
+    (async () => {
+      setDisabilityTypesPending(true);
+
+      try {
+        const disabilityTypesList = await getDisabilityTypesList();
+        console.log(disabilityTypesList);
+        const roles = await getRolesList();
+        console.log(roles);
+      } catch (e) {
+        console.log(e);
+      }
+
+      setDisabilityTypesPending(false);
+    })();
+  }, []);
+
+  if (disabilityTypesPending) {
+    return (
+      <View style={styles.container}>
+        <Skeleton />
+        <Skeleton />
+        <Skeleton />
+        <Skeleton />
+        <Skeleton />
+      </View>
+    );
+  }
+
   return (
     <Formik
       initialValues={{
-        features: [] as number[],
+        disabilityTypes: [] as string[],
       }}
       validationSchema={toFormikValidationSchema(aboutStep2Schema)}
       onSubmit={handleOnSubmit}>
       {({ handleSubmit, values, errors, setFieldValue }) => (
         <>
           <View style={styles.container}>
-            <Button
-              type="outlined"
-              text="Я использую инвалидную коляску"
-              active={values.features?.includes(0)}
-              error={!!errors.features}
-              onPress={() => handleOnPress(values.features, 0, setFieldValue)}
-            />
-            <Button
-              type="outlined"
-              text="Я слепой / Слабовидящий"
-              active={values.features?.includes(1)}
-              error={!!errors.features}
-              onPress={() => handleOnPress(values.features, 1, setFieldValue)}
-            />
-            <Button
-              type="outlined"
-              text="Я глухой / Слабослышащий"
-              active={values.features?.includes(2)}
-              error={!!errors.features}
-              onPress={() => handleOnPress(values.features, 2, setFieldValue)}
-            />
-            <Button
-              type="outlined"
-              text="Я перенес полиомелит"
-              active={values.features?.includes(3)}
-              error={!!errors.features}
-              onPress={() => handleOnPress(values.features, 3, setFieldValue)}
-            />
-            <Button
-              type="outlined"
-              text="У меня ДЦП"
-              active={values.features?.includes(4)}
-              error={!!errors.features}
-              onPress={() => handleOnPress(values.features, 4, setFieldValue)}
-            />
-            <Button
-              type="outlined"
-              text="Другое"
-              active={values.features?.includes(5)}
-              error={!!errors.features}
-              onPress={() => handleOnPress(values.features, 5, setFieldValue)}
-            />
-            {!!errors.features && <Text style={styles.error}>{errors.features}</Text>}
+            {disabilityTypes.map((t, i) => (
+              <Button
+                key={i}
+                type="outlined"
+                text={t.displayName}
+                active={values.disabilityTypes?.includes(t.guid)}
+                error={!!errors.disabilityTypes}
+                onPress={() => handleOnPress(values.disabilityTypes, t.guid, setFieldValue)}
+              />
+            ))}
+            {!!errors.disabilityTypes && <Text style={styles.error}>{errors.disabilityTypes}</Text>}
           </View>
           <View style={styles.buttons}>
             <OnboardingButton

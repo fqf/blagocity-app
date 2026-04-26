@@ -3,7 +3,14 @@ import Svg, { Path } from "react-native-svg";
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import COLORS from "@/constants/colors";
 import DropShadow from "react-native-drop-shadow";
-import Animated, { useAnimatedStyle, useSharedValue, withDelay, withRepeat, withTiming } from "react-native-reanimated";
+import Animated, {
+  cancelAnimation,
+  useAnimatedStyle,
+  useSharedValue,
+  withDelay,
+  withRepeat,
+  withTiming,
+} from "react-native-reanimated";
 
 type TProps = {
   text: string;
@@ -67,6 +74,9 @@ const OnboardingButton: FC<TProps> = ({ text, pendingText, pending, onPress }) =
           true,
         ),
       );
+    } else {
+      cancelAnimation(opacity);
+      opacity.set(1);
     }
   }, [opacity, pending]);
 

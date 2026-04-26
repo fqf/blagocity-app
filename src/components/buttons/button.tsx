@@ -6,6 +6,7 @@ import Icon from "@/components/icons/icon";
 
 type TProps = {
   type: "primary" | "secondary" | "outlined";
+  inverted?: boolean;
   text: string;
   icon?: EIcon;
   active?: boolean;
@@ -35,6 +36,9 @@ const styles = StyleSheet.create({
   primary: {
     backgroundColor: COLORS.active,
   },
+  invertedPrimary: {
+    backgroundColor: COLORS.activeBackground,
+  },
   secondary: {
     backgroundColor: COLORS.inputBackground,
   },
@@ -50,6 +54,9 @@ const styles = StyleSheet.create({
   primaryText: {
     color: "white",
   },
+  invertedPrimaryText: {
+    color: COLORS.active,
+  },
   active: {
     borderColor: COLORS.active,
     backgroundColor: COLORS.activeBackground,
@@ -59,6 +66,7 @@ const styles = StyleSheet.create({
   },
   error: {
     backgroundColor: COLORS.errorBackground,
+    borderColor: COLORS.error,
   },
   errorText: {
     color: COLORS.error,
@@ -80,6 +88,7 @@ const styles = StyleSheet.create({
 });
 const Button: FC<TProps> = ({
   type = "primary",
+  inverted,
   text,
   icon,
   active,
@@ -97,13 +106,10 @@ const Button: FC<TProps> = ({
       style={[
         styles.container,
         fullWidth ? styles.fullwidth : null,
-        type === "primary"
-          ? styles.primary
-          : type === "secondary"
-            ? styles.secondary
-            : type === "outlined"
-              ? styles.outlined
-              : null,
+        type === "primary" && !inverted ? styles.primary : null,
+        type === "primary" && inverted ? styles.invertedPrimary : null,
+        type === "secondary" ? styles.secondary : null,
+        type === "outlined" ? styles.outlined : null,
         size === "large" ? styles.largeContainer : null,
         active ? styles.active : null,
         error ? styles.error : null,
@@ -121,7 +127,8 @@ const Button: FC<TProps> = ({
       <Text
         style={[
           styles.text,
-          type === "primary" ? styles.primaryText : null,
+          type === "primary" && !inverted ? styles.primaryText : null,
+          type === "primary" && inverted ? styles.invertedPrimaryText : null,
           size === "large" ? styles.largeText : null,
           active ? styles.activeText : null,
           error ? styles.errorText : null,

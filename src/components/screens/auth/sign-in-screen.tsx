@@ -9,6 +9,8 @@ import { Image } from "expo-image";
 import { toFormikValidationSchema } from "zod-formik-adapter";
 import signInSchema from "@/schemes/auth/sign-in-schema";
 import { useRouter } from "expo-router";
+import { signIn } from "@/actions/auth-actions";
+import * as SecureStore from "expo-secure-store";
 
 const styles = StyleSheet.create({
   container: {
@@ -63,9 +65,25 @@ const SignInScreen: FC = () => {
   };
   const handleOnSubmit = async ({ nickname, code }: { nickname: string; code: string }) => {
     setPending(true);
-    setTimeout(() => {
-      router.push("/tabs/map");
-    }, 2000);
+
+    try {
+      const { token } = await signIn({ login: nickname, password: code });
+      SecureStore.setItem(
+        process.env.EXPO_PUBLIC_SECURE_AUTH_STATE_KEY!,
+        JSON.stringify({
+          token,
+        }),
+      );
+      console.log(token);
+
+      setTimeout(() => {
+        router.navigate("/tabs/map");
+      }, 500);
+    } catch (e) {
+      console.log(e);
+    }
+
+    setPending(false);
   };
 
   useEffect(() => {
