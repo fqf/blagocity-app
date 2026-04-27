@@ -8,8 +8,10 @@ import GlobalLayout from "@/components/layouts/global-layout";
 import dayjs from "dayjs";
 import "dayjs/locale/ru";
 import customParseFormat from "dayjs/plugin/customParseFormat";
+import duration from "dayjs/plugin/duration";
 
 dayjs.extend(customParseFormat);
+dayjs.extend(duration);
 
 SplashScreen.setOptions({
   duration: 1000,

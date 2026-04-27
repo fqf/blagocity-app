@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { StyleSheet, View } from "react-native";
 import TContainerProps from "@/models/types/container-props";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 import COLORS from "@/constants/colors";
 import Header from "@/components/others/header";
 
@@ -32,14 +32,12 @@ const styles = StyleSheet.create({
 });
 const ModalLayout: FC<TProps> = ({ title, children }) => {
   return (
-    <SafeAreaProvider>
-      <SafeAreaView style={styles.safeAreaView}>
-        <View style={styles.container}>
-          <Header withClose title={title} headerStyle={styles.header} />
-          {children}
-        </View>
-      </SafeAreaView>
-    </SafeAreaProvider>
+    <SafeAreaView style={styles.safeAreaView}>
+      <View style={styles.container}>
+        <Header withClose title={title} headerStyle={styles.header} />
+        {children}
+      </View>
+    </SafeAreaView>
   );
 };
 

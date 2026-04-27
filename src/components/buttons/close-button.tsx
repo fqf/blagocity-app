@@ -3,7 +3,6 @@ import { StyleSheet, TouchableOpacity, ViewStyle } from "react-native";
 import Icon from "@/components/icons/icon";
 import EIcon from "@/models/enums/icon";
 import COLORS from "@/constants/colors";
-import chroma from "chroma-js";
 
 type TProps = {
   style?: ViewStyle;
@@ -15,7 +14,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 20,
-    backgroundColor: chroma(COLORS.inputBorder).alpha(0.75).hex(),
+    backgroundColor: COLORS.inputBorder,
     justifyContent: "center",
     alignItems: "center",
   },

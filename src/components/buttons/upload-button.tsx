@@ -8,7 +8,7 @@ const styles = StyleSheet.create({
   uploadButton: {
     width: "100%",
     height: 128,
-    backgroundColor: COLORS.inputBackground,
+    backgroundColor: COLORS.blockBackground,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 12,

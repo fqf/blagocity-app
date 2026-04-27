@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   fullwidth: {
-    flex: 1,
+    width: "100%",
   },
   primary: {
     backgroundColor: COLORS.active,
@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.activeBackground,
   },
   secondary: {
-    backgroundColor: COLORS.inputBackground,
+    backgroundColor: COLORS.blockBackground,
   },
   outlined: {
     borderColor: COLORS.inputBorder,

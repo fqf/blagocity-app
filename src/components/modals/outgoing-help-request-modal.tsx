@@ -1,12 +1,21 @@
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import COLORS from "@/constants/colors";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 import Button from "@/components/buttons/button";
 import Icon from "@/components/icons/icon";
 import EIcon from "@/models/enums/icon";
 import CloseButton from "@/components/buttons/close-button";
 import { useRouter } from "expo-router";
+import Animated, {
+  cancelAnimation,
+  useAnimatedStyle,
+  useSharedValue,
+  withDelay,
+  withRepeat,
+  withTiming,
+} from "react-native-reanimated";
+import TimerBlock from "@/components/blocks/timer-block";
 
 const styles = StyleSheet.create({
   safeAreaView: {
@@ -25,6 +34,8 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 24,
     right: 24,
+    zIndex: 1,
+    elevation: 1,
   },
   ringContainer: {
     width: 168,
@@ -37,9 +48,24 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 28,
   },
+  successContainer: {
+    width: 168,
+    height: 168,
+    borderRadius: 84,
+    borderWidth: 20,
+    borderColor: COLORS.successBackground,
+    backgroundColor: COLORS.success,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 28,
+  },
   ringIcon: {
     width: 48,
     height: 48,
+  },
+  successIcon: {
+    width: 64,
+    height: 64,
   },
   title: {
     fontFamily: "LexendDeca-ExtraBold",
@@ -84,38 +110,97 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
   },
+  buttons: {
+    width: "100%",
+    gap: 12,
+    alignItems: "stretch",
+    marginTop: 48,
+  },
 });
 const OutgoingHelpRequestModal: FC = () => {
+  const [status, setStatus] = useState<"sent" | "received">("sent");
+  const scale = useSharedValue(0.01);
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      position: "absolute",
+      borderRadius: "50%",
+      backgroundColor: COLORS.error,
+      width: 1500,
+      height: 1500,
+      opacity: 0.03 / scale.value,
+      transform: [
+        {
+          scale: scale.value,
+        },
+      ],
+    };
+  });
   const router = useRouter();
   const handleOnClosePress = () => {
     if (router.canGoBack()) {
+      cancelAnimation(scale);
+      scale.set(0.01);
       router.back();
     }
   };
 
+  useEffect(() => {
+    setTimeout(() => {
+      setStatus("received");
+    }, 5000);
+  }, []);
+  useEffect(() => {
+    scale.value = withDelay(
+      500,
+      withRepeat(
+        withTiming(1, {
+          duration: 1000,
+        }),
+        -1,
+        false,
+      ),
+    );
+  }, [scale]);
+
   return (
-    <SafeAreaProvider>
-      <SafeAreaView style={styles.safeAreaView}>
-        <View style={styles.container}>
-          <CloseButton style={styles.close} onPress={handleOnClosePress} />
+    <SafeAreaView style={styles.safeAreaView}>
+      <View style={styles.container}>
+        <CloseButton style={styles.close} onPress={handleOnClosePress} />
+        {status === "sent" && (
           <View style={styles.ringContainer}>
+            <Animated.View style={animatedStyle} />
             <Icon icon={EIcon.Ring} fill="white" style={styles.ringIcon} />
           </View>
-          <Text style={styles.title}>Вызов отправлен</Text>
+        )}
+        {status === "received" && (
+          <View style={styles.successContainer}>
+            <Icon icon={EIcon.Success} fill="white" style={styles.successIcon} />
+          </View>
+        )}
+        {status === "sent" && <Text style={styles.title}>Вызов отправлен</Text>}
+        {status === "received" && <Text style={styles.title}>Помощник в пути!</Text>}
+        {status === "sent" && (
           <Text style={styles.description}>
             Сотрудники <Text style={styles.name}>Доброе утро</Text> получили ваше уведомление и скоро подойдут.
           </Text>
-          <View style={styles.timerBlock}>
-            <Icon icon={EIcon.Clock} style={styles.icon} />
-            <View>
-              <Text style={styles.timeTitle}>Время ожидания</Text>
-              <Text style={styles.time}>00:03</Text>
-            </View>
-          </View>
-          <Button fullWidth size="large" type="secondary" text="Отменить вызов" />
+        )}
+        {status === "received" && (
+          <Text style={styles.description}>
+            Сотрудник принял ваш вызов и уже направляется к вам. Пожалуйста, оставайтесь на месте.
+          </Text>
+        )}
+        {status === "sent" && <TimerBlock />}
+        <View style={styles.buttons}>
+          {status === "sent" && <Button fullWidth size="large" type="secondary" text="Отменить вызов" />}
+          {status === "received" && (
+            <>
+              <Button fullWidth size="large" type="primary" text="Хорошо, жду" />
+              <Button fullWidth size="large" type="secondary" text="Отменить вызов" />
+            </>
+          )}
         </View>
-      </SafeAreaView>
-    </SafeAreaProvider>
+      </View>
+    </SafeAreaView>
   );
 };
 

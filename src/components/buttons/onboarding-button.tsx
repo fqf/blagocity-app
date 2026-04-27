@@ -11,11 +11,14 @@ import Animated, {
   withRepeat,
   withTiming,
 } from "react-native-reanimated";
+import EIcon from "@/models/enums/icon";
+import Icon from "@/components/icons/icon";
 
 type TProps = {
   text: string;
   pendingText?: string;
   pending?: boolean;
+  icon?: EIcon;
   onPress?: () => void;
 };
 
@@ -44,8 +47,10 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     position: "absolute",
+    flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
+    gap: 12,
   },
   text: {
     fontFamily: "LexendDeca-Medium",
@@ -53,8 +58,12 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     color: "white",
   },
+  icon: {
+    width: 24,
+    height: 24,
+  },
 });
-const OnboardingButton: FC<TProps> = ({ text, pendingText, pending, onPress }) => {
+const OnboardingButton: FC<TProps> = ({ text, pendingText, pending, icon, onPress }) => {
   const opacity = useSharedValue(1);
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -89,6 +98,7 @@ const OnboardingButton: FC<TProps> = ({ text, pendingText, pending, onPress }) =
           </Svg>
         </DropShadow>
         <View style={styles.content}>
+          {!!icon && <Icon icon={icon} fill="white" style={styles.icon} />}
           <Text style={styles.text}>{pending && !!pendingText ? pendingText : text}</Text>
         </View>
       </TouchableOpacity>

@@ -1,7 +1,6 @@
-import { FC, useRef } from "react";
+import { FC } from "react";
 import { useRouter } from "expo-router";
-import { Dimensions, StyleSheet, Text, View } from "react-native";
-import { BlurTargetView } from "expo-blur";
+import { StyleSheet, Text, View } from "react-native";
 import Constants from "expo-constants";
 import { Image } from "expo-image";
 import IconButton from "@/components/buttons/icon-button";
@@ -124,27 +123,27 @@ const styles = StyleSheet.create({
 });
 const ActionScreen: FC<TProps> = ({ id }) => {
   const router = useRouter();
-  const blurRef = useRef(null);
   const handleOnBackPress = () => {
     if (router.canGoBack()) {
       router.back();
     }
   };
+  const handleOnCouponPress = () => {
+    router.push("/tabs/discounts/action/coupon");
+  };
 
   return (
     <View style={styles.container}>
-      <BlurTargetView ref={blurRef}>
-        <Image
-          source={{
-            uri: "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1b/15/7e/cf/artur-restorant.jpg?w=1000&h=-1&s=1",
-          }}
-          contentFit="cover"
-          style={styles.image}
-        />
-      </BlurTargetView>
+      <Image
+        source={{
+          uri: "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1b/15/7e/cf/artur-restorant.jpg?w=1000&h=-1&s=1",
+        }}
+        contentFit="cover"
+        style={styles.image}
+      />
       <View style={styles.topHud}>
-        <IconButton icon={EIcon.ChevronLeft} blurTarget={blurRef} onPress={handleOnBackPress} />
-        <IconButton icon={EIcon.Like} blurTarget={blurRef} />
+        <IconButton icon={EIcon.ChevronLeft} onPress={handleOnBackPress} />
+        <IconButton icon={EIcon.Like} />
       </View>
       <View style={styles.bottomHud}>
         <DropShadow style={styles.shadow}>
@@ -181,7 +180,7 @@ const ActionScreen: FC<TProps> = ({ id }) => {
           </View>
         </View>
         <View style={styles.footer}>
-          <OnboardingButton text="Получить купон" />
+          <OnboardingButton text="Получить купон" icon={EIcon.QRCode} onPress={handleOnCouponPress} />
         </View>
       </View>
     </View>

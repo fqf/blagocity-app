@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from "react";
 import CloseButton from "@/components/buttons/close-button";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 import {
   Keyboard,
   KeyboardAvoidingView,
@@ -168,48 +168,46 @@ const CheckInModal: FC = () => {
   }, []);
 
   return (
-    <SafeAreaProvider>
-      <SafeAreaView style={styles.safeAreaView}>
-        <KeyboardAvoidingView behavior={Platform.OS === "android" ? behavior : "height"} style={styles.container}>
-          <View style={styles.header}>
-            <Text style={styles.title}>Отметиться и оценить</Text>
+    <SafeAreaView style={styles.safeAreaView}>
+      <KeyboardAvoidingView behavior={Platform.OS === "android" ? behavior : "height"} style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.title}>Отметиться и оценить</Text>
+        </View>
+        <CloseButton style={styles.close} onPress={handleOnClosePress} />
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
+          <View style={styles.ratingForm}>
+            <Text style={styles.ratingTitle}>Как вам Доброе Утро?</Text>
+            <View style={styles.ratingButtons}>
+              {new Array(10).fill("").map((_, i) => (
+                <TouchableOpacity key={i}>
+                  <Icon icon={EIcon.Star} style={styles.star} />
+                </TouchableOpacity>
+              ))}
+            </View>
           </View>
-          <CloseButton style={styles.close} onPress={handleOnClosePress} />
-          <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
-            <View style={styles.ratingForm}>
-              <Text style={styles.ratingTitle}>Как вам Доброе Утро?</Text>
-              <View style={styles.ratingButtons}>
-                {new Array(10).fill("").map((_, i) => (
-                  <TouchableOpacity key={i}>
-                    <Icon icon={EIcon.Star} style={styles.star} />
-                  </TouchableOpacity>
-                ))}
-              </View>
+          <View style={styles.block}>
+            <Text style={styles.label}>Отзыв</Text>
+            <Input multiline placeholder="Опишите ваши впечатления о доступности этого места..." />
+          </View>
+          <View style={styles.block}>
+            <Text style={styles.label}>Фотографии</Text>
+            <UploadButton />
+          </View>
+          <View style={styles.block}>
+            <Text style={[styles.ratingTitle, { textAlign: "left" }]}>Оцените доступность</Text>
+            <Text style={styles.description}>
+              Помогите другим пользователям, оценив наличие следующих элементов доступной среды.
+            </Text>
+            <View style={styles.featuresContainer}>
+              {featureItems.map(({ title }, i) => (
+                <FeaturePicker key={i} title={title} />
+              ))}
             </View>
-            <View style={styles.block}>
-              <Text style={styles.label}>Отзыв</Text>
-              <Input multiline placeholder="Опишите ваши впечатления о доступности этого места..." />
-            </View>
-            <View style={styles.block}>
-              <Text style={styles.label}>Фотографии</Text>
-              <UploadButton />
-            </View>
-            <View style={styles.block}>
-              <Text style={[styles.ratingTitle, { textAlign: "left" }]}>Оцените доступность</Text>
-              <Text style={styles.description}>
-                Помогите другим пользователям, оценив наличие следующих элементов доступной среды.
-              </Text>
-              <View style={styles.featuresContainer}>
-                {featureItems.map(({ title }, i) => (
-                  <FeaturePicker key={i} title={title} />
-                ))}
-              </View>
-            </View>
-            <OnboardingButton text="Опубликовать отзыв" />
-          </ScrollView>
-        </KeyboardAvoidingView>
-      </SafeAreaView>
-    </SafeAreaProvider>
+          </View>
+          <OnboardingButton text="Опубликовать отзыв" />
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 

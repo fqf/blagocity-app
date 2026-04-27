@@ -23,6 +23,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 12,
   },
+  button: {
+    flex: 1,
+  },
   label: {
     fontFamily: "LexendDeca-Regular",
     fontSize: 14,
@@ -42,20 +45,20 @@ const GenderPicker: FC<TProps> = ({ value, error, disabled, onPick }) => {
       <View style={styles.buttons}>
         <Button
           disabled={disabled}
-          fullWidth
           type="outlined"
           text="Мужской"
           active={value === EGender.Male}
           error={!!error}
+          style={styles.button}
           onPress={() => onPick?.(EGender.Male)}
         />
         <Button
           disabled={disabled}
-          fullWidth
           type="outlined"
           text="Женский"
           active={value === EGender.Female}
           error={!!error}
+          style={styles.button}
           onPress={() => onPick?.(EGender.Female)}
         />
       </View>

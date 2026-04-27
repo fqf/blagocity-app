@@ -42,6 +42,7 @@ import NewIcon from "@/components/icons/new-icon";
 import PalmIcon from "@/components/icons/palm-icon";
 import SportIcon from "@/components/icons/sport-icon";
 import ServiceIcon from "@/components/icons/service-icon";
+import SuccessIcon from "@/components/icons/success-icon";
 
 type TProps = {
   icon: EIcon;
@@ -177,6 +178,9 @@ const Icon: FC<TProps> = ({ icon, fill, style }) => {
 
     case EIcon.StepArrow:
       return <StepArrowIcon fill={fill} style={style} />;
+
+    case EIcon.Success:
+      return <SuccessIcon fill={fill} style={style} />;
 
     case EIcon.Upload:
       return <UploadIcon fill={fill} style={style} />;

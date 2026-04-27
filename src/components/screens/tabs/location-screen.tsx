@@ -1,4 +1,4 @@
-import { FC, useRef } from "react";
+import { FC } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { Image } from "expo-image";
@@ -12,7 +12,6 @@ import { declOfReviews } from "@/lib/decl-of-num";
 import Icon from "@/components/icons/icon";
 import IconButton from "@/components/buttons/icon-button";
 import Constants from "expo-constants";
-import { BlurTargetView } from "expo-blur";
 
 type TProps = {
   id: string;
@@ -141,7 +140,6 @@ const styles = StyleSheet.create({
 });
 const LocationScreen: FC<TProps> = ({ id }) => {
   const router = useRouter();
-  const blurRef = useRef(null);
   const handleOnBackPress = () => {
     if (router.canGoBack()) {
       router.back();
@@ -156,18 +154,16 @@ const LocationScreen: FC<TProps> = ({ id }) => {
 
   return (
     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.container}>
-      <BlurTargetView ref={blurRef}>
-        <Image
-          source={{
-            uri: "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1b/15/7e/cf/artur-restorant.jpg?w=1000&h=-1&s=1",
-          }}
-          contentFit="cover"
-          style={styles.image}
-        />
-      </BlurTargetView>
+      <Image
+        source={{
+          uri: "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1b/15/7e/cf/artur-restorant.jpg?w=1000&h=-1&s=1",
+        }}
+        contentFit="cover"
+        style={styles.image}
+      />
       <View style={styles.hud}>
-        <IconButton icon={EIcon.ChevronLeft} blurTarget={blurRef} onPress={handleOnBackPress} />
-        <IconButton icon={EIcon.Like} blurTarget={blurRef} />
+        <IconButton icon={EIcon.ChevronLeft} onPress={handleOnBackPress} />
+        <IconButton icon={EIcon.Like} />
       </View>
       <View style={styles.content}>
         <View style={styles.header}>

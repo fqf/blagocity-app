@@ -42,6 +42,7 @@ const enum EIcon {
   Star,
   StarFilled,
   StepArrow,
+  Success,
   Upload,
 }
 
