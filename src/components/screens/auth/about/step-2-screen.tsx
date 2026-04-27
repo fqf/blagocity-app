@@ -12,6 +12,10 @@ import Skeleton from "@/components/others/skeleton";
 import { getDisabilityTypesList } from "@/actions/disablity-types-actions";
 import TGetDisabilityTypesListResponse from "@/models/contracts/disabilityTypes/getDisabilityTypesListResponse";
 import { getRolesList } from "@/actions/roles-actions";
+import { isKyError } from "ky";
+import { createUser } from "@/actions/user-actions";
+import EGender from "@/models/enums/gender";
+import * as SecureStore from "expo-secure-store";
 
 const styles = StyleSheet.create({
   container: {
@@ -37,9 +41,9 @@ const styles = StyleSheet.create({
 const Step2Screen: FC = () => {
   const [disabilityTypesPending, setDisabilityTypesPending] = useState(true);
   const [disabilityTypes, setDisabilityTypes] = useState<TGetDisabilityTypesListResponse>([]);
-  const [role, setRole] = useState(null);
+  const [role, setRole] = useState<string>("");
   const [pending, setPending] = useState(false);
-  const { name, password, avatar, gender, dob } = useSignUpStore();
+  const { name, password, avatar, gender, dob, reset } = useSignUpStore();
   const router = useRouter();
   const handleOnPress = (values: string[], value: string, setFieldValue: (field: string, value: string[]) => void) => {
     if (values.includes(value)) {
@@ -50,11 +54,28 @@ const Step2Screen: FC = () => {
   };
   const handleOnSubmit = async ({ disabilityTypes }: { disabilityTypes: string[] }) => {
     setPending(true);
-    console.log(name);
-    console.log(password);
-    console.log(avatar);
-    console.log(gender);
-    console.log(dob);
+
+    try {
+      const userData = await createUser({
+        login: name,
+        gender: gender === EGender.Male ? "Мужской" : "Женский",
+        password,
+        birthday: dob?.toISOString() || "",
+        name,
+        avatar: avatar?.toString() || "",
+        roles: [`api/roles/${role}`],
+        disabilityTypes: disabilityTypes.map(dt => `api/disability_types/${dt}`),
+      });
+      SecureStore.setItem(process.env.EXPO_PUBLIC_SECURE_AUTH_STATE_KEY!, JSON.stringify(userData));
+      reset();
+      router.push("/onboarding/places");
+    } catch (e) {
+      if (isKyError(e)) {
+        console.error(e.message);
+      }
+    }
+
+    setPending(false);
   };
 
   useEffect(() => {
@@ -63,11 +84,19 @@ const Step2Screen: FC = () => {
 
       try {
         const disabilityTypesList = await getDisabilityTypesList();
-        console.log(disabilityTypesList);
+        disabilityTypesList.sort(a => (a.displayName === "Другое" ? 0 : -1));
+        setDisabilityTypes(disabilityTypesList);
+
         const roles = await getRolesList();
-        console.log(roles);
+        const userRole = roles.find(r => r.name === "user");
+
+        if (userRole) {
+          setRole(userRole.guid);
+        }
       } catch (e) {
-        console.log(e);
+        if (isKyError(e)) {
+          console.error(e.message);
+        }
       }
 
       setDisabilityTypesPending(false);

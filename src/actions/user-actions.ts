@@ -1,15 +1,15 @@
 import blagocityApi from "@/api/blagocity-api";
-import { TAvatarType } from "@/components/buttons/avatar-button";
 import TCreateUserResponse from "@/models/contracts/user/createUserResponse";
+import TCreateUserRequest from "@/models/contracts/user/createUserRequest";
 
 export const getMe = async () => {
   return await blagocityApi.get("/me").json();
 };
 
-export const createUser = async (name: string, password: string, avatar: TAvatarType) => {
+export const createUser = async (request: TCreateUserRequest) => {
   return await blagocityApi
     .post<TCreateUserResponse>("/users", {
-      json: {},
+      json: request,
     })
     .json();
 };

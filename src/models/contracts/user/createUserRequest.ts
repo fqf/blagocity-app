@@ -1,20 +1,13 @@
 type TCreateUserRequest = {
-  email: string;
+  login: string;
   gender: "Мужской" | "Женский";
   password: string;
   birthday: string;
   name: string;
-  media: string;
-  roles: {
-    name: string;
-    description: string;
-  }[];
-  disabilityTypes: {
-    name: string;
-    fullName: string;
-    displayName: string;
-    description: string;
-  }[];
+  avatar: string;
+  media?: string;
+  roles: string[];
+  disabilityTypes: string[];
 };
 
 export default TCreateUserRequest;

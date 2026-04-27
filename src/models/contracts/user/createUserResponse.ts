@@ -1,9 +1,10 @@
 type TCreateUserResponse = {
   guid: string;
-  email: string;
+  login: string;
   gender: "Мужской" | "Женский";
   birthday: string;
   name: string;
+  avatar: string;
   media: {
     createdAt: string;
   };

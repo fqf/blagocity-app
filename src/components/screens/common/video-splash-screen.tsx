@@ -3,6 +3,8 @@ import { useVideoPlayer, VideoPlayerStatus, VideoView } from "expo-video";
 import { useEventListener } from "expo";
 import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
+import * as SecureStore from "expo-secure-store";
+import useProfileStore from "@/stores/profile-store";
 
 const styles = StyleSheet.create({
   container: {
@@ -22,6 +24,7 @@ const VideoSplashScreen = () => {
     player.play();
   });
   const router = useRouter();
+  const { setUserData } = useProfileStore();
 
   useEventListener(player, "statusChange", ({ status }) => {
     setVideoStatus(status);
@@ -29,9 +32,16 @@ const VideoSplashScreen = () => {
 
   useEffect(() => {
     if (videoStatus === "idle") {
-      router.replace("/auth/sign-in");
+      const userData = JSON.parse(SecureStore.getItem(process.env.EXPO_PUBLIC_SECURE_AUTH_STATE_KEY!) ?? "null");
+
+      if (userData) {
+        setUserData(userData);
+        router.replace("/tabs/map");
+      } else {
+        router.replace("/auth/sign-in");
+      }
     }
-  }, [router, videoStatus]);
+  }, [router, setUserData, videoStatus]);
 
   return (
     <View style={styles.container}>

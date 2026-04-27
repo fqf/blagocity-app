@@ -10,7 +10,8 @@ import { toFormikValidationSchema } from "zod-formik-adapter";
 import signInSchema from "@/schemes/auth/sign-in-schema";
 import { useRouter } from "expo-router";
 import { signIn } from "@/actions/auth-actions";
-import * as SecureStore from "expo-secure-store";
+//import * as SecureStore from "expo-secure-store";
+import { isKyError } from "ky";
 
 const styles = StyleSheet.create({
   container: {
@@ -56,11 +57,9 @@ const styles = StyleSheet.create({
 const SignInScreen: FC = () => {
   const [behavior, setBehavior] = useState<"height" | undefined>();
   const [pending, setPending] = useState(false);
-  const [error, setError] = useState(false);
   const [isSecure, setIsSecure] = useState(true);
   const router = useRouter();
   const handleOnInputChange = (callBack: (e: string | ChangeEvent<any>) => void, e: string | ChangeEvent<any>) => {
-    setError(false);
     callBack(e);
   };
   const handleOnSubmit = async ({ nickname, code }: { nickname: string; code: string }) => {
@@ -68,19 +67,21 @@ const SignInScreen: FC = () => {
 
     try {
       const { token } = await signIn({ login: nickname, password: code });
-      SecureStore.setItem(
+      /*SecureStore.setItem(
         process.env.EXPO_PUBLIC_SECURE_AUTH_STATE_KEY!,
         JSON.stringify({
           token,
         }),
-      );
+      );*/
       console.log(token);
 
       setTimeout(() => {
         router.navigate("/tabs/map");
       }, 500);
     } catch (e) {
-      console.log(e);
+      if (isKyError(e)) {
+        console.error(e.message);
+      }
     }
 
     setPending(false);

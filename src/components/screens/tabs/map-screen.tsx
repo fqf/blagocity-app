@@ -5,13 +5,14 @@ import TabsLayout from "@/components/layouts/tabs-layout";
 import MapButton from "@/components/buttons/map-button";
 import EIcon from "@/models/enums/icon";
 import Constants from "expo-constants";
-import AvatarButton from "@/components/buttons/avatar-button";
+import AvatarButton, { TAvatarType } from "@/components/buttons/avatar-button";
 import AssistButton from "@/components/buttons/assist-button";
 import * as Location from "expo-location";
 import { debounce } from "lodash";
 import { useRouter } from "expo-router";
 import PinButton from "@/components/buttons/pin-button";
 import { Feature, Point } from "geojson";
+import useProfileStore from "@/stores/profile-store";
 
 Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_TOKEN!).then();
 
@@ -43,6 +44,7 @@ const MapScreen: FC = () => {
   const [zoomLevel, setZoomLevel] = useState(16);
   const [location, setLocation] = useState<[number, number]>(defaultLocation);
   const router = useRouter();
+  const { userData } = useProfileStore();
   const handleOnPlusPress = () => {
     setZoomLevel(prev => prev + 1);
   };
@@ -99,7 +101,7 @@ const MapScreen: FC = () => {
       </MapView>
       <View style={styles.header}>
         <MapButton icon={EIcon.List} />
-        <AvatarButton size="small" type={1} onPress={handleOnAvatarPress} />
+        <AvatarButton size="small" type={+(userData?.avatar ?? 1) as TAvatarType} onPress={handleOnAvatarPress} />
         <MapButton icon={EIcon.Filter} />
       </View>
       <View style={styles.mapTools}>

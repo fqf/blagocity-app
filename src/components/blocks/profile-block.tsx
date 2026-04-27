@@ -6,6 +6,7 @@ import COLORS from "@/constants/colors";
 import EIcon from "@/models/enums/icon";
 import Icon from "@/components/icons/icon";
 import { useRouter } from "expo-router";
+import useProfileStore from "@/stores/profile-store";
 
 const styles = StyleSheet.create({
   container: {
@@ -42,6 +43,7 @@ const styles = StyleSheet.create({
   },
 });
 const ProfileBlock: FC = () => {
+  const { userData } = useProfileStore();
   const router = useRouter();
   const handleOnButtonPress = () => {
     router.push("/tabs/map/settings/profile");
@@ -51,8 +53,8 @@ const ProfileBlock: FC = () => {
     <ShadowBlock>
       <View style={styles.container}>
         <View style={styles.content}>
-          <Image source={{ uri: "avatar_1" }} style={styles.avatar} />
-          <Text style={styles.text}>Вася В.</Text>
+          <Image source={{ uri: `avatar_${userData?.avatar ?? 1}` }} style={styles.avatar} />
+          <Text style={styles.text}>{userData?.name}</Text>
         </View>
         <TouchableOpacity activeOpacity={0.5} style={styles.button} onPress={handleOnButtonPress}>
           <Icon icon={EIcon.Gear} fill={COLORS.label} style={styles.icon} />

@@ -4,6 +4,8 @@ import ShadowBlock from "@/components/blocks/shadow-block";
 import Icon from "@/components/icons/icon";
 import EIcon from "@/models/enums/icon";
 import COLORS from "@/constants/colors";
+import { useRouter } from "expo-router";
+import * as SecureStore from "expo-secure-store";
 
 const styles = StyleSheet.create({
   container: {
@@ -27,8 +29,14 @@ const styles = StyleSheet.create({
   },
 });
 const ExitButton: FC = () => {
+  const router = useRouter();
+  const handleOnButtonPress = async () => {
+    await SecureStore.deleteItemAsync(process.env.EXPO_PUBLIC_SECURE_AUTH_STATE_KEY!);
+    router.replace("/");
+  };
+
   return (
-    <TouchableOpacity activeOpacity={0.55}>
+    <TouchableOpacity activeOpacity={0.55} onPress={handleOnButtonPress}>
       <ShadowBlock>
         <View style={styles.container}>
           <Icon icon={EIcon.Quit} fill={COLORS.error} style={styles.icon} />
