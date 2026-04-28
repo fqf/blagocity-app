@@ -16,7 +16,7 @@ import useProfileStore from "@/stores/profile-store";
 
 Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_TOKEN!).then();
 
-export const defaultLocation: [number, number] = [37.616371, 55.757537];
+export const defaultLocation: [number, number] = [37.626728, 55.756476];
 const styles = StyleSheet.create({
   map: {
     flex: 1,
@@ -95,7 +95,7 @@ const MapScreen: FC = () => {
           centerCoordinate={location}
           animationDuration={5}
         />
-        <MarkerView coordinate={[37.390489, 55.869463]}>
+        <MarkerView coordinate={[37.626728, 55.756476]}>
           <PinButton href="/tabs/map/location/117" />
         </MarkerView>
       </MapView>

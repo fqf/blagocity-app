@@ -16,6 +16,8 @@ import { isKyError } from "ky";
 import { createUser } from "@/actions/user-actions";
 import EGender from "@/models/enums/gender";
 import * as SecureStore from "expo-secure-store";
+import { signIn } from "@/actions/auth-actions";
+import useProfileStore from "@/stores/profile-store";
 
 const styles = StyleSheet.create({
   container: {
@@ -27,7 +29,7 @@ const styles = StyleSheet.create({
   buttons: {
     width: "100%",
     position: "absolute",
-    bottom: 25,
+    bottom: 30,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -44,6 +46,7 @@ const Step2Screen: FC = () => {
   const [role, setRole] = useState<string>("");
   const [pending, setPending] = useState(false);
   const { name, password, avatar, gender, dob, reset } = useSignUpStore();
+  const { setUserData } = useProfileStore();
   const router = useRouter();
   const handleOnPress = (values: string[], value: string, setFieldValue: (field: string, value: string[]) => void) => {
     if (values.includes(value)) {
@@ -66,7 +69,9 @@ const Step2Screen: FC = () => {
         roles: [`api/roles/${role}`],
         disabilityTypes: disabilityTypes.map(dt => `api/disability_types/${dt}`),
       });
-      SecureStore.setItem(process.env.EXPO_PUBLIC_SECURE_AUTH_STATE_KEY!, JSON.stringify(userData));
+      setUserData(userData);
+      const { token } = await signIn({ login: name, password });
+      SecureStore.setItem(process.env.EXPO_PUBLIC_SECURE_AUTH_STATE_KEY!, token);
       reset();
       router.push("/onboarding/places");
     } catch (e) {
@@ -128,6 +133,7 @@ const Step2Screen: FC = () => {
             {disabilityTypes.map((t, i) => (
               <Button
                 key={i}
+                disabled={pending}
                 type="outlined"
                 text={t.displayName}
                 active={values.disabilityTypes?.includes(t.guid)}

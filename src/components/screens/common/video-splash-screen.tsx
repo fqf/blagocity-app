@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import useProfileStore from "@/stores/profile-store";
+import { getMe } from "@/actions/user-actions";
 
 const styles = StyleSheet.create({
   container: {
@@ -32,11 +33,14 @@ const VideoSplashScreen = () => {
 
   useEffect(() => {
     if (videoStatus === "idle") {
-      const userData = JSON.parse(SecureStore.getItem(process.env.EXPO_PUBLIC_SECURE_AUTH_STATE_KEY!) ?? "null");
+      const token = SecureStore.getItem(process.env.EXPO_PUBLIC_SECURE_AUTH_STATE_KEY!);
 
-      if (userData) {
-        setUserData(userData);
-        router.replace("/tabs/map");
+      if (token) {
+        (async () => {
+          const userData = await getMe(token);
+          setUserData(userData);
+          router.replace("/tabs/map");
+        })();
       } else {
         router.replace("/auth/sign-in");
       }

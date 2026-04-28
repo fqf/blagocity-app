@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: COLORS.inputBorder,
     paddingTop: 32,
-    paddingBottom: 32,
+    paddingBottom: 30,
   },
 });
 const ActionScreen: FC<TProps> = ({ id }) => {

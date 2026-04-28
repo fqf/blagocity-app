@@ -10,8 +10,10 @@ import { toFormikValidationSchema } from "zod-formik-adapter";
 import signInSchema from "@/schemes/auth/sign-in-schema";
 import { useRouter } from "expo-router";
 import { signIn } from "@/actions/auth-actions";
-//import * as SecureStore from "expo-secure-store";
-import { isKyError } from "ky";
+import * as SecureStore from "expo-secure-store";
+import { getMe } from "@/actions/user-actions";
+import useProfileStore from "@/stores/profile-store";
+import Alert from "@/components/others/alert";
 
 const styles = StyleSheet.create({
   container: {
@@ -38,7 +40,7 @@ const styles = StyleSheet.create({
     width: "100%",
     gap: 20,
     position: "absolute",
-    bottom: 25,
+    bottom: 30,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -58,6 +60,8 @@ const SignInScreen: FC = () => {
   const [behavior, setBehavior] = useState<"height" | undefined>();
   const [pending, setPending] = useState(false);
   const [isSecure, setIsSecure] = useState(true);
+  const [authError, setAuthError] = useState(false);
+  const { setUserData } = useProfileStore();
   const router = useRouter();
   const handleOnInputChange = (callBack: (e: string | ChangeEvent<any>) => void, e: string | ChangeEvent<any>) => {
     callBack(e);
@@ -67,24 +71,20 @@ const SignInScreen: FC = () => {
 
     try {
       const { token } = await signIn({ login: nickname, password: code });
-      /*SecureStore.setItem(
-        process.env.EXPO_PUBLIC_SECURE_AUTH_STATE_KEY!,
-        JSON.stringify({
-          token,
-        }),
-      );*/
-      console.log(token);
+      const userData = await getMe(token);
+      setUserData(userData);
+      SecureStore.setItem(process.env.EXPO_PUBLIC_SECURE_AUTH_STATE_KEY!, token);
 
       setTimeout(() => {
         router.navigate("/tabs/map");
       }, 500);
-    } catch (e) {
-      if (isKyError(e)) {
-        console.error(e.message);
-      }
+    } catch {
+      setAuthError(true);
+      setPending(false);
     }
-
-    setPending(false);
+  };
+  const handleOnCloseAlertPress = () => {
+    setAuthError(false);
   };
 
   useEffect(() => {
@@ -141,6 +141,14 @@ const SignInScreen: FC = () => {
                   <LinkButton text="Зарегистрироваться" href="/auth/sign-up" />
                 </View>
                 <View style={styles.buttons}>
+                  {authError && (
+                    <Alert
+                      variant="error"
+                      title="Ошибка авторизации"
+                      description="Что-то пошло не так..."
+                      onClosePress={handleOnCloseAlertPress}
+                    />
+                  )}
                   <OnboardingButton
                     text="Войти"
                     pendingText="Вход в приложение..."
@@ -149,7 +157,7 @@ const SignInScreen: FC = () => {
                   />
                   <View style={styles.footer}>
                     <Text style={styles.footerText}>Забыли кодовое слово?</Text>
-                    <LinkButton text="Восстановить" href="/onboarding/places" />
+                    <LinkButton text="Восстановить" href="/auth/sign-in" />
                   </View>
                 </View>
               </View>

@@ -127,7 +127,7 @@ const OutgoingHelpRequestModal: FC = () => {
       backgroundColor: COLORS.error,
       width: 1500,
       height: 1500,
-      opacity: 0.03 / scale.value,
+      opacity: 0.01 / scale.value,
       transform: [
         {
           scale: scale.value,
@@ -147,7 +147,7 @@ const OutgoingHelpRequestModal: FC = () => {
   useEffect(() => {
     setTimeout(() => {
       setStatus("received");
-    }, 5000);
+    }, 7500);
   }, []);
   useEffect(() => {
     scale.value = withDelay(

@@ -6,6 +6,7 @@ import EIcon from "@/models/enums/icon";
 import COLORS from "@/constants/colors";
 import { useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
+import useProfileStore from "@/stores/profile-store";
 
 const styles = StyleSheet.create({
   container: {
@@ -30,9 +31,11 @@ const styles = StyleSheet.create({
 });
 const ExitButton: FC = () => {
   const router = useRouter();
+  const { reset } = useProfileStore();
   const handleOnButtonPress = async () => {
     await SecureStore.deleteItemAsync(process.env.EXPO_PUBLIC_SECURE_AUTH_STATE_KEY!);
     router.replace("/");
+    reset();
   };
 
   return (
