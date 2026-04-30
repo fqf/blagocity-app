@@ -22,8 +22,9 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     borderRadius: 12,
-    height: 42,
+    minHeight: 42,
     paddingHorizontal: 12,
+    paddingVertical: 8,
     borderWidth: 2,
     borderColor: "transparent",
     justifyContent: "center",
@@ -57,7 +58,10 @@ const styles = StyleSheet.create({
   invertedPrimaryText: {
     color: COLORS.active,
   },
-  active: {
+  activeSecondary: {
+    backgroundColor: COLORS.activeBackground,
+  },
+  activeOutlined: {
     borderColor: COLORS.active,
     backgroundColor: COLORS.activeBackground,
   },
@@ -111,7 +115,8 @@ const Button: FC<TProps> = ({
         type === "secondary" ? styles.secondary : null,
         type === "outlined" ? styles.outlined : null,
         size === "large" ? styles.largeContainer : null,
-        active ? styles.active : null,
+        active && type === "outlined" ? styles.activeOutlined : null,
+        active && type === "secondary" ? styles.activeSecondary : null,
         error ? styles.error : null,
         disabled ? styles.disabled : null,
         style,

@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { Image } from "expo-image";
@@ -12,6 +12,14 @@ import { declOfReviews } from "@/lib/decl-of-num";
 import Icon from "@/components/icons/icon";
 import IconButton from "@/components/buttons/icon-button";
 import Constants from "expo-constants";
+import Skeleton from "@/components/others/skeleton";
+import { isHTTPError, isKyError } from "ky";
+import { getPlace, getPlaceTypesList } from "@/actions/place-actions";
+import TGetPlaceResponse from "@/models/contracts/place/getPlaceResponse";
+import { getAccessibilityList } from "@/actions/accesibility-actions";
+import { getUser } from "@/actions/user-actions";
+import * as SecureStore from "expo-secure-store";
+import useProfileStore from "@/stores/profile-store";
 
 type TProps = {
   id: string;
@@ -36,6 +44,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   content: {
+    flex: 1,
     padding: 20,
     gap: 24,
   },
@@ -46,6 +55,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
+  },
+  subheader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   title: {
     fontFamily: "LexendDeca-Bold",
@@ -70,8 +84,9 @@ const styles = StyleSheet.create({
   addressContainer: {
     flexDirection: "row",
     marginTop: 8,
-    alignItems: "center",
+    alignItems: "flex-start",
     gap: 6,
+    paddingRight: 20,
   },
   address: {
     fontFamily: "LexendDeca-Regular",
@@ -81,6 +96,7 @@ const styles = StyleSheet.create({
   addressIcon: {
     width: 16,
     height: 16,
+    marginTop: 2,
   },
   authorContainer: {
     backgroundColor: COLORS.blockBackground,
@@ -112,6 +128,7 @@ const styles = StyleSheet.create({
   featuresContainer: {
     gap: 8,
     alignItems: "flex-start",
+    paddingRight: 20,
   },
   buttonsContainer: {
     gap: 12,
@@ -137,8 +154,17 @@ const styles = StyleSheet.create({
     gap: 12,
     paddingBottom: 20,
   },
+  emptyText: {
+    color: COLORS.label,
+  },
 });
 const LocationScreen: FC<TProps> = ({ id }) => {
+  const [pending, setPending] = useState(true);
+  const [placeData, setPlaceData] = useState<TGetPlaceResponse | null>(null);
+  const [placeType, setPlaceType] = useState("");
+  const [accessibility, setAccessibility] = useState<string[]>([]);
+  const [author, setAuthor] = useState("");
+  const { userData } = useProfileStore();
   const router = useRouter();
   const handleOnBackPress = () => {
     if (router.canGoBack()) {
@@ -151,6 +177,86 @@ const LocationScreen: FC<TProps> = ({ id }) => {
   const handleOnCreateReviewPress = () => {
     router.push("/tabs/map/location/check-in");
   };
+
+  useEffect(() => {
+    setPending(true);
+
+    (async () => {
+      try {
+        const token = SecureStore.getItem(process.env.EXPO_PUBLIC_SECURE_AUTH_STATE_KEY!);
+
+        if (!token) {
+          throw new Error("Bad token");
+        }
+
+        const placeDataResponse = await getPlace(id);
+        const placeTypeId = placeDataResponse.placeType.split("/").slice(-1)[0];
+        const placeTypesListResponse = await getPlaceTypesList();
+        const placeTypeName = placeTypesListResponse.find(pt => pt.guid === placeTypeId)?.name;
+        setPlaceType(placeTypeName ?? "");
+
+        const userId = placeDataResponse.createdBy.split("/").slice(-1)[0];
+
+        if (userId === "me") {
+          setAuthor(`${userData?.name ?? ""} (я)`);
+        } else {
+          const userDataResponse = await getUser(token, userId);
+          setAuthor(userDataResponse.name);
+        }
+
+        const accessibilityListResponse = await getAccessibilityList();
+        const accessibilityList = placeDataResponse.accessibilityCriteria.map(acc => {
+          const guid = acc.split("/api/accessibility_criteria/")[1];
+          return accessibilityListResponse.find(item => item.guid === guid)?.name ?? "";
+        });
+        setAccessibility(accessibilityList);
+        setPlaceData(placeDataResponse);
+        setPending(false);
+      } catch (e) {
+        if (isHTTPError(e)) {
+          const error = await e.response.json();
+          console.log(error);
+        } else if (isKyError(e)) {
+          console.error(e.message);
+        }
+      }
+    })();
+  }, [id]);
+
+  if (pending) {
+    return (
+      <View style={[styles.container, { flex: 1 }]}>
+        <Skeleton style={{ height: 300, borderRadius: 0 }} />
+        <View style={styles.hud}>
+          <IconButton icon={EIcon.ChevronLeft} onPress={handleOnBackPress} />
+        </View>
+        <View style={styles.content}>
+          <View style={styles.header}>
+            <View style={{ gap: 8 }}>
+              <Skeleton style={{ height: 32, width: 154, borderRadius: 6 }} />
+              <Skeleton style={{ height: 24, width: 42, borderRadius: 6 }} />
+              <View style={styles.addressContainer}>
+                <Skeleton style={{ height: 20, width: 92, borderRadius: 6 }} />
+              </View>
+            </View>
+            <Skeleton style={{ height: 32, width: 61, borderRadius: 6 }} />
+          </View>
+          <View style={styles.authorContainer}>
+            <Skeleton style={{ height: 20, width: 180, borderRadius: 6 }} />
+            <Skeleton style={{ height: 36, width: 318, borderRadius: 6 }} />
+          </View>
+          <View style={styles.block}>
+            <Skeleton style={{ height: 28, width: 350, borderRadius: 6 }} />
+            <View style={styles.featuresContainer}>
+              <Skeleton style={{ height: 32, width: 95, borderRadius: 6 }} />
+              <Skeleton style={{ height: 32, width: 274, borderRadius: 6 }} />
+              <Skeleton style={{ height: 32, width: 231, borderRadius: 6 }} />
+            </View>
+          </View>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.container}>
@@ -167,36 +273,42 @@ const LocationScreen: FC<TProps> = ({ id }) => {
       </View>
       <View style={styles.content}>
         <View style={styles.header}>
-          <View>
-            <Text style={styles.title}>Доброе утро</Text>
-            <Text style={styles.description}>Кафе</Text>
+          <View style={{ width: "100%" }}>
+            <View style={styles.subheader}>
+              <Text style={styles.title}>{placeData?.name}</Text>
+              <Rating value={4.7} />
+            </View>
+            <Text style={styles.description}>{placeType}</Text>
             <View style={styles.addressContainer}>
               <Icon icon={EIcon.PinOutlined} fill={COLORS.icon} style={styles.addressIcon} />
-              <Text style={styles.address}>ул. Ленина, 12</Text>
+              <Text style={styles.address}>{placeData?.address}</Text>
             </View>
           </View>
-          <Rating value={4.7} />
         </View>
         <View style={styles.authorContainer}>
           <View style={styles.authorHeader}>
             <Icon icon={EIcon.Profile} fill={COLORS.icon} style={styles.authorIcon} />
             <Text style={styles.authorTitle}>
-              Кем создано: <Text style={styles.authorName}>Иван Иванов</Text>
+              Кем создано: <Text style={styles.authorName}>{author}</Text>
             </Text>
           </View>
-          <Feature icon={EIcon.Shield} title="Владелец отслеживает отзывы" variant="success" />
+          <Feature
+            icon={EIcon.Shield}
+            title={`Автор ${!placeData?.ownerReviewTrackingEnabled ? "не " : ""}отслеживает отзывы`}
+            variant={placeData?.ownerReviewTrackingEnabled ? "success" : "error"}
+          />
         </View>
         <View style={styles.block}>
           <Text style={styles.subtitle}>Атрибуты доступности</Text>
           <View style={styles.featuresContainer}>
-            <Feature icon={EIcon.Checked} title="Пандус" />
-            <Feature icon={EIcon.Checked} title="Доступ на механической коляске" />
-            <Feature icon={EIcon.Checked} title="Меню со штрифтом Брайля" />
+            {accessibility.map((acc, i) => (
+              <Feature key={i} icon={EIcon.Checked} title={acc} />
+            ))}
           </View>
         </View>
         <View style={styles.block}>
           <Text style={styles.subtitle}>Доступная среда</Text>
-          <Text style={styles.text}>Уютная кофейня с эко-френдли подходом. Скидка за свой стаканчик.</Text>
+          <Text style={styles.text}>Уютное место с френдли подходом.</Text>
         </View>
         <View style={styles.buttonsContainer}>
           <Button error type="secondary" text="Позвать помощника" icon={EIcon.Ring} onPress={handleOnAlertPress} />
@@ -215,26 +327,23 @@ const LocationScreen: FC<TProps> = ({ id }) => {
           <View style={styles.reviewsHeader}>
             <Text style={styles.subtitle}>Отзывы</Text>
             <Text style={styles.reviewsHeaderCounter}>
-              {2} {declOfReviews(2)}
+              {placeData?.reviews?.length ?? 0} {declOfReviews(placeData?.reviews?.length ?? 0)}
             </Text>
           </View>
           <View style={styles.reviewsContainer}>
-            <ReviewBlock
-              user="Алексей"
-              avatar={3}
-              rating={5}
-              date={new Date()}
-              text="Отличное место! Очень удобный пандус на входе."
-              features={["Пандус", "Доступ на механической коляске"]}
-            />
-            <ReviewBlock
-              user="Михаил"
-              avatar={4}
-              rating={4.5}
-              date={new Date()}
-              text="Приемлемо."
-              features={["Пандус", "Доступ на механической коляске"]}
-            />
+            {!placeData?.reviews?.length && <Text style={styles.emptyText}>Отзывов пока нет...</Text>}
+            {!!placeData?.reviews?.length &&
+              placeData?.reviews.map(review => (
+                <ReviewBlock
+                  key={review.guid}
+                  user="Алексей"
+                  avatar={3}
+                  rating={5}
+                  date={new Date()}
+                  text="Отличное место! Очень удобный пандус на входе."
+                  features={["Пандус", "Доступ на механической коляске"]}
+                />
+              ))}
           </View>
         </View>
       </View>

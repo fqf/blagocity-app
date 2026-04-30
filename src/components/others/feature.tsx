@@ -17,12 +17,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 4,
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-start",
     gap: 8,
   },
   icon: {
     width: 14,
     height: 14,
+    marginTop: 4,
   },
   text: {
     fontFamily: "LexendDeca-SemiBold",
@@ -37,11 +38,11 @@ const Feature: FC<TProps> = ({ icon, title, variant = "default" }) => {
         styles.container,
         variant === "default" ? { backgroundColor: COLORS.activeBackground } : null,
         variant === "success" ? { backgroundColor: COLORS.successBackground } : null,
-        variant === "error" ? { backgroundColor: COLORS.error } : null,
+        variant === "error" ? { backgroundColor: COLORS.errorBackground } : null,
       ]}>
       <Icon
         icon={icon}
-        fill={variant === "success" ? COLORS.success : variant === "error" ? "white" : COLORS.active}
+        fill={variant === "success" ? COLORS.success : variant === "error" ? COLORS.error : COLORS.active}
         style={styles.icon}
       />
       <Text
@@ -49,7 +50,7 @@ const Feature: FC<TProps> = ({ icon, title, variant = "default" }) => {
           styles.text,
           variant === "default" ? { color: COLORS.active } : null,
           variant === "success" ? { color: COLORS.success } : null,
-          variant === "error" ? { color: "white" } : null,
+          variant === "error" ? { color: COLORS.error } : null,
         ]}>
         {title}
       </Text>

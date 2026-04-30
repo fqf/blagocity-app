@@ -1,9 +1,10 @@
 import blagocityApi from "@/api/blagocity-api";
 import TCreateUserResponse from "@/models/contracts/user/createUserResponse";
 import TCreateUserRequest from "@/models/contracts/user/createUserRequest";
+import TGetUserResponse from "@/models/contracts/user/getUserResponse";
 
 export const getMe = async (token: string) => {
-  return await blagocityApi(token).get<TCreateUserResponse>("/me").json();
+  return await blagocityApi(token).get<TGetUserResponse>("/me").json();
 };
 
 export const createUser = async (request: TCreateUserRequest) => {
@@ -19,5 +20,5 @@ export const editUser = async (token: string, guid: string) => {
 };
 
 export const getUser = async (token: string, guid: string) => {
-  return await blagocityApi(token).get(`/users/${guid}`).json();
+  return await blagocityApi(token).get<TGetUserResponse>(`/users/${guid}`).json();
 };

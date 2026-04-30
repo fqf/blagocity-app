@@ -1,8 +1,19 @@
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import ShadowBlock from "@/components/blocks/shadow-block";
 import COLORS from "@/constants/colors";
 import Button from "@/components/buttons/button";
+import Skeleton from "@/components/others/skeleton";
+import { getPlaceTypesList } from "@/actions/place-actions";
+import TGetPlaceTypesListResponse from "@/models/contracts/place/getPlaceTypesListResponse";
+import { isKyError } from "ky";
+
+type TProps = Partial<{
+  value: string;
+  error: string;
+  disabled: boolean;
+  onPress: (value: string) => void;
+}>;
 
 const styles = StyleSheet.create({
   container: {
@@ -19,19 +30,66 @@ const styles = StyleSheet.create({
   },
   content: {
     flexDirection: "row",
+    flexWrap: "wrap",
     gap: 8,
   },
+  skeleton: {
+    width: 100,
+  },
+  error: {
+    fontFamily: "LexendDeca-Regular",
+    fontSize: 12,
+    color: COLORS.error,
+    textAlign: "center",
+  },
 });
-const PlaceTypeBlock: FC = () => {
+const PlaceTypeBlock: FC<TProps> = ({ value, error, disabled, onPress }) => {
+  const [pending, setPending] = useState(true);
+  const [types, setTypes] = useState<TGetPlaceTypesListResponse>([]);
+
+  useEffect(() => {
+    (async () => {
+      setPending(true);
+
+      try {
+        const response = await getPlaceTypesList();
+        setTypes(response);
+      } catch (e) {
+        if (isKyError(e)) {
+          console.error(e.message);
+        }
+      }
+
+      setPending(false);
+    })();
+  }, []);
+
   return (
     <ShadowBlock>
       <View style={styles.container}>
         <Text style={styles.label}>Тип места</Text>
         <View style={styles.content}>
-          <Button type="secondary" text="Социальное" />
-          <Button type="secondary" text="Досуг" />
-          <Button type="secondary" text="Дорога" />
+          {pending && (
+            <>
+              <Skeleton style={styles.skeleton} />
+              <Skeleton style={styles.skeleton} />
+              <Skeleton style={styles.skeleton} />
+            </>
+          )}
+          {!pending &&
+            types.map(type => (
+              <Button
+                key={type.guid}
+                type="secondary"
+                active={type.guid === value}
+                text={type.name}
+                error={!!error}
+                disabled={disabled}
+                onPress={() => onPress?.(type.guid)}
+              />
+            ))}
         </View>
+        {!!error && <Text style={styles.error}>{error}</Text>}
       </View>
     </ShadowBlock>
   );

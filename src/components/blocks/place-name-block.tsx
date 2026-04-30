@@ -4,6 +4,14 @@ import ShadowBlock from "@/components/blocks/shadow-block";
 import COLORS from "@/constants/colors";
 import Input from "@/components/inputs/input";
 
+type TProps = Partial<{
+  value: string;
+  error: string;
+  disabled: boolean;
+  onChange: (value: string) => void;
+  onBlur: (e: any) => void;
+}>;
+
 const styles = StyleSheet.create({
   container: {
     width: "100%",
@@ -18,12 +26,19 @@ const styles = StyleSheet.create({
     color: COLORS.text,
   },
 });
-const PlaceNameBlock: FC = () => {
+const PlaceNameBlock: FC<TProps> = ({ value, error, disabled, onChange, onBlur }) => {
   return (
     <ShadowBlock>
       <View style={styles.container}>
         <Text style={styles.label}>Название места</Text>
-        <Input placeholder="Введите название места..." />
+        <Input
+          placeholder="Введите название места..."
+          value={value}
+          error={error}
+          disabled={disabled}
+          onChange={onChange}
+          onBlur={onBlur}
+        />
       </View>
     </ShadowBlock>
   );

@@ -1,29 +1,20 @@
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import ShadowBlock from "@/components/blocks/shadow-block";
 import COLORS from "@/constants/colors";
 import Button from "@/components/buttons/button";
+import { isKyError } from "ky";
+import TGetAccessibilityListResponse from "@/models/contracts/accessibility/getAccessibilityListResponse";
+import { getAccessibilityList } from "@/actions/accesibility-actions";
+import Skeleton from "@/components/others/skeleton";
 
-const items = [
-  {
-    feature: "Пандус",
-  },
-  {
-    feature: "Тактильная плитка",
-  },
-  {
-    feature: "Кнопка помощи",
-  },
-  {
-    feature: "Шрифт Брайля",
-  },
-  {
-    feature: "Озвучивание",
-  },
-  {
-    feature: "Сопровождение",
-  },
-];
+type TProps = Partial<{
+  value: string[];
+  error: string;
+  disabled: boolean;
+  onPress: (value: string) => void;
+}>;
+
 const styles = StyleSheet.create({
   container: {
     width: "100%",
@@ -42,17 +33,63 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
   },
+  skeleton: {
+    width: 100,
+  },
+  error: {
+    fontFamily: "LexendDeca-Regular",
+    fontSize: 12,
+    color: COLORS.error,
+    textAlign: "center",
+  },
 });
-const AccessibleEnvironmentBlock: FC = () => {
+const AccessibleEnvironmentBlock: FC<TProps> = ({ value, error, disabled, onPress }) => {
+  const [pending, setPending] = useState(true);
+  const [accessibility, setAccessibility] = useState<TGetAccessibilityListResponse>([]);
+
+  useEffect(() => {
+    (async () => {
+      setPending(true);
+
+      try {
+        const response = await getAccessibilityList();
+        setAccessibility(response);
+      } catch (e) {
+        if (isKyError(e)) {
+          console.error(e.message);
+        }
+      }
+
+      setPending(false);
+    })();
+  }, []);
+
   return (
     <ShadowBlock>
       <View style={styles.container}>
         <Text style={styles.label}>Доступная среда</Text>
         <View style={styles.content}>
-          {items.map((item, i) => (
-            <Button key={i} type="outlined" text={item.feature} />
-          ))}
+          {pending && (
+            <>
+              <Skeleton style={styles.skeleton} />
+              <Skeleton style={styles.skeleton} />
+              <Skeleton style={styles.skeleton} />
+            </>
+          )}
+          {!pending &&
+            accessibility.map(acc => (
+              <Button
+                key={acc.guid}
+                type="outlined"
+                disabled={disabled}
+                error={!!error}
+                text={acc.name}
+                active={value?.includes(acc.guid)}
+                onPress={() => onPress?.(acc.guid)}
+              />
+            ))}
         </View>
+        {!!error && <Text style={styles.error}>{error}</Text>}
       </View>
     </ShadowBlock>
   );
