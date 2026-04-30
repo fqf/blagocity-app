@@ -10,6 +10,7 @@ import { toFormikValidationSchema } from "zod-formik-adapter";
 import signUpSchema from "@/schemes/auth/sign-up-schema";
 import { useRouter } from "expo-router";
 import useSignUpStore from "@/stores/sign-up-store";
+import EIcon from "@/models/enums/icon";
 
 const styles = StyleSheet.create({
   container: {
@@ -56,6 +57,7 @@ const styles = StyleSheet.create({
 const SignUpScreen: FC = () => {
   const [behavior, setBehavior] = useState<"height" | undefined>();
   const [isSecure, setIsSecure] = useState(true);
+  const [isSecure2, setIsSecure2] = useState(true);
   const { setName, setPassword } = useSignUpStore();
   const router = useRouter();
   const handleOnInputChange = (callBack: (e: string | ChangeEvent<any>) => void, e: string | ChangeEvent<any>) => {
@@ -65,6 +67,12 @@ const SignUpScreen: FC = () => {
     setName(nickname);
     setPassword(code);
     router.push("/auth/about/step-1");
+  };
+  const handleOnCodeInputButtonPress = () => {
+    setIsSecure(prev => !prev);
+  };
+  const handleOnCodeInput2ButtonPress = () => {
+    setIsSecure2(prev => !prev);
   };
 
   useEffect(() => {
@@ -112,14 +120,18 @@ const SignUpScreen: FC = () => {
                   value={values.code}
                   isSecure={isSecure}
                   error={touched.code && !!errors.code ? errors.code : ""}
+                  icon={isSecure ? EIcon.EyeClosed : EIcon.EyeOpened}
+                  onIconPress={handleOnCodeInputButtonPress}
                   onChange={e => handleOnInputChange(handleChange("code"), e)}
                   onBlur={handleBlur("code")}
                 />
                 <Input
                   placeholder="Повторите кодовое слово"
                   value={values.code2}
-                  isSecure={isSecure}
+                  isSecure={isSecure2}
                   error={touched.code2 && !!errors.code2 ? errors.code2 : ""}
+                  icon={isSecure2 ? EIcon.EyeClosed : EIcon.EyeOpened}
+                  onIconPress={handleOnCodeInput2ButtonPress}
                   onChange={e => handleOnInputChange(handleChange("code2"), e)}
                   onBlur={handleBlur("code2")}
                 />
@@ -130,11 +142,7 @@ const SignUpScreen: FC = () => {
                   </Text>
                 </View>
                 <View style={styles.buttons}>
-                  <OnboardingButton
-                    text="Зарегистрироваться"
-                    pendingText="Регистрация в приложении..."
-                    onPress={handleSubmit}
-                  />
+                  <OnboardingButton text="Далее" onPress={handleSubmit} />
                   <View style={styles.footer}>
                     <Text style={styles.footerText}>Уже есть аккаунт?</Text>
                     <LinkButton text="Авторизоваться" href="/auth/sign-in" />

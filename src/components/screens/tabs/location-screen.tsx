@@ -148,7 +148,7 @@ const LocationScreen: FC<TProps> = ({ id }) => {
   const handleOnAlertPress = () => {
     router.push("/tabs/map/location/outgoing-help-request");
   };
-  const handleOnCheckInPress = () => {
+  const handleOnCreateReviewPress = () => {
     router.push("/tabs/map/location/check-in");
   };
 
@@ -201,14 +201,14 @@ const LocationScreen: FC<TProps> = ({ id }) => {
         <View style={styles.buttonsContainer}>
           <Button error type="secondary" text="Позвать помощника" icon={EIcon.Ring} onPress={handleOnAlertPress} />
           <View style={styles.buttonsRow}>
+            <Button type="primary" text="Отметиться" icon={EIcon.PinOutlined} style={styles.buttonsRowButton} />
             <Button
-              type="primary"
-              text="Отметиться"
-              icon={EIcon.PinOutlined}
+              type="secondary"
+              text="Оставить отзыв"
+              icon={EIcon.Bubble}
               style={styles.buttonsRowButton}
-              onPress={handleOnCheckInPress}
+              onPress={handleOnCreateReviewPress}
             />
-            <Button type="secondary" text="Оставить отзыв" icon={EIcon.Bubble} style={styles.buttonsRowButton} />
           </View>
         </View>
         <View style={styles.block}>

@@ -11,6 +11,8 @@ const enum EIcon {
   Coupon,
   Discount,
   Electronics,
+  EyeClosed,
+  EyeOpened,
   Filter,
   Food,
   Gear,

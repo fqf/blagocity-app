@@ -1,8 +1,8 @@
 import { FC } from "react";
-import CheckInModal from "@/components/modals/check-in-modal";
+import CreateReviewModal from "../../../../../components/modals/create-review-modal";
 
 const CheckIn: FC = () => {
-  return <CheckInModal />;
+  return <CreateReviewModal />;
 };
 
 export default CheckIn;

@@ -43,6 +43,7 @@ import PalmIcon from "@/components/icons/palm-icon";
 import SportIcon from "@/components/icons/sport-icon";
 import ServiceIcon from "@/components/icons/service-icon";
 import SuccessIcon from "@/components/icons/success-icon";
+import EyeIcon from "@/components/icons/eye-icon";
 
 type TProps = {
   icon: EIcon;
@@ -85,6 +86,12 @@ const Icon: FC<TProps> = ({ icon, fill, style }) => {
 
     case EIcon.Electronics:
       return <ElectronicsIcon fill={fill} style={style} />;
+
+    case EIcon.EyeClosed:
+      return <EyeIcon closed fill={fill} style={style} />;
+
+    case EIcon.EyeOpened:
+      return <EyeIcon fill={fill} style={style} />;
 
     case EIcon.Filter:
       return <FilterIcon fill={fill} style={style} />;

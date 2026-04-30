@@ -78,11 +78,16 @@ const Step1Screen: FC = () => {
                 onPick={handleChange("gender")}
               />
               <Input
+                maskType="datetime"
+                maskOptions={{
+                  format: "DD.MM.YYYY",
+                }}
                 label="Дата рождения"
                 placeholder="Например, 25.05.1975"
-                inputMode="decimal"
-                keyboardType="decimal-pad"
+                inputMode="numeric"
+                keyboardType="numeric"
                 value={values.dob}
+                maxLength={10}
                 error={touched.dob && !!errors.dob ? errors.dob : ""}
                 onChange={e => handleOnInputChange(handleChange("dob"), e)}
                 onBlur={handleBlur("dob")}

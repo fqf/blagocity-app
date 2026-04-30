@@ -1,7 +1,10 @@
 import { FC, useState } from "react";
-import { BlurEvent, StyleSheet, Text, TextInput, View } from "react-native";
+import { BlurEvent, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import COLORS from "@/constants/colors";
 import chroma from "chroma-js";
+import EIcon from "@/models/enums/icon";
+import Icon from "@/components/icons/icon";
+import { TextInputMask } from "react-native-masked-text";
 
 type TProps = Partial<{
   label: string;
@@ -15,10 +18,15 @@ type TProps = Partial<{
   disabled: boolean;
   unit: string;
   error: string;
+  icon: EIcon;
+  mask: string;
+  maskType: "custom" | "datetime" | "cel-phone" | "credit-card" | "money" | "only-numbers";
+  maskOptions: object;
+  maxLength: number;
+  onIconPress: () => void;
   onFocus: () => void;
   onChange: (text: string) => void;
   onBlur: (e: BlurEvent) => void;
-  onButtonPress: () => void;
 }>;
 
 const styles = StyleSheet.create({
@@ -59,6 +67,18 @@ const styles = StyleSheet.create({
     color: COLORS.error,
     textAlign: "center",
   },
+  iconButton: {
+    width: 42,
+    height: 42,
+    position: "absolute",
+    right: 0,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  icon: {
+    width: 24,
+    height: 24,
+  },
 });
 const Input: FC<TProps> = ({
   label,
@@ -68,13 +88,18 @@ const Input: FC<TProps> = ({
   multiline,
   autoCapitalize,
   keyboardType,
+  isSecure,
   disabled,
   unit,
   error,
+  icon,
+  maskType,
+  maskOptions,
+  maxLength,
+  onIconPress,
   onFocus,
   onChange,
   onBlur,
-  onButtonPress,
 }) => {
   const [focused, setFocused] = useState(false);
   const handleOnFocus = () => {
@@ -94,25 +119,59 @@ const Input: FC<TProps> = ({
     <View style={styles.container}>
       {!!label && <Text style={styles.label}>{label}</Text>}
       <View style={styles.content}>
-        <TextInput
-          placeholder={placeholder}
-          placeholderTextColor={error ? chroma(COLORS.error).alpha(0.5).hex() : chroma(COLORS.label).alpha(0.5).hex()}
-          value={value}
-          inputMode={inputMode}
-          multiline={multiline}
-          autoCapitalize={autoCapitalize}
-          keyboardType={keyboardType}
-          readOnly={disabled}
-          style={[
-            styles.input,
-            focused ? { borderColor: COLORS.active, backgroundColor: "white" } : null,
-            multiline ? { height: 122, verticalAlign: "top" } : null,
-            error ? { borderColor: COLORS.error, backgroundColor: chroma(COLORS.error).alpha(0.1).hex() } : null,
-          ]}
-          onChangeText={(text: string) => handleOnChange(text, onChange)}
-          onFocus={handleOnFocus}
-          onBlur={handleOnBlur}
-        />
+        {!!maskType && (
+          <TextInputMask
+            type={maskType}
+            options={maskOptions}
+            placeholder={placeholder}
+            placeholderTextColor={error ? chroma(COLORS.error).alpha(0.5).hex() : chroma(COLORS.label).alpha(0.5).hex()}
+            value={value}
+            inputMode={inputMode}
+            multiline={multiline}
+            autoCapitalize={autoCapitalize}
+            keyboardType={keyboardType}
+            readOnly={disabled}
+            maxLength={maxLength}
+            style={[
+              styles.input,
+              focused ? { borderColor: COLORS.active, backgroundColor: "white" } : null,
+              multiline ? { height: 122, verticalAlign: "top" } : null,
+              error ? { borderColor: COLORS.error, backgroundColor: chroma(COLORS.error).alpha(0.1).hex() } : null,
+            ]}
+            onChangeText={(text: string) => handleOnChange(text, onChange)}
+            onFocus={handleOnFocus}
+            onBlur={handleOnBlur}
+          />
+        )}
+        {!maskType && (
+          <TextInput
+            placeholder={placeholder}
+            placeholderTextColor={error ? chroma(COLORS.error).alpha(0.5).hex() : chroma(COLORS.label).alpha(0.5).hex()}
+            value={value}
+            inputMode={inputMode}
+            multiline={multiline}
+            autoCapitalize={autoCapitalize}
+            keyboardType={keyboardType}
+            secureTextEntry={isSecure}
+            readOnly={disabled}
+            style={[
+              styles.input,
+              focused ? { borderColor: COLORS.active, backgroundColor: "white" } : null,
+              multiline ? { height: 122, verticalAlign: "top" } : null,
+              icon ? { paddingRight: 36 } : null,
+              error ? { borderColor: COLORS.error, backgroundColor: chroma(COLORS.error).alpha(0.1).hex() } : null,
+            ]}
+            onChangeText={(text: string) => handleOnChange(text, onChange)}
+            onFocus={handleOnFocus}
+            onBlur={handleOnBlur}
+          />
+        )}
+
+        {!unit && icon && (
+          <TouchableOpacity activeOpacity={0.75} onPress={onIconPress} style={styles.iconButton}>
+            <Icon icon={icon} fill={COLORS.icon} style={styles.icon} />
+          </TouchableOpacity>
+        )}
         {!!unit && <Text style={styles.unit}>{unit}</Text>}
       </View>
       {!!error && <Text style={styles.error}>{error}</Text>}

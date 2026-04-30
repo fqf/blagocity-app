@@ -14,6 +14,7 @@ import * as SecureStore from "expo-secure-store";
 import { getMe } from "@/actions/user-actions";
 import useProfileStore from "@/stores/profile-store";
 import Alert from "@/components/others/alert";
+import EIcon from "@/models/enums/icon";
 
 const styles = StyleSheet.create({
   container: {
@@ -86,6 +87,9 @@ const SignInScreen: FC = () => {
   const handleOnCloseAlertPress = () => {
     setAuthError(false);
   };
+  const handleOnCodeInputButtonPress = () => {
+    setIsSecure(prev => !prev);
+  };
 
   useEffect(() => {
     if (Platform.OS === "android") {
@@ -133,6 +137,8 @@ const SignInScreen: FC = () => {
                   isSecure={isSecure}
                   error={touched.code && !!errors.code ? errors.code : ""}
                   disabled={pending}
+                  icon={isSecure ? EIcon.EyeClosed : EIcon.EyeOpened}
+                  onIconPress={handleOnCodeInputButtonPress}
                   onChange={e => handleOnInputChange(handleChange("code"), e)}
                   onBlur={handleBlur("code")}
                 />

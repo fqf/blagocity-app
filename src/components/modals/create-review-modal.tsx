@@ -142,7 +142,7 @@ const featureItems = [
     title: "Помощник (приложение/премиум)",
   },
 ];
-const CheckInModal: FC = () => {
+const CreateReviewModal: FC = () => {
   const [behavior, setBehavior] = useState<"height" | undefined>();
   const router = useRouter();
   const handleOnClosePress = () => {
@@ -171,7 +171,7 @@ const CheckInModal: FC = () => {
     <SafeAreaView style={styles.safeAreaView}>
       <KeyboardAvoidingView behavior={Platform.OS === "android" ? behavior : "height"} style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.title}>Отметиться и оценить</Text>
+          <Text style={styles.title}>Оставить отзыв</Text>
         </View>
         <CloseButton style={styles.close} onPress={handleOnClosePress} />
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
@@ -211,4 +211,4 @@ const CheckInModal: FC = () => {
   );
 };
 
-export default CheckInModal;
+export default CreateReviewModal;
