@@ -13,10 +13,11 @@ import { Formik } from "formik";
 import { toFormikValidationSchema } from "zod-formik-adapter";
 import editPlaceSchema from "@/schemes/tabs/edit-place-schema";
 import { isHTTPError, isKyError } from "ky";
-import { createPlace } from "@/actions/place-actions";
+import { createPlace, getPlacesList } from "@/actions/place-actions";
 import * as SecureStore from "expo-secure-store";
 import useProfileStore from "@/stores/profile-store";
 import { useRouter } from "expo-router";
+import useMapStore from "@/stores/map-store";
 
 type TProps = {
   id: string;
@@ -41,6 +42,7 @@ const EditLocationModal: FC<TProps> = ({ id, coords }) => {
   const [behavior, setBehavior] = useState<"height" | undefined>();
   const [address, setAddress] = useState("");
   const { userData } = useProfileStore();
+  const { setPlacesList } = useMapStore();
   const router = useRouter();
   const handleOnInputChange = (callBack: (e: string | ChangeEvent<any>) => void, e: string | ChangeEvent<any>) => {
     callBack(e);
@@ -88,6 +90,8 @@ const EditLocationModal: FC<TProps> = ({ id, coords }) => {
         ownerReviewTrackingEnabled: true,
         photos: [],
       });
+      const placesList = await getPlacesList();
+      setPlacesList(placesList);
 
       if (router.canGoBack()) {
         router.back();
@@ -170,7 +174,7 @@ const EditLocationModal: FC<TProps> = ({ id, coords }) => {
                       onPress={value => handleOnAccessibilitySelect(values.accessibility, value, setFieldValue)}
                     />
                     <OnboardingButton
-                      text="Добавить"
+                      text="Добавить локацию"
                       pending={pending}
                       pendingText="Сохранение данных..."
                       onPress={handleSubmit}

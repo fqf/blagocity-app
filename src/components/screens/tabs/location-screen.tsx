@@ -14,12 +14,13 @@ import IconButton from "@/components/buttons/icon-button";
 import Constants from "expo-constants";
 import Skeleton from "@/components/others/skeleton";
 import { isHTTPError, isKyError } from "ky";
-import { getPlace, getPlaceTypesList } from "@/actions/place-actions";
+import { getPlaceTypesList } from "@/actions/place-actions";
 import TGetPlaceResponse from "@/models/contracts/place/getPlaceResponse";
 import { getAccessibilityList } from "@/actions/accesibility-actions";
 import { getUser } from "@/actions/user-actions";
 import * as SecureStore from "expo-secure-store";
 import useProfileStore from "@/stores/profile-store";
+import useMapStore from "@/stores/map-store";
 
 type TProps = {
   id: string;
@@ -165,6 +166,7 @@ const LocationScreen: FC<TProps> = ({ id }) => {
   const [accessibility, setAccessibility] = useState<string[]>([]);
   const [author, setAuthor] = useState("");
   const { userData } = useProfileStore();
+  const { placesList } = useMapStore();
   const router = useRouter();
   const handleOnBackPress = () => {
     if (router.canGoBack()) {
@@ -175,7 +177,12 @@ const LocationScreen: FC<TProps> = ({ id }) => {
     router.push("/tabs/map/location/outgoing-help-request");
   };
   const handleOnCreateReviewPress = () => {
-    router.push("/tabs/map/location/check-in");
+    router.push({
+      pathname: "/tabs/map/review/edit/-1",
+      params: {
+        name: placeData?.name,
+      },
+    });
   };
 
   useEffect(() => {
@@ -189,13 +196,18 @@ const LocationScreen: FC<TProps> = ({ id }) => {
           throw new Error("Bad token");
         }
 
-        const placeDataResponse = await getPlace(id);
-        const placeTypeId = placeDataResponse.placeType.split("/").slice(-1)[0];
+        const placeDataResponse = placesList?.find(place => place.guid === id);
+
+        if (!placeDataResponse) {
+          throw new Error("Place not found");
+        }
+
+        const placeTypeId = placeDataResponse?.placeType.split("/").slice(-1)[0];
         const placeTypesListResponse = await getPlaceTypesList();
         const placeTypeName = placeTypesListResponse.find(pt => pt.guid === placeTypeId)?.name;
         setPlaceType(placeTypeName ?? "");
 
-        const userId = placeDataResponse.createdBy.split("/").slice(-1)[0];
+        const userId = placeDataResponse?.createdBy.split("/").slice(-1)[0];
 
         if (userId === "me") {
           setAuthor(`${userData?.name ?? ""} (я)`);
@@ -205,7 +217,7 @@ const LocationScreen: FC<TProps> = ({ id }) => {
         }
 
         const accessibilityListResponse = await getAccessibilityList();
-        const accessibilityList = placeDataResponse.accessibilityCriteria.map(acc => {
+        const accessibilityList = placeDataResponse?.accessibilityCriteria.map(acc => {
           const guid = acc.split("/api/accessibility_criteria/")[1];
           return accessibilityListResponse.find(item => item.guid === guid)?.name ?? "";
         });
@@ -221,7 +233,7 @@ const LocationScreen: FC<TProps> = ({ id }) => {
         }
       }
     })();
-  }, [id]);
+  }, [id, placesList, userData?.name]);
 
   if (pending) {
     return (

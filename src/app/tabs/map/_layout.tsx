@@ -18,7 +18,7 @@ const MapLayout: FC = () => {
         options={{ presentation: "transparentModal", animation: "slide_from_bottom", animationDuration: 250 }}
       />
       <Stack.Screen
-        name="(modals)/location/check-in"
+        name="(modals)/review/edit/[id]"
         options={{ presentation: "transparentModal", animation: "slide_from_bottom", animationDuration: 250 }}
       />
     </Stack>

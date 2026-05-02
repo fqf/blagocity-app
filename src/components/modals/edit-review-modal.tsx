@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { ChangeEvent, FC, useEffect, useState } from "react";
 import CloseButton from "@/components/buttons/close-button";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
@@ -11,7 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import COLORS from "@/constants/colors";
 import Input from "@/components/inputs/input";
 import UploadButton from "@/components/buttons/upload-button";
@@ -19,6 +19,10 @@ import Icon from "@/components/icons/icon";
 import EIcon from "@/models/enums/icon";
 import FeaturePicker from "@/components/pickers/feature-picker";
 import OnboardingButton from "@/components/buttons/onboarding-button";
+import { toFormikValidationSchema } from "zod-formik-adapter";
+import { Formik } from "formik";
+import { getReviewAccessibilityList } from "@/actions/accesibility-actions";
+import editReviewSchema from "@/schemes/tabs/edit-review-schema";
 import hairlineWidth = StyleSheet.hairlineWidth;
 
 const styles = StyleSheet.create({
@@ -94,6 +98,12 @@ const styles = StyleSheet.create({
   featuresContainer: {
     gap: 16,
   },
+  error: {
+    fontFamily: "LexendDeca-Regular",
+    fontSize: 12,
+    color: COLORS.error,
+    textAlign: "center",
+  },
 });
 const featureItems = [
   {
@@ -142,14 +152,20 @@ const featureItems = [
     title: "Помощник (приложение/премиум)",
   },
 ];
-const CreateReviewModal: FC = () => {
+const EditReviewModal: FC = () => {
+  const [pending, setPending] = useState(false);
   const [behavior, setBehavior] = useState<"height" | undefined>();
+  const { name } = useLocalSearchParams();
   const router = useRouter();
   const handleOnClosePress = () => {
     if (router.canGoBack()) {
       router.back();
     }
   };
+  const handleOnInputChange = (callBack: (e: string | ChangeEvent<any>) => void, e: string | ChangeEvent<any>) => {
+    callBack(e);
+  };
+  const handleOnSubmit = async ({ rating, review }: { rating: number; review: string }) => {};
 
   useEffect(() => {
     if (Platform.OS === "android") {
@@ -166,6 +182,12 @@ const CreateReviewModal: FC = () => {
       };
     }
   }, []);
+  useEffect(() => {
+    (async () => {
+      const x = await getReviewAccessibilityList();
+      console.log(x);
+    })();
+  }, []);
 
   return (
     <SafeAreaView style={styles.safeAreaView}>
@@ -174,41 +196,62 @@ const CreateReviewModal: FC = () => {
           <Text style={styles.title}>Оставить отзыв</Text>
         </View>
         <CloseButton style={styles.close} onPress={handleOnClosePress} />
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
-          <View style={styles.ratingForm}>
-            <Text style={styles.ratingTitle}>Как вам Доброе Утро?</Text>
-            <View style={styles.ratingButtons}>
-              {new Array(10).fill("").map((_, i) => (
-                <TouchableOpacity key={i}>
-                  <Icon icon={EIcon.Star} style={styles.star} />
-                </TouchableOpacity>
-              ))}
-            </View>
-          </View>
-          <View style={styles.block}>
-            <Text style={styles.label}>Отзыв</Text>
-            <Input multiline placeholder="Опишите ваши впечатления о доступности этого места..." />
-          </View>
-          <View style={styles.block}>
-            <Text style={styles.label}>Фотографии</Text>
-            <UploadButton />
-          </View>
-          <View style={styles.block}>
-            <Text style={[styles.ratingTitle, { textAlign: "left" }]}>Оцените доступность</Text>
-            <Text style={styles.description}>
-              Помогите другим пользователям, оценив наличие следующих элементов доступной среды.
-            </Text>
-            <View style={styles.featuresContainer}>
-              {featureItems.map(({ title }, i) => (
-                <FeaturePicker key={i} title={title} />
-              ))}
-            </View>
-          </View>
-          <OnboardingButton text="Опубликовать отзыв" />
-        </ScrollView>
+        <Formik
+          initialValues={{ rating: 0, review: "" }}
+          validationSchema={toFormikValidationSchema(editReviewSchema)}
+          onSubmit={handleOnSubmit}>
+          {({ handleChange, handleBlur, handleSubmit, values, errors, touched, setFieldValue }) => (
+            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
+              <View style={styles.ratingForm}>
+                <Text style={styles.ratingTitle}>Как вам {name}?</Text>
+                <View style={styles.ratingButtons}>
+                  {new Array(10).fill("").map((_, i) => (
+                    <TouchableOpacity key={i}>
+                      <Icon icon={EIcon.Star} fill={errors.rating ? COLORS.error : COLORS.active} style={styles.star} />
+                    </TouchableOpacity>
+                  ))}
+                </View>
+                {!!errors.rating && <Text style={styles.error}>{errors.rating}</Text>}
+              </View>
+              <View style={styles.block}>
+                <Text style={styles.label}>Отзыв</Text>
+                <Input
+                  multiline
+                  placeholder="Опишите ваши впечатления о доступности этого места..."
+                  value={values.review}
+                  error={touched.review && !!errors.review ? errors.review : ""}
+                  disabled={pending}
+                  onChange={e => handleOnInputChange(handleChange("review"), e)}
+                  onBlur={handleBlur("review")}
+                />
+              </View>
+              <View style={styles.block}>
+                <Text style={styles.label}>Фотографии</Text>
+                <UploadButton />
+              </View>
+              <View style={styles.block}>
+                <Text style={[styles.ratingTitle, { textAlign: "left" }]}>Оцените доступность</Text>
+                <Text style={styles.description}>
+                  Помогите другим пользователям, оценив наличие следующих элементов доступной среды.
+                </Text>
+                <View style={styles.featuresContainer}>
+                  {featureItems.map(({ title }, i) => (
+                    <FeaturePicker key={i} title={title} />
+                  ))}
+                </View>
+              </View>
+              <OnboardingButton
+                text="Добавить отзыв"
+                pending={pending}
+                pendingText="Сохранение данных..."
+                onPress={handleSubmit}
+              />
+            </ScrollView>
+          )}
+        </Formik>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
 
-export default CreateReviewModal;
+export default EditReviewModal;

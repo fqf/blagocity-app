@@ -13,8 +13,7 @@ import { useRouter } from "expo-router";
 import PinButton from "@/components/buttons/pin-button";
 import { Feature, Point } from "geojson";
 import useProfileStore from "@/stores/profile-store";
-import { getPlacesList } from "@/actions/place-actions";
-import TGetPlacesListResponse from "@/models/contracts/place/getPlacesListResponse";
+import useMapStore from "@/stores/map-store";
 
 Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_TOKEN!).then();
 
@@ -45,9 +44,9 @@ const styles = StyleSheet.create({
 const MapScreen: FC = () => {
   const [zoomLevel, setZoomLevel] = useState(16);
   const [location, setLocation] = useState<[number, number]>(defaultLocation);
-  const [places, setPlaces] = useState<TGetPlacesListResponse>([]);
   const router = useRouter();
   const { userData } = useProfileStore();
+  const { placesList } = useMapStore();
   const handleOnPlusPress = () => {
     setZoomLevel(prev => prev + 1);
   };
@@ -79,11 +78,6 @@ const MapScreen: FC = () => {
 
   useEffect(() => {
     handleOnSetCurrentLocationPress().then();
-
-    (async () => {
-      const places = await getPlacesList();
-      setPlaces(places);
-    })();
   }, []);
 
   return (
@@ -103,7 +97,7 @@ const MapScreen: FC = () => {
           centerCoordinate={location}
           animationDuration={5}
         />
-        {places.map(place => (
+        {placesList?.map(place => (
           <MarkerView key={place.guid} coordinate={[place.longitude, place.latitude]}>
             <PinButton href={`/tabs/map/location/${place.guid}`} />
           </MarkerView>
