@@ -18,6 +18,7 @@ type TProps = {
   text: string;
   pendingText?: string;
   pending?: boolean;
+  disabled?: boolean;
   icon?: EIcon;
   onPress?: () => void;
 };
@@ -63,7 +64,7 @@ const styles = StyleSheet.create({
     height: 24,
   },
 });
-const OnboardingButton: FC<TProps> = ({ text, pendingText, pending, icon, onPress }) => {
+const OnboardingButton: FC<TProps> = ({ text, pendingText, pending, disabled, icon, onPress }) => {
   const opacity = useSharedValue(1);
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -91,7 +92,7 @@ const OnboardingButton: FC<TProps> = ({ text, pendingText, pending, icon, onPres
 
   return (
     <Animated.View style={animatedStyle}>
-      <TouchableOpacity disabled={pending} activeOpacity={0.65} style={styles.container} onPress={onPress}>
+      <TouchableOpacity disabled={pending || disabled} activeOpacity={0.65} style={styles.container} onPress={onPress}>
         <DropShadow style={styles.shadow}>
           <Svg viewBox="0 0 331 52" fill={COLORS.active} style={styles.shape}>
             <Path d="M0 15.724C0 8.101 6.07 1.881 13.693 1.742 43.503 1.2 115.637-.01 166 0c49.917.01 121.606 1.206 151.308 1.744C324.931 1.882 331 8.102 331 15.726v20.548c0 7.624-6.069 13.844-13.692 13.982C287.606 50.794 215.917 51.99 166 52c-50.362.01-122.498-1.2-152.307-1.742C6.07 50.119 0 43.899 0 36.276z" />

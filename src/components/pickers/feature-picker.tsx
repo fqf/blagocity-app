@@ -4,9 +4,14 @@ import COLORS from "@/constants/colors";
 import Icon from "@/components/icons/icon";
 import EIcon from "@/models/enums/icon";
 
+export type TFeaturePickerValue = -1 | 0 | 1;
 type TProps = {
+  guid: string;
   title: string;
-  value?: -1 | 0 | 1;
+  value?: TFeaturePickerValue;
+  error?: boolean;
+  disabled?: boolean;
+  onPick?: (guid: string, value: TFeaturePickerValue) => void;
 };
 
 const styles = StyleSheet.create({
@@ -16,10 +21,16 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.blockBackground,
     gap: 12,
   },
+  errorContainer: {
+    backgroundColor: COLORS.errorBackground,
+  },
   title: {
     fontFamily: "LexendDeca-Regular",
     fontSize: 14,
     color: COLORS.text,
+  },
+  errorTitle: {
+    color: COLORS.error,
   },
   pickerContainer: {
     flexDirection: "row",
@@ -68,23 +79,45 @@ const styles = StyleSheet.create({
     borderBottomColor: COLORS.inputBorder,
     borderLeftWidth: 0,
   },
+  activeButton: {
+    borderLeftColor: COLORS.active,
+    borderTopColor: COLORS.active,
+    borderRightColor: COLORS.active,
+    borderBottomColor: COLORS.active,
+    backgroundColor: COLORS.active,
+  },
+  activeText: {
+    color: "white",
+  },
 });
-const FeaturePicker: FC<TProps> = ({ title, value }) => {
+const FeaturePicker: FC<TProps> = ({ guid, title, value, error, disabled, onPick }) => {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>{title}</Text>
+    <View style={[styles.container, error ? styles.errorContainer : null]}>
+      <Text style={[styles.title, error ? styles.errorTitle : null]}>{title}</Text>
       <View style={styles.pickerContainer}>
-        <TouchableOpacity activeOpacity={0.75} style={[styles.pickerButton, styles.pickerLeftButton]}>
-          <Icon icon={EIcon.Plus} fill={COLORS.icon} style={styles.pickerIcon} />
-          <Text style={styles.pickerText}>Есть</Text>
+        <TouchableOpacity
+          disabled={disabled}
+          activeOpacity={0.75}
+          style={[styles.pickerButton, styles.pickerLeftButton, value === 1 ? styles.activeButton : null]}
+          onPress={() => onPick?.(guid, 1)}>
+          <Icon icon={EIcon.Plus} fill={value === 1 ? "white" : COLORS.icon} style={styles.pickerIcon} />
+          <Text style={[styles.pickerText, value === 1 ? styles.activeText : null]}>Есть</Text>
         </TouchableOpacity>
-        <TouchableOpacity activeOpacity={0.75} style={[styles.pickerButton, styles.pickerMiddleButton]}>
-          <Icon icon={EIcon.Minus} fill={COLORS.icon} style={styles.pickerIcon} />
-          <Text style={styles.pickerText}>Нет</Text>
+        <TouchableOpacity
+          disabled={disabled}
+          activeOpacity={0.75}
+          style={[styles.pickerButton, styles.pickerMiddleButton, value === -1 ? styles.activeButton : null]}
+          onPress={() => onPick?.(guid, -1)}>
+          <Icon icon={EIcon.Minus} fill={value === -1 ? "white" : COLORS.icon} style={styles.pickerIcon} />
+          <Text style={[styles.pickerText, value === -1 ? styles.activeText : null]}>Нет</Text>
         </TouchableOpacity>
-        <TouchableOpacity activeOpacity={0.75} style={[styles.pickerButton, styles.pickerRightButton]}>
-          <Icon icon={EIcon.Question} fill={COLORS.icon} style={styles.pickerIcon} />
-          <Text style={styles.pickerText}>Не знаю</Text>
+        <TouchableOpacity
+          disabled={disabled}
+          activeOpacity={0.75}
+          style={[styles.pickerButton, styles.pickerRightButton, value === 0 ? styles.activeButton : null]}
+          onPress={() => onPick?.(guid, 0)}>
+          <Icon icon={EIcon.Question} fill={value === 0 ? "white" : COLORS.icon} style={styles.pickerIcon} />
+          <Text style={[styles.pickerText, value === 0 ? styles.activeText : null]}>Не знаю</Text>
         </TouchableOpacity>
       </View>
     </View>

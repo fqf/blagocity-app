@@ -1,12 +1,20 @@
-import { z, ZodObject } from "zod";
+import { string, z, ZodObject } from "zod";
 
 const editReviewSchema: ZodObject = z.object({
-  rating: z.number().min(1, { error: "Необходимо поставить оценку!" }),
   review: z
-    .string({ error: "Обязательно для заполнения!" })
+    .string()
     .trim()
     .min(10, { error: "Должно быть минимум 10 символа!" })
-    .max(100, { error: "Должно быть максимум 100 символов!" }),
+    .max(100, { error: "Должно быть максимум 100 символов!" })
+    .optional(),
+  accessibility: z
+    .array(
+      z.object({
+        guid: string(),
+        value: z.number(),
+      }),
+    )
+    .nonempty({ error: "Вы ничего не указали!" }),
 });
 
 export default editReviewSchema;

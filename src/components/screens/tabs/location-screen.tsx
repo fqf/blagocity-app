@@ -177,12 +177,7 @@ const LocationScreen: FC<TProps> = ({ id }) => {
     router.push("/tabs/map/location/outgoing-help-request");
   };
   const handleOnCreateReviewPress = () => {
-    router.push({
-      pathname: "/tabs/map/review/edit/-1",
-      params: {
-        name: placeData?.name,
-      },
-    });
+    router.push(`/tabs/map/review/edit/-1?name=${placeData?.name}&location=${placeData?.guid}`);
   };
 
   useEffect(() => {
@@ -209,7 +204,7 @@ const LocationScreen: FC<TProps> = ({ id }) => {
 
         const userId = placeDataResponse?.createdBy.split("/").slice(-1)[0];
 
-        if (userId === "me") {
+        if (userId === userData?.guid) {
           setAuthor(`${userData?.name ?? ""} (я)`);
         } else {
           const userDataResponse = await getUser(token, userId);
@@ -233,7 +228,7 @@ const LocationScreen: FC<TProps> = ({ id }) => {
         }
       }
     })();
-  }, [id, placesList, userData?.name]);
+  }, [id, placesList, userData?.guid, userData?.name]);
 
   if (pending) {
     return (
@@ -345,17 +340,7 @@ const LocationScreen: FC<TProps> = ({ id }) => {
           <View style={styles.reviewsContainer}>
             {!placeData?.reviews?.length && <Text style={styles.emptyText}>Отзывов пока нет...</Text>}
             {!!placeData?.reviews?.length &&
-              placeData?.reviews.map(review => (
-                <ReviewBlock
-                  key={review.guid}
-                  user="Алексей"
-                  avatar={3}
-                  rating={5}
-                  date={new Date()}
-                  text="Отличное место! Очень удобный пандус на входе."
-                  features={["Пандус", "Доступ на механической коляске"]}
-                />
-              ))}
+              placeData?.reviews.map(review => <ReviewBlock key={review.guid} guid={review.guid} />)}
           </View>
         </View>
       </View>

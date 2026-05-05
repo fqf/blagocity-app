@@ -100,8 +100,7 @@ const EditLocationModal: FC<TProps> = ({ id, coords }) => {
       }
     } catch (e) {
       if (isHTTPError(e)) {
-        const error = await e.response.text();
-        console.error(error);
+        console.error((e.data as any).detail);
       } else if (isKyError(e)) {
         console.error(e.message);
       }

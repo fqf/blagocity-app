@@ -3,7 +3,7 @@ type TCreateReviewRequest = {
   author: string;
   rating: number;
   text: string;
-  isActive: string;
+  isActive: boolean;
   reviewedAt: string;
   photos: string[];
 };

@@ -1,20 +1,24 @@
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import Tag from "@/components/others/tag";
 import COLORS from "@/constants/colors";
 import Rating from "@/components/others/rating";
 import Avatar from "@/components/others/avatar";
 import dayjs from "dayjs";
-import { TAvatarType } from "@/components/buttons/avatar-button";
 import ShadowBlock from "@/components/blocks/shadow-block";
+import { isHTTPError, isKyError } from "ky";
+import { getReview } from "@/actions/review-actions";
+import Skeleton from "@/components/others/skeleton";
+import TGetReviewResponse from "@/models/contracts/review/getReviewResponse";
+import TGetUserResponse from "@/models/contracts/user/getUserResponse";
+import { getUser } from "@/actions/user-actions";
+import * as SecureStore from "expo-secure-store";
+import { TAvatarType } from "@/components/buttons/avatar-button";
+import TGetAccessibilityListResponse from "@/models/contracts/accessibility/getAccessibilityListResponse";
+import Tag from "@/components/others/tag";
+import { getAccessibility } from "@/actions/accesibility-actions";
 
 type TProps = {
-  user: string;
-  avatar: TAvatarType;
-  rating: number;
-  date: Date;
-  text: string;
-  features: string[];
+  guid: string;
 };
 
 const styles = StyleSheet.create({
@@ -53,6 +57,7 @@ const styles = StyleSheet.create({
   },
   footer: {
     flexDirection: "row",
+    flexWrap: "wrap",
     gap: 6,
     justifyContent: "flex-start",
     alignItems: "center",
@@ -60,26 +65,110 @@ const styles = StyleSheet.create({
     borderTopColor: COLORS.inputBorder,
     paddingTop: 12,
   },
+  avatarSkeleton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+  },
+  nameSkeleton: {
+    width: 60,
+    height: 20,
+    borderRadius: 6,
+  },
+  dateSkeleton: {
+    width: 80,
+    height: 16,
+    borderRadius: 6,
+    marginTop: 4,
+  },
+  ratingSkeleton: {
+    width: 40,
+    height: 24,
+    borderRadius: 6,
+  },
+  textSkeleton: {
+    height: 40,
+    borderRadius: 6,
+  },
+  tagSkeleton: {
+    width: 37,
+    height: 15,
+    borderRadius: 6,
+  },
 });
-const ReviewBlock: FC<TProps> = ({ user, avatar, rating, date, text, features }) => {
+const ReviewBlock: FC<TProps> = ({ guid }) => {
+  const [pending, setPending] = useState(true);
+  const [review, setReview] = useState<TGetReviewResponse>();
+  const [author, setAuthor] = useState<TGetUserResponse>();
+  const [accessibility, setAccessibility] = useState<TGetAccessibilityListResponse>([]);
+
+  useEffect(() => {
+    if (guid) {
+      setPending(true);
+
+      (async () => {
+        try {
+          const token = SecureStore.getItem(process.env.EXPO_PUBLIC_SECURE_AUTH_STATE_KEY!);
+
+          if (!token) {
+            throw new Error("Bad token");
+          }
+
+          const reviewResponse = await getReview(guid);
+          setReview(reviewResponse);
+          const userResponse = await getUser(token, reviewResponse.author.split("/").slice(-1)[0]);
+          setAuthor(userResponse);
+
+          const accessibilityResponse = await Promise.all(
+            reviewResponse.accessibilityCriteria
+              .filter(acc => acc.value)
+              .map(acc => getAccessibility(acc.criterion.split("/").slice(-1)[0])),
+          );
+
+          setAccessibility(accessibilityResponse);
+          setPending(false);
+        } catch (e) {
+          if (isHTTPError(e)) {
+            const json = await e.response.json();
+            console.error(json);
+          } else if (isKyError(e)) {
+            console.error(e.message);
+          }
+        }
+      })();
+    }
+  }, [guid]);
+
   return (
     <ShadowBlock>
       <View style={styles.container}>
         <View style={styles.header}>
           <View style={styles.headerSection}>
-            <Avatar type={avatar} size="small" />
+            {pending && <Skeleton style={styles.avatarSkeleton} />}
+            {!pending && <Avatar type={+(author?.avatar ?? 1) as TAvatarType} size="small" />}
             <View>
-              <Text style={styles.userName}>{user}</Text>
-              <Text style={styles.date}>{dayjs(date).locale("ru").format("DD MMMM YYYY")}</Text>
+              {pending && <Skeleton style={styles.nameSkeleton} />}
+              {!pending && <Text style={styles.userName}>{author?.name}</Text>}
+              {pending && <Skeleton style={styles.dateSkeleton} />}
+              {!pending && (
+                <Text style={styles.date}>{dayjs(review?.reviewedAt).locale("ru").format("DD MMMM YYYY")}</Text>
+              )}
             </View>
           </View>
-          <Rating value={rating} />
+          {pending && <Skeleton style={styles.ratingSkeleton} />}
+          {!pending && <Rating value={review?.rating ?? 0} />}
         </View>
-        <Text style={styles.text}>{text}</Text>
+        {pending && <Skeleton style={styles.textSkeleton} />}
+        {!pending && <Text style={styles.text}>{review?.text}</Text>}
         <View style={styles.footer}>
-          {features.map((feature, i) => (
-            <Tag key={i} text={feature} variant="success" />
-          ))}
+          {pending && (
+            <>
+              <Skeleton style={styles.tagSkeleton} />
+              <Skeleton style={styles.tagSkeleton} />
+              <Skeleton style={styles.tagSkeleton} />
+            </>
+          )}
+          {!pending && accessibility.map(acc => <Tag key={acc.guid} text={acc.name} variant="success" />)}
         </View>
       </View>
     </ShadowBlock>

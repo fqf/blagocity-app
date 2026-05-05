@@ -1,4 +1,4 @@
-import { ChangeEvent, FC, useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import CloseButton from "@/components/buttons/close-button";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
@@ -17,13 +17,25 @@ import Input from "@/components/inputs/input";
 import UploadButton from "@/components/buttons/upload-button";
 import Icon from "@/components/icons/icon";
 import EIcon from "@/models/enums/icon";
-import FeaturePicker from "@/components/pickers/feature-picker";
+import FeaturePicker, { TFeaturePickerValue } from "@/components/pickers/feature-picker";
 import OnboardingButton from "@/components/buttons/onboarding-button";
 import { toFormikValidationSchema } from "zod-formik-adapter";
 import { Formik } from "formik";
-import { getReviewAccessibilityList } from "@/actions/accesibility-actions";
+import { createReviewAccessibility, getAccessibilityList } from "@/actions/accesibility-actions";
 import editReviewSchema from "@/schemes/tabs/edit-review-schema";
+import { isHTTPError, isKyError } from "ky";
+import Skeleton from "@/components/others/skeleton";
+import TGetAccessibilityListResponse from "@/models/contracts/accessibility/getAccessibilityListResponse";
+import { createReview } from "@/actions/review-actions";
+import useProfileStore from "@/stores/profile-store";
+import dayjs from "dayjs";
+import * as SecureStore from "expo-secure-store";
 import hairlineWidth = StyleSheet.hairlineWidth;
+
+type TValues = {
+  guid: string;
+  value: TFeaturePickerValue;
+}[];
 
 const styles = StyleSheet.create({
   safeAreaView: {
@@ -104,68 +116,88 @@ const styles = StyleSheet.create({
     color: COLORS.error,
     textAlign: "center",
   },
+  skeleton: {
+    height: 100,
+  },
 });
-const featureItems = [
-  {
-    title: "Доступ на механической коляске",
-  },
-  {
-    title: "Доступ на механической коляске с электроприставкой",
-  },
-  {
-    title: "Доступ на электрической коляске",
-  },
-  {
-    title: "Санузел для людей с инвалидностью",
-  },
-  {
-    title: "Лифт",
-  },
-  {
-    title: "Пандус",
-  },
-  {
-    title: "Тактильные указатели",
-  },
-  {
-    title: "Оборудованное место для человека с инвалидностью",
-  },
-  {
-    title: "Световая/Цветовая индикация",
-  },
-  {
-    title: "Звуковая индикация (например, меню)",
-  },
-  {
-    title: "Меню со штрифтом Брайля",
-  },
-  {
-    title: "Доступ с собакой-поводырем",
-  },
-  {
-    title: "Подарки Дону",
-  },
-  {
-    title: "Бронирование и предварительная подготовка",
-  },
-  {
-    title: "Помощник (приложение/премиум)",
-  },
-];
 const EditReviewModal: FC = () => {
   const [pending, setPending] = useState(false);
+  const [accessibilityPending, setAccessibilityPending] = useState(true);
+  const [accessibility, setAccessibility] = useState<TGetAccessibilityListResponse>([]);
   const [behavior, setBehavior] = useState<"height" | undefined>();
-  const { name } = useLocalSearchParams();
+  const { name, location } = useLocalSearchParams();
+  const { userData } = useProfileStore();
   const router = useRouter();
   const handleOnClosePress = () => {
     if (router.canGoBack()) {
       router.back();
     }
   };
-  const handleOnInputChange = (callBack: (e: string | ChangeEvent<any>) => void, e: string | ChangeEvent<any>) => {
-    callBack(e);
+  const handleOnAccessibilityPick = (
+    values: TValues,
+    guid: string,
+    value: TFeaturePickerValue,
+    setFieldValue: (field: string, value: TValues) => void,
+  ) => {
+    let reminder: TValues = values;
+
+    if (values.some(v => v.guid === guid)) {
+      reminder = reminder.filter(v => v.guid !== guid);
+    }
+
+    setFieldValue("accessibility", [...reminder, { guid, value }]);
   };
-  const handleOnSubmit = async ({ rating, review }: { rating: number; review: string }) => {};
+  const handleOnSubmit = async ({
+    rating,
+    review,
+    accessibility,
+  }: {
+    rating: number;
+    review: string;
+    accessibility: TValues;
+  }) => {
+    setPending(true);
+
+    try {
+      const token = SecureStore.getItem(process.env.EXPO_PUBLIC_SECURE_AUTH_STATE_KEY!);
+
+      if (!token) {
+        throw new Error("Bad token");
+      }
+
+      const { guid } = await createReview(token, {
+        establishment: `api/establishments/${location}`,
+        author: `api/users/${userData?.guid}`,
+        rating,
+        text: review,
+        isActive: true,
+        reviewedAt: dayjs().toISOString(),
+        photos: [],
+      });
+
+      for (const acc of accessibility) {
+        await createReviewAccessibility(token, {
+          review: `api/reviews/${guid}`,
+          criterion: `api/accessibility_criteria/${acc.guid}`,
+          value: acc.value === 1 ? true : acc.value === -1 ? false : null,
+        });
+      }
+
+      if (router.canGoBack()) {
+        router.back();
+      } else {
+        router.replace("/tabs/map");
+      }
+    } catch (e) {
+      if (isHTTPError(e)) {
+        console.error((e.data as any).detail);
+      } else if (isKyError(e)) {
+        console.error(e.message);
+      }
+
+      setPending(false);
+    }
+  };
 
   useEffect(() => {
     if (Platform.OS === "android") {
@@ -184,8 +216,18 @@ const EditReviewModal: FC = () => {
   }, []);
   useEffect(() => {
     (async () => {
-      const x = await getReviewAccessibilityList();
-      console.log(x);
+      setAccessibilityPending(true);
+
+      try {
+        const response = await getAccessibilityList();
+        setAccessibility(response);
+      } catch (e) {
+        if (isKyError(e)) {
+          console.error(e.message);
+        }
+      }
+
+      setAccessibilityPending(false);
     })();
   }, []);
 
@@ -197,7 +239,7 @@ const EditReviewModal: FC = () => {
         </View>
         <CloseButton style={styles.close} onPress={handleOnClosePress} />
         <Formik
-          initialValues={{ rating: 0, review: "" }}
+          initialValues={{ rating: 0, review: "", accessibility: [] as TValues }}
           validationSchema={toFormikValidationSchema(editReviewSchema)}
           onSubmit={handleOnSubmit}>
           {({ handleChange, handleBlur, handleSubmit, values, errors, touched, setFieldValue }) => (
@@ -206,8 +248,12 @@ const EditReviewModal: FC = () => {
                 <Text style={styles.ratingTitle}>Как вам {name}?</Text>
                 <View style={styles.ratingButtons}>
                   {new Array(10).fill("").map((_, i) => (
-                    <TouchableOpacity key={i}>
-                      <Icon icon={EIcon.Star} fill={errors.rating ? COLORS.error : COLORS.active} style={styles.star} />
+                    <TouchableOpacity key={i} disabled={pending} onPress={() => setFieldValue("rating", i + 1)}>
+                      <Icon
+                        icon={values.rating >= i + 1 ? EIcon.StarFilled : EIcon.Star}
+                        fill={errors.rating ? COLORS.error : COLORS.active}
+                        style={styles.star}
+                      />
                     </TouchableOpacity>
                   ))}
                 </View>
@@ -221,7 +267,7 @@ const EditReviewModal: FC = () => {
                   value={values.review}
                   error={touched.review && !!errors.review ? errors.review : ""}
                   disabled={pending}
-                  onChange={e => handleOnInputChange(handleChange("review"), e)}
+                  onChange={handleChange("review")}
                   onBlur={handleBlur("review")}
                 />
               </View>
@@ -235,12 +281,32 @@ const EditReviewModal: FC = () => {
                   Помогите другим пользователям, оценив наличие следующих элементов доступной среды.
                 </Text>
                 <View style={styles.featuresContainer}>
-                  {featureItems.map(({ title }, i) => (
-                    <FeaturePicker key={i} title={title} />
-                  ))}
+                  {accessibilityPending && (
+                    <>
+                      <Skeleton style={styles.skeleton} />
+                      <Skeleton style={styles.skeleton} />
+                      <Skeleton style={styles.skeleton} />
+                    </>
+                  )}
+                  {!accessibilityPending &&
+                    accessibility.map(({ name, guid }) => (
+                      <FeaturePicker
+                        key={guid}
+                        disabled={pending}
+                        guid={guid}
+                        title={name}
+                        value={values.accessibility.find(a => a.guid === guid)?.value}
+                        error={!!errors.accessibility}
+                        onPick={(guid, value) =>
+                          handleOnAccessibilityPick(values.accessibility, guid, value, setFieldValue)
+                        }
+                      />
+                    ))}
                 </View>
+                {!!errors.accessibility && <Text style={styles.error}>{errors.accessibility as string}</Text>}
               </View>
               <OnboardingButton
+                disabled={accessibilityPending}
                 text="Добавить отзыв"
                 pending={pending}
                 pendingText="Сохранение данных..."
