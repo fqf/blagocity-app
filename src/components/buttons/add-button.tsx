@@ -4,6 +4,7 @@ import DropShadow from "react-native-drop-shadow";
 import COLORS from "@/constants/colors";
 import Icon from "@/components/icons/icon";
 import EIcon from "@/models/enums/icon";
+import { useBus } from "react-bus";
 
 const styles = StyleSheet.create({
   shape: {
@@ -31,8 +32,13 @@ const styles = StyleSheet.create({
   },
 });
 const AddButton: FC = () => {
+  const bus = useBus();
+  const handleOnButtonPress = () => {
+    bus.emit("add-press");
+  };
+
   return (
-    <TouchableOpacity activeOpacity={0.65}>
+    <TouchableOpacity activeOpacity={0.65} onPress={handleOnButtonPress}>
       <DropShadow style={styles.shadow}>
         <View style={styles.shape}>
           <Icon icon={EIcon.Plus} fill="white" style={styles.icon} />

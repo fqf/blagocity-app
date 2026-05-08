@@ -9,6 +9,7 @@ import dayjs from "dayjs";
 import "dayjs/locale/ru";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import duration from "dayjs/plugin/duration";
+import { Provider } from "react-bus";
 
 dayjs.extend(customParseFormat);
 dayjs.extend(duration);
@@ -24,14 +25,14 @@ if (Platform.OS === "android") {
 
 const RootLayout = () => {
   return (
-    <>
+    <Provider>
       <StatusBar style="dark" />
       <GestureHandlerRootView>
         <GlobalLayout>
           <Slot />
         </GlobalLayout>
       </GestureHandlerRootView>
-    </>
+    </Provider>
   );
 };
 

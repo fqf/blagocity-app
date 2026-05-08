@@ -2,7 +2,6 @@ import { FC } from "react";
 import { Dimensions, StyleSheet, View } from "react-native";
 import TabButton from "@/components/buttons/tab-button";
 import EIcon from "@/models/enums/icon";
-import Svg, { Path } from "react-native-svg";
 import COLORS from "@/constants/colors";
 import AddButton from "@/components/buttons/add-button";
 

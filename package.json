@@ -47,6 +47,7 @@
     "ky": "^2.0.0",
     "lodash": "^4.18.1",
     "react": "19.2.0",
+    "react-bus": "^4.0.1",
     "react-dom": "19.2.0",
     "react-native": "0.83.6",
     "react-native-drop-shadow": "^1.0.3",

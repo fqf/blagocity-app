@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react";
-import Mapbox, { Camera, MapState, MapView, MarkerView } from "@rnmapbox/maps";
+import Mapbox, { Camera, MapState, MapView, MarkerView, PointAnnotation, UserLocation } from "@rnmapbox/maps";
 import { StyleSheet, View } from "react-native";
 import TabsLayout from "@/components/layouts/tabs-layout";
 import MapButton from "@/components/buttons/map-button";
@@ -11,13 +11,14 @@ import * as Location from "expo-location";
 import { debounce } from "lodash";
 import { useRouter } from "expo-router";
 import PinButton from "@/components/buttons/pin-button";
-import { Feature, Point } from "geojson";
+import { Feature, Point, Position } from "geojson";
 import useProfileStore from "@/stores/profile-store";
 import useMapStore from "@/stores/map-store";
+import { useListener } from "react-bus";
 
 Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_TOKEN!).then();
 
-export const defaultLocation: [number, number] = [37.626728, 55.756476];
+export const defaultLocation: Position = [37.626728, 55.756476];
 const styles = StyleSheet.create({
   map: {
     flex: 1,
@@ -42,8 +43,9 @@ const styles = StyleSheet.create({
   },
 });
 const MapScreen: FC = () => {
+  const [pin, setPin] = useState<Position | null>(null);
   const [zoomLevel, setZoomLevel] = useState(16);
-  const [location, setLocation] = useState<[number, number]>(defaultLocation);
+  const [location, setLocation] = useState<Position>(defaultLocation);
   const router = useRouter();
   const { userData } = useProfileStore();
   const { placesList } = useMapStore();
@@ -75,7 +77,18 @@ const MapScreen: FC = () => {
     const { coordinates } = geometry;
     router.push(`/tabs/map/location/edit/-1?coords=${coordinates}`);
   };
+  const handleOnAddPress = () => {
+    setPin(location);
+  };
+  const handleOnPinDragStart = () => {
+    console.log("START");
+  };
+  const handleOnPinDragEnd = ({ geometry }: { geometry: { coordinates: Position } }) => {
+    const { coordinates } = geometry;
+    setPin(coordinates);
+  };
 
+  useListener("add-press", handleOnAddPress);
   useEffect(() => {
     handleOnSetCurrentLocationPress().then();
   }, []);
@@ -97,6 +110,23 @@ const MapScreen: FC = () => {
           centerCoordinate={location}
           animationDuration={5}
         />
+        <UserLocation animated showsUserHeadingIndicator />
+        {pin && (
+          <>
+            <MarkerView coordinate={pin}>
+              <PinButton href={`/tabs/map/location/edit/-1?coords=${pin}`} />
+            </MarkerView>
+            <PointAnnotation
+              draggable
+              id="1"
+              coordinate={pin}
+              onDragStart={handleOnPinDragStart}
+              onDragEnd={handleOnPinDragEnd}
+              style={{ backgroundColor: "red", zIndex: 1 }}>
+              <PinButton />
+            </PointAnnotation>
+          </>
+        )}
         {placesList?.map(place => (
           <MarkerView key={place.guid} coordinate={[place.longitude, place.latitude]}>
             <PinButton href={`/tabs/map/location/${place.guid}`} />

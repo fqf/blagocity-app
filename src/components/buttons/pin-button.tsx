@@ -5,7 +5,8 @@ import EIcon from "@/models/enums/icon";
 import { Href, useRouter } from "expo-router";
 
 type TProps = {
-  href: Href;
+  href?: Href;
+  onPress?: () => void;
 };
 
 const styles = StyleSheet.create({
@@ -15,10 +16,14 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
 });
-const PinButton: FC<TProps> = ({ href }) => {
+const PinButton: FC<TProps> = ({ href, onPress }) => {
   const router = useRouter();
   const handleOnPress = () => {
-    router.push(href);
+    if (href) {
+      router.push(href);
+    } else if (onPress) {
+      onPress();
+    }
   };
 
   return (
