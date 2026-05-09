@@ -6,6 +6,7 @@ import { Href, useRouter } from "expo-router";
 
 type TProps = {
   href?: Href;
+  style?: object;
   onPress?: () => void;
 };
 
@@ -13,10 +14,10 @@ const styles = StyleSheet.create({
   icon: {
     width: 48,
     height: 48,
-    marginBottom: 30,
+    marginBottom: 35,
   },
 });
-const PinButton: FC<TProps> = ({ href, onPress }) => {
+const PinButton: FC<TProps> = ({ href, style, onPress }) => {
   const router = useRouter();
   const handleOnPress = () => {
     if (href) {
@@ -27,7 +28,7 @@ const PinButton: FC<TProps> = ({ href, onPress }) => {
   };
 
   return (
-    <TouchableOpacity activeOpacity={0.75} onPress={handleOnPress}>
+    <TouchableOpacity activeOpacity={0.75} onPress={handleOnPress} style={style}>
       <Icon icon={EIcon.PinFilled} fill="white" style={styles.icon} />
     </TouchableOpacity>
   );

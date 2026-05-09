@@ -1,5 +1,13 @@
 import { FC, useEffect, useState } from "react";
-import Mapbox, { Camera, MapState, MapView, MarkerView, PointAnnotation, UserLocation } from "@rnmapbox/maps";
+import Mapbox, {
+  Camera,
+  MapState,
+  MapView,
+  MarkerView,
+  PointAnnotation,
+  ScreenPointPayload,
+  UserLocation,
+} from "@rnmapbox/maps";
 import { StyleSheet, View } from "react-native";
 import TabsLayout from "@/components/layouts/tabs-layout";
 import MapButton from "@/components/buttons/map-button";
@@ -15,6 +23,7 @@ import { Feature, Point, Position } from "geojson";
 import useProfileStore from "@/stores/profile-store";
 import useMapStore from "@/stores/map-store";
 import { useListener } from "react-bus";
+import Button from "@/components/buttons/button";
 
 Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_TOKEN!).then();
 
@@ -41,9 +50,16 @@ const styles = StyleSheet.create({
   assistContainer: {
     marginTop: 60,
   },
+  addButton: {
+    position: "absolute",
+    zIndex: 1,
+    elevation: 1,
+  },
 });
 const MapScreen: FC = () => {
   const [pin, setPin] = useState<Position | null>(null);
+  const [showAddButton, setShowAddButton] = useState(false);
+  const [addButton, setAddButton] = useState<[number, number]>();
   const [zoomLevel, setZoomLevel] = useState(16);
   const [location, setLocation] = useState<Position>(defaultLocation);
   const router = useRouter();
@@ -67,6 +83,9 @@ const MapScreen: FC = () => {
     setZoomLevel(16);
     setLocation([location?.coords.longitude ?? defaultLocation[0], location?.coords.latitude ?? defaultLocation[1]]);
   };
+  const handleOnMapMove = () => {
+    setShowAddButton(false);
+  };
   const handleOnMapDrag = debounce((mapState: MapState) => {
     setLocation(mapState.properties.center as [number, number]);
   }, 150);
@@ -81,11 +100,18 @@ const MapScreen: FC = () => {
     setPin(location);
   };
   const handleOnPinDragStart = () => {
-    console.log("START");
+    setShowAddButton(false);
   };
-  const handleOnPinDragEnd = ({ geometry }: { geometry: { coordinates: Position } }) => {
+  const handleOnPinDragEnd = ({ geometry, properties }: Feature<Point, ScreenPointPayload>) => {
     const { coordinates } = geometry;
     setPin(coordinates);
+
+    const { screenPointX, screenPointY } = properties;
+    setAddButton([screenPointX, screenPointY]);
+    setShowAddButton(true);
+  };
+  const handleOnAddPlacePress = () => {
+    router.push(`/tabs/map/location/edit/-1?coords=${pin}`);
   };
 
   useListener("add-press", handleOnAddPress);
@@ -95,6 +121,14 @@ const MapScreen: FC = () => {
 
   return (
     <TabsLayout>
+      {showAddButton && (
+        <Button
+          type="primary"
+          text="Добавить новое место"
+          style={[styles.addButton, { top: (addButton?.[1] ?? 0) - 90, left: (addButton?.[0] ?? 0) - 92 }]}
+          onPress={handleOnAddPlacePress}
+        />
+      )}
       <MapView
         logoEnabled={false}
         attributionEnabled={false}
@@ -102,6 +136,7 @@ const MapScreen: FC = () => {
         localizeLabels={{ locale: "ru" }}
         projection="globe"
         style={styles.map}
+        onTouchMove={handleOnMapMove}
         onCameraChanged={handleOnMapDrag}
         onLongPress={handleOnMapLongPress}>
         <Camera
@@ -112,20 +147,14 @@ const MapScreen: FC = () => {
         />
         <UserLocation animated showsUserHeadingIndicator />
         {pin && (
-          <>
-            <MarkerView coordinate={pin}>
-              <PinButton href={`/tabs/map/location/edit/-1?coords=${pin}`} />
-            </MarkerView>
-            <PointAnnotation
-              draggable
-              id="1"
-              coordinate={pin}
-              onDragStart={handleOnPinDragStart}
-              onDragEnd={handleOnPinDragEnd}
-              style={{ backgroundColor: "red", zIndex: 1 }}>
-              <PinButton />
-            </PointAnnotation>
-          </>
+          <PointAnnotation
+            draggable
+            id="1"
+            coordinate={pin}
+            onDragStart={handleOnPinDragStart}
+            onDragEnd={handleOnPinDragEnd}>
+            <PinButton />
+          </PointAnnotation>
         )}
         {placesList?.map(place => (
           <MarkerView key={place.guid} coordinate={[place.longitude, place.latitude]}>

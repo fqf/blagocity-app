@@ -1,6 +1,6 @@
 import { FC } from "react";
 import EIcon from "@/models/enums/icon";
-import { StyleSheet, Text, TouchableOpacity, ViewStyle } from "react-native";
+import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import COLORS from "@/constants/colors";
 import Icon from "@/components/icons/icon";
 
@@ -14,7 +14,7 @@ type TProps = {
   fullWidth?: boolean;
   disabled?: boolean;
   size?: "default" | "large";
-  style?: ViewStyle;
+  style?: object;
   onPress?: () => void;
 };
 
