@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import Mapbox, {
   Camera,
   MapState,
@@ -24,6 +24,11 @@ import useProfileStore from "@/stores/profile-store";
 import useMapStore from "@/stores/map-store";
 import { useListener } from "react-bus";
 import Button from "@/components/buttons/button";
+import Preloader from "@/components/others/preloader";
+import * as SecureStore from "expo-secure-store";
+import { getMe } from "@/actions/user-actions";
+import { getPlacesList } from "@/actions/place-actions";
+import { isHTTPError, isKyError } from "ky";
 
 Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_TOKEN!).then();
 
@@ -55,21 +60,35 @@ const styles = StyleSheet.create({
     zIndex: 1,
     elevation: 1,
   },
+  preloaderContainer: {
+    position: "absolute",
+    zIndex: 1,
+    elevation: 1,
+    width: "100%",
+    height: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+  },
 });
 const MapScreen: FC = () => {
+  const [profilePending, setProfilePending] = useState(true);
+  const [placesPending, setPlacesPending] = useState(true);
   const [pin, setPin] = useState<Position | null>(null);
   const [showAddButton, setShowAddButton] = useState(false);
   const [addButton, setAddButton] = useState<[number, number]>();
-  const [zoomLevel, setZoomLevel] = useState(16);
   const [location, setLocation] = useState<Position>(defaultLocation);
   const router = useRouter();
-  const { userData } = useProfileStore();
-  const { placesList } = useMapStore();
-  const handleOnPlusPress = () => {
-    setZoomLevel(prev => prev + 1);
+  const { userData, setUserData } = useProfileStore();
+  const { placesList, setPlacesList } = useMapStore();
+  const mapRef = useRef<MapView>(null);
+  const cameraRef = useRef<Camera>(null);
+  const handleOnPlusPress = async () => {
+    const currentZoom = await mapRef.current?.getZoom();
+    cameraRef.current?.zoomTo((currentZoom ?? 15) + 1, 300);
   };
-  const handleOnMinusPress = () => {
-    setZoomLevel(prev => prev - 1);
+  const handleOnMinusPress = async () => {
+    const currentZoom = await mapRef.current?.getZoom();
+    cameraRef.current?.zoomTo((currentZoom ?? 15) - 1, 300);
   };
   const handleOnSetCurrentLocationPress = async () => {
     const { status } = await Location.requestForegroundPermissionsAsync();
@@ -80,7 +99,7 @@ const MapScreen: FC = () => {
 
     const location = await Location.getLastKnownPositionAsync();
 
-    setZoomLevel(16);
+    cameraRef.current?.zoomTo(16);
     setLocation([location?.coords.longitude ?? defaultLocation[0], location?.coords.latitude ?? defaultLocation[1]]);
   };
   const handleOnMapMove = () => {
@@ -116,8 +135,42 @@ const MapScreen: FC = () => {
 
   useListener("add-press", handleOnAddPress);
   useEffect(() => {
-    handleOnSetCurrentLocationPress().then();
+    //handleOnSetCurrentLocationPress().then();
   }, []);
+  useEffect(() => {
+    const token = SecureStore.getItem(process.env.EXPO_PUBLIC_SECURE_AUTH_STATE_KEY!);
+
+    (async () => {
+      try {
+        if (!token) {
+          throw new Error("Bad token");
+        }
+
+        if (!userData) {
+          setProfilePending(true);
+
+          const userData = await getMe(token);
+          setUserData(userData);
+        }
+
+        if (!placesList) {
+          setPlacesPending(true);
+
+          const placesList = await getPlacesList();
+          setPlacesList(placesList);
+        }
+      } catch (e) {
+        if (isHTTPError(e)) {
+          console.error((e.data as any).detail);
+        } else if (isKyError(e)) {
+          console.error(e.message);
+        }
+      }
+
+      setProfilePending(false);
+      setPlacesPending(false);
+    })();
+  }, [userData, placesList, setPlacesList, setUserData]);
 
   return (
     <TabsLayout>
@@ -130,6 +183,7 @@ const MapScreen: FC = () => {
         />
       )}
       <MapView
+        ref={mapRef}
         logoEnabled={false}
         attributionEnabled={false}
         scaleBarEnabled={false}
@@ -140,8 +194,8 @@ const MapScreen: FC = () => {
         onCameraChanged={handleOnMapDrag}
         onLongPress={handleOnMapLongPress}>
         <Camera
+          ref={cameraRef}
           defaultSettings={{ centerCoordinate: location, zoomLevel: 15 }}
-          zoomLevel={zoomLevel}
           centerCoordinate={location}
           animationDuration={5}
         />
@@ -164,7 +218,12 @@ const MapScreen: FC = () => {
       </MapView>
       <View style={styles.header}>
         <MapButton icon={EIcon.List} />
-        <AvatarButton size="small" type={+(userData?.avatar ?? 1) as TAvatarType} onPress={handleOnAvatarPress} />
+        <AvatarButton
+          pending={profilePending}
+          size="small"
+          type={+(userData?.avatar ?? 1) as TAvatarType}
+          onPress={handleOnAvatarPress}
+        />
         <MapButton icon={EIcon.Filter} />
       </View>
       <View style={styles.mapTools}>
@@ -175,6 +234,11 @@ const MapScreen: FC = () => {
           <AssistButton />
         </View>
       </View>
+      {placesPending && (
+        <View style={styles.preloaderContainer}>
+          <Preloader />
+        </View>
+      )}
     </TabsLayout>
   );
 };

@@ -3,6 +3,7 @@ import { StyleSheet, TouchableOpacity, View } from "react-native";
 import COLORS from "@/constants/colors";
 import chroma from "chroma-js";
 import Avatar from "@/components/others/avatar";
+import Preloader from "@/components/others/preloader";
 
 export type TAvatarType = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 type TProps = {
@@ -10,6 +11,7 @@ type TProps = {
   active?: boolean;
   disabled?: boolean;
   size?: "large" | "small";
+  pending?: boolean;
   onPress?: () => void;
 };
 
@@ -20,6 +22,12 @@ const styles = StyleSheet.create({
     borderRadius: "50%",
     alignItems: "center",
     justifyContent: "center",
+    overflow: "hidden",
+  },
+  smallContainer: {
+    width: 50,
+    height: 50,
+    backgroundColor: "white",
   },
   content: {
     width: 145,
@@ -29,11 +37,6 @@ const styles = StyleSheet.create({
   smallContent: {
     width: 44,
     height: 44,
-  },
-  smallContainer: {
-    width: 50,
-    height: 50,
-    backgroundColor: "white",
   },
   active: {
     backgroundColor: chroma(COLORS.active).alpha(0.5).hex(),
@@ -67,7 +70,15 @@ const styles = StyleSheet.create({
   content_8: {},
   smallContent_8: {},
 });
-const AvatarButton: FC<TProps> = ({ type = 1, active, disabled, size = "large", onPress }) => {
+const AvatarButton: FC<TProps> = ({ type = 1, active, disabled, size = "large", pending, onPress }) => {
+  if (pending) {
+    return (
+      <View style={[styles.container, size === "small" ? styles.smallContainer : null]}>
+        <Preloader size={size === "small" ? 100 : 200} />
+      </View>
+    );
+  }
+
   if (size === "small") {
     return (
       <TouchableOpacity
