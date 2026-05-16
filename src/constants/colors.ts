@@ -1,6 +1,6 @@
 const COLORS = {
   background: "#F9FAFB",
-  inputBackground: "white",
+  inputBackground: "#F2F3F7",
   blockBackground: "#F9FAFB",
   inputBorder: "#E5E7EB",
   icon: "#6B7280",

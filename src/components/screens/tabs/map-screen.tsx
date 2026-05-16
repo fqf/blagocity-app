@@ -8,7 +8,7 @@ import Mapbox, {
   ScreenPointPayload,
   UserLocation,
 } from "@rnmapbox/maps";
-import { StyleSheet, View } from "react-native";
+import { Dimensions, StyleSheet, View } from "react-native";
 import TabsLayout from "@/components/layouts/tabs-layout";
 import MapButton from "@/components/buttons/map-button";
 import EIcon from "@/models/enums/icon";
@@ -75,7 +75,7 @@ const MapScreen: FC = () => {
   const [placesPending, setPlacesPending] = useState(true);
   const [pin, setPin] = useState<Position | null>(null);
   const [showAddButton, setShowAddButton] = useState(false);
-  const [addButton, setAddButton] = useState<[number, number]>();
+  const [addButton, setAddButton] = useState<Position>();
   const [location, setLocation] = useState<Position>(defaultLocation);
   const router = useRouter();
   const { userData, setUserData } = useProfileStore();
@@ -83,14 +83,20 @@ const MapScreen: FC = () => {
   const mapRef = useRef<MapView>(null);
   const cameraRef = useRef<Camera>(null);
   const handleOnPlusPress = async () => {
+    setShowAddButton(false);
+
     const currentZoom = await mapRef.current?.getZoom();
     cameraRef.current?.zoomTo((currentZoom ?? 15) + 1, 300);
   };
   const handleOnMinusPress = async () => {
+    setShowAddButton(false);
+
     const currentZoom = await mapRef.current?.getZoom();
     cameraRef.current?.zoomTo((currentZoom ?? 15) - 1, 300);
   };
   const handleOnSetCurrentLocationPress = async () => {
+    setShowAddButton(false);
+
     const { status } = await Location.requestForegroundPermissionsAsync();
 
     if (status !== "granted") {
@@ -117,6 +123,8 @@ const MapScreen: FC = () => {
   };
   const handleOnAddPress = () => {
     setPin(location);
+    setAddButton([Dimensions.get("window").width / 2, Dimensions.get("window").height / 2]);
+    setShowAddButton(true);
   };
   const handleOnPinDragStart = () => {
     setShowAddButton(false);
@@ -130,7 +138,15 @@ const MapScreen: FC = () => {
     setShowAddButton(true);
   };
   const handleOnAddPlacePress = () => {
+    setShowAddButton(false);
+    setAddButton(undefined);
+    setPin(null);
     router.push(`/tabs/map/location/edit/-1?coords=${pin}`);
+  };
+  const handleOnRemovePinPress = () => {
+    setPin(null);
+    setAddButton(undefined);
+    setShowAddButton(false);
   };
 
   useListener("add-press", handleOnAddPress);
@@ -175,12 +191,23 @@ const MapScreen: FC = () => {
   return (
     <TabsLayout>
       {showAddButton && (
-        <Button
-          type="primary"
-          text="Добавить новое место"
-          style={[styles.addButton, { top: (addButton?.[1] ?? 0) - 90, left: (addButton?.[0] ?? 0) - 92 }]}
-          onPress={handleOnAddPlacePress}
-        />
+        <>
+          <Button
+            type="primary"
+            icon={EIcon.Plus}
+            text="Добавить локацию"
+            style={[styles.addButton, { top: (addButton?.[1] ?? 0) - 90, left: (addButton?.[0] ?? 0) - 92 }]}
+            onPress={handleOnAddPlacePress}
+          />
+          <Button
+            error
+            type="secondary"
+            icon={EIcon.Minus}
+            text="Удалить пин"
+            style={[styles.addButton, { top: (addButton?.[1] ?? 0) + 15, left: (addButton?.[0] ?? 0) - 72 }]}
+            onPress={handleOnRemovePinPress}
+          />
+        </>
       )}
       <MapView
         ref={mapRef}

@@ -6,11 +6,9 @@ import Icon from "@/components/icons/icon";
 
 type TProps = {
   type: "primary" | "secondary" | "outlined";
-  inverted?: boolean;
+  theme: "default" | "active" | "error";
   text: string;
   icon?: EIcon;
-  active?: boolean;
-  error?: boolean;
   fullWidth?: boolean;
   disabled?: boolean;
   size?: "default" | "large";
@@ -34,45 +32,65 @@ const styles = StyleSheet.create({
   fullwidth: {
     width: "100%",
   },
-  primary: {
+  primaryDefault: {
+    backgroundColor: COLORS.text,
+  },
+  primaryActive: {
     backgroundColor: COLORS.active,
   },
-  invertedPrimary: {
-    backgroundColor: COLORS.activeBackground,
+  primaryError: {
+    backgroundColor: COLORS.error,
   },
-  secondary: {
+  secondaryDefault: {
     backgroundColor: COLORS.blockBackground,
   },
-  outlined: {
+  secondaryActive: {
+    backgroundColor: COLORS.activeBackground,
+  },
+  secondaryError: {
+    backgroundColor: COLORS.errorBackground,
+  },
+  outlinedDefault: {
     borderColor: COLORS.inputBorder,
+    backgroundColor: "white",
+  },
+  outlinedActive: {
+    borderColor: COLORS.active,
+    backgroundColor: "white",
+  },
+  outlinedError: {
+    borderColor: COLORS.error,
     backgroundColor: "white",
   },
   text: {
     fontFamily: "LexendDeca-Bold",
     fontSize: 14,
-    color: COLORS.text,
   },
-  primaryText: {
+  textPrimaryDefault: {
     color: "white",
   },
-  invertedPrimaryText: {
+  textPrimaryActive: {
+    color: "white",
+  },
+  textPrimaryError: {
+    color: "white",
+  },
+  textSecondaryDefault: {
+    color: COLORS.text,
+  },
+  textSecondaryActive: {
     color: COLORS.active,
   },
-  activeSecondary: {
-    backgroundColor: COLORS.activeBackground,
+  textSecondaryError: {
+    color: COLORS.error,
   },
-  activeOutlined: {
-    borderColor: COLORS.active,
-    backgroundColor: COLORS.activeBackground,
+  textOutlinedDefault: {
+    color: COLORS.text,
   },
-  activeText: {
+  textOutlinedActive: {
     color: COLORS.active,
   },
-  error: {
-    backgroundColor: COLORS.errorBackground,
-    borderColor: COLORS.error,
-  },
-  errorText: {
+  textOutlinedError: {
     color: COLORS.error,
   },
   disabled: {
@@ -92,17 +110,29 @@ const styles = StyleSheet.create({
 });
 const Button: FC<TProps> = ({
   type = "primary",
-  inverted,
+  theme = "default",
   text,
   icon,
-  active,
-  error,
   fullWidth,
   disabled,
   size = "default",
   style,
   onPress,
 }) => {
+  const getIconFillColor = () => {
+    if (type === "primary") {
+      return "white";
+    }
+
+    if (theme === "active") {
+      return COLORS.active;
+    } else if (theme === "error") {
+      return COLORS.error;
+    }
+
+    return COLORS.text;
+  };
+
   return (
     <TouchableOpacity
       disabled={disabled}
@@ -110,33 +140,28 @@ const Button: FC<TProps> = ({
       style={[
         styles.container,
         fullWidth ? styles.fullwidth : null,
-        type === "primary" && !inverted ? styles.primary : null,
-        type === "primary" && inverted ? styles.invertedPrimary : null,
-        type === "secondary" ? styles.secondary : null,
-        type === "outlined" ? styles.outlined : null,
+        type === "primary" && theme === "default" ? styles.primaryDefault : null,
+        type === "primary" && theme === "active" ? styles.primaryActive : null,
+        type === "primary" && theme === "error" ? styles.primaryError : null,
+        type === "secondary" && theme === "default" ? styles.secondaryDefault : null,
+        type === "secondary" && theme === "active" ? styles.secondaryActive : null,
+        type === "secondary" && theme === "error" ? styles.secondaryError : null,
+        type === "outlined" && theme === "default" ? styles.outlinedDefault : null,
+        type === "outlined" && theme === "active" ? styles.outlinedActive : null,
+        type === "outlined" && theme === "error" ? styles.outlinedError : null,
         size === "large" ? styles.largeContainer : null,
-        active && type === "outlined" ? styles.activeOutlined : null,
-        active && type === "secondary" ? styles.activeSecondary : null,
-        error ? styles.error : null,
         disabled ? styles.disabled : null,
         style,
       ]}
       onPress={onPress}>
-      {!!icon && (
-        <Icon
-          icon={icon}
-          fill={type === "primary" ? "white" : error ? COLORS.error : COLORS.text}
-          style={styles.icon}
-        />
-      )}
+      {!!icon && <Icon icon={icon} fill={getIconFillColor()} style={styles.icon} />}
       <Text
         style={[
           styles.text,
-          type === "primary" && !inverted ? styles.primaryText : null,
-          type === "primary" && inverted ? styles.invertedPrimaryText : null,
           size === "large" ? styles.largeText : null,
-          active ? styles.activeText : null,
-          error ? styles.errorText : null,
+          {
+            color: getIconFillColor(),
+          },
         ]}>
         {text}
       </Text>
