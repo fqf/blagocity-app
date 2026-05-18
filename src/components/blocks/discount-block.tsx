@@ -80,7 +80,7 @@ const DiscountBlock: FC<TProps> = ({ image, title, description, discount, onButt
           <Text style={styles.description}>{description}</Text>
         </View>
         <View style={styles.buttons}>
-          <Button inverted type="primary" text="Описание акции" onPress={onButtonPress} />
+          <Button type="secondary" theme="active" text="Описание акции" onPress={onButtonPress} />
         </View>
       </View>
     </ShadowBlock>

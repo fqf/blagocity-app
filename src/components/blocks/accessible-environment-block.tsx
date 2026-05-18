@@ -81,10 +81,9 @@ const AccessibleEnvironmentBlock: FC<TProps> = ({ value, error, disabled, onPres
               <Button
                 key={acc.guid}
                 type="outlined"
+                theme={error ? "error" : value?.includes(acc.guid) ? "active" : "default"}
                 disabled={disabled}
-                error={!!error}
                 text={acc.name}
-                active={value?.includes(acc.guid)}
                 onPress={() => onPress?.(acc.guid)}
               />
             ))}

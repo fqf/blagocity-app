@@ -13,7 +13,6 @@ import TGetUserResponse from "@/models/contracts/user/getUserResponse";
 import { getUser } from "@/actions/user-actions";
 import * as SecureStore from "expo-secure-store";
 import { TAvatarType } from "@/components/buttons/avatar-button";
-import TGetAccessibilityListResponse from "@/models/contracts/accessibility/getAccessibilityListResponse";
 import Tag from "@/components/others/tag";
 import { getAccessibility } from "@/actions/accesibility-actions";
 
@@ -100,7 +99,7 @@ const ReviewBlock: FC<TProps> = ({ guid }) => {
   const [pending, setPending] = useState(true);
   const [review, setReview] = useState<TGetReviewResponse>();
   const [author, setAuthor] = useState<TGetUserResponse>();
-  const [accessibility, setAccessibility] = useState<TGetAccessibilityListResponse>([]);
+  const [accessibility, setAccessibility] = useState<{ guid: string; name: string; value?: boolean }[]>([]);
 
   useEffect(() => {
     if (guid) {
@@ -120,9 +119,15 @@ const ReviewBlock: FC<TProps> = ({ guid }) => {
           setAuthor(userResponse);
 
           const accessibilityResponse = await Promise.all(
-            reviewResponse.accessibilityCriteria
-              .filter(acc => acc.value)
-              .map(acc => getAccessibility(acc.criterion.split("/").slice(-1)[0])),
+            reviewResponse.accessibilityCriteria.map(async acc => {
+              const accessibilityData = await getAccessibility(acc.criterion.split("/").slice(-1)[0]);
+
+              return {
+                guid: accessibilityData.guid,
+                name: accessibilityData.name,
+                value: acc.value,
+              };
+            }),
           );
 
           setAccessibility(accessibilityResponse);
@@ -168,7 +173,14 @@ const ReviewBlock: FC<TProps> = ({ guid }) => {
               <Skeleton style={styles.tagSkeleton} />
             </>
           )}
-          {!pending && accessibility.map(acc => <Tag key={acc.guid} text={acc.name} variant="success" />)}
+          {!pending &&
+            accessibility.map(acc => (
+              <Tag
+                key={acc.guid}
+                text={acc.name}
+                variant={acc.value === undefined ? "default" : acc.value ? "success" : "error"}
+              />
+            ))}
         </View>
       </View>
     </ShadowBlock>

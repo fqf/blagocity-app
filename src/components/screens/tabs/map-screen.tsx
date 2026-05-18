@@ -16,7 +16,6 @@ import Constants from "expo-constants";
 import AvatarButton, { TAvatarType } from "@/components/buttons/avatar-button";
 import AssistButton from "@/components/buttons/assist-button";
 import * as Location from "expo-location";
-import { debounce } from "lodash";
 import { useRouter } from "expo-router";
 import PinButton from "@/components/buttons/pin-button";
 import { Feature, Point, Position } from "geojson";
@@ -76,7 +75,8 @@ const MapScreen: FC = () => {
   const [pin, setPin] = useState<Position | null>(null);
   const [showAddButton, setShowAddButton] = useState(false);
   const [addButton, setAddButton] = useState<Position>();
-  const [location, setLocation] = useState<Position>(defaultLocation);
+  const [currentLocation, setCurrentLocation] = useState<Position | null>();
+  const location = useRef<Position>(defaultLocation);
   const router = useRouter();
   const { userData, setUserData } = useProfileStore();
   const { placesList, setPlacesList } = useMapStore();
@@ -97,23 +97,16 @@ const MapScreen: FC = () => {
   const handleOnSetCurrentLocationPress = async () => {
     setShowAddButton(false);
 
-    const { status } = await Location.requestForegroundPermissionsAsync();
-
-    if (status !== "granted") {
-      return;
+    if (currentLocation) {
+      location.current = currentLocation;
+      cameraRef.current?.moveTo(currentLocation);
+      cameraRef.current?.zoomTo(16);
     }
-
-    const location = await Location.getLastKnownPositionAsync();
-
-    cameraRef.current?.zoomTo(16);
-    setLocation([location?.coords.longitude ?? defaultLocation[0], location?.coords.latitude ?? defaultLocation[1]]);
   };
-  const handleOnMapMove = () => {
+  const handleOnMapDrag = (mapState: MapState) => {
     setShowAddButton(false);
+    location.current = mapState.properties.center;
   };
-  const handleOnMapDrag = debounce((mapState: MapState) => {
-    setLocation(mapState.properties.center as [number, number]);
-  }, 150);
   const handleOnAvatarPress = () => {
     router.push("/tabs/map/settings");
   };
@@ -122,7 +115,7 @@ const MapScreen: FC = () => {
     router.push(`/tabs/map/location/edit/-1?coords=${coordinates}`);
   };
   const handleOnAddPress = () => {
-    setPin(location);
+    setPin(location.current);
     setAddButton([Dimensions.get("window").width / 2, Dimensions.get("window").height / 2]);
     setShowAddButton(true);
   };
@@ -151,7 +144,21 @@ const MapScreen: FC = () => {
 
   useListener("add-press", handleOnAddPress);
   useEffect(() => {
-    //handleOnSetCurrentLocationPress().then();
+    (async () => {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+
+      if (status !== "granted") {
+        return;
+      }
+
+      const currentLocationData = await Location.getLastKnownPositionAsync();
+
+      if (currentLocationData) {
+        location.current = [currentLocationData.coords.longitude, currentLocationData.coords.latitude];
+        cameraRef.current?.moveTo([currentLocationData.coords.longitude, currentLocationData.coords.latitude]);
+        setCurrentLocation([currentLocationData.coords.longitude, currentLocationData.coords.latitude]);
+      }
+    })();
   }, []);
   useEffect(() => {
     const token = SecureStore.getItem(process.env.EXPO_PUBLIC_SECURE_AUTH_STATE_KEY!);
@@ -194,14 +201,15 @@ const MapScreen: FC = () => {
         <>
           <Button
             type="primary"
+            theme="active"
             icon={EIcon.Plus}
             text="Добавить локацию"
             style={[styles.addButton, { top: (addButton?.[1] ?? 0) - 90, left: (addButton?.[0] ?? 0) - 92 }]}
             onPress={handleOnAddPlacePress}
           />
           <Button
-            error
-            type="secondary"
+            type="primary"
+            theme="error"
             icon={EIcon.Minus}
             text="Удалить пин"
             style={[styles.addButton, { top: (addButton?.[1] ?? 0) + 15, left: (addButton?.[0] ?? 0) - 72 }]}
@@ -217,13 +225,12 @@ const MapScreen: FC = () => {
         localizeLabels={{ locale: "ru" }}
         projection="globe"
         style={styles.map}
-        onTouchMove={handleOnMapMove}
         onCameraChanged={handleOnMapDrag}
         onLongPress={handleOnMapLongPress}>
         <Camera
           ref={cameraRef}
-          defaultSettings={{ centerCoordinate: location, zoomLevel: 15 }}
-          centerCoordinate={location}
+          defaultSettings={{ centerCoordinate: currentLocation ?? defaultLocation, zoomLevel: 16 }}
+          centerCoordinate={location.current}
           animationDuration={5}
         />
         <UserLocation animated showsUserHeadingIndicator />

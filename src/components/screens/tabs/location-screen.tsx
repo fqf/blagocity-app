@@ -21,6 +21,9 @@ import { getUser } from "@/actions/user-actions";
 import * as SecureStore from "expo-secure-store";
 import useProfileStore from "@/stores/profile-store";
 import useMapStore from "@/stores/map-store";
+import { getReviewsList } from "@/actions/review-actions";
+import { useListener } from "react-bus";
+import TGetReviewResponse from "@/models/contracts/review/getReviewResponse";
 
 type TProps = {
   id: string;
@@ -161,10 +164,12 @@ const styles = StyleSheet.create({
 });
 const LocationScreen: FC<TProps> = ({ id }) => {
   const [pending, setPending] = useState(true);
+  const [reviewsListPending, setReviewsListPending] = useState(true);
   const [placeData, setPlaceData] = useState<TGetPlaceResponse | null>(null);
   const [placeType, setPlaceType] = useState("");
   const [accessibility, setAccessibility] = useState<string[]>([]);
   const [author, setAuthor] = useState("");
+  const [reviewsList, setReviewsList] = useState<TGetReviewResponse[]>([]);
   const { userData } = useProfileStore();
   const { placesList } = useMapStore();
   const router = useRouter();
@@ -174,12 +179,36 @@ const LocationScreen: FC<TProps> = ({ id }) => {
     }
   };
   const handleOnAlertPress = () => {
-    router.push("/tabs/map/location/outgoing-help-request");
+    router.push(`/tabs/map/location/outgoing-help-request?name=${placeData?.name}&location=${placeData?.guid}`);
   };
   const handleOnCreateReviewPress = () => {
     router.push(`/tabs/map/review/edit/-1?name=${placeData?.name}&location=${placeData?.guid}`);
   };
+  const handleOnRefreshReviewsList = async () => {
+    setReviewsListPending(true);
 
+    try {
+      const token = SecureStore.getItem(process.env.EXPO_PUBLIC_SECURE_AUTH_STATE_KEY!);
+
+      if (!token) {
+        throw new Error("Bad token");
+      }
+
+      const reviewsListResponse = await getReviewsList(id);
+      setReviewsList(reviewsListResponse);
+    } catch (e) {
+      if (isHTTPError(e)) {
+        const error = await e.response.json();
+        console.log(error);
+      } else if (isKyError(e)) {
+        console.error(e.message);
+      }
+    }
+
+    setReviewsListPending(false);
+  };
+
+  useListener("refresh-reviews-list", handleOnRefreshReviewsList);
   useEffect(() => {
     setPending(true);
 
@@ -218,7 +247,9 @@ const LocationScreen: FC<TProps> = ({ id }) => {
         });
         setAccessibility(accessibilityList);
         setPlaceData(placeDataResponse);
+        setReviewsList(placeDataResponse.reviews);
         setPending(false);
+        setReviewsListPending(false);
       } catch (e) {
         if (isHTTPError(e)) {
           const error = await e.response.json();
@@ -318,11 +349,24 @@ const LocationScreen: FC<TProps> = ({ id }) => {
           <Text style={styles.text}>Уютное место с френдли подходом.</Text>
         </View>
         <View style={styles.buttonsContainer}>
-          <Button error type="secondary" text="Позвать помощника" icon={EIcon.Ring} onPress={handleOnAlertPress} />
+          <Button
+            type="secondary"
+            theme="error"
+            text="Позвать помощника"
+            icon={EIcon.Ring}
+            onPress={handleOnAlertPress}
+          />
           <View style={styles.buttonsRow}>
-            <Button type="primary" text="Отметиться" icon={EIcon.PinOutlined} style={styles.buttonsRowButton} />
+            <Button
+              type="primary"
+              theme="active"
+              text="Отметиться"
+              icon={EIcon.PinOutlined}
+              style={styles.buttonsRowButton}
+            />
             <Button
               type="secondary"
+              theme="default"
               text="Оставить отзыв"
               icon={EIcon.Bubble}
               style={styles.buttonsRowButton}
@@ -333,14 +377,18 @@ const LocationScreen: FC<TProps> = ({ id }) => {
         <View style={styles.block}>
           <View style={styles.reviewsHeader}>
             <Text style={styles.subtitle}>Отзывы</Text>
-            <Text style={styles.reviewsHeaderCounter}>
-              {placeData?.reviews?.length ?? 0} {declOfReviews(placeData?.reviews?.length ?? 0)}
-            </Text>
+            {!reviewsListPending && (
+              <Text style={styles.reviewsHeaderCounter}>
+                {reviewsList.length ?? 0} {declOfReviews(reviewsList.length ?? 0)}
+              </Text>
+            )}
           </View>
           <View style={styles.reviewsContainer}>
-            {!placeData?.reviews?.length && <Text style={styles.emptyText}>Отзывов пока нет...</Text>}
-            {!!placeData?.reviews?.length &&
-              placeData?.reviews.map(review => <ReviewBlock key={review.guid} guid={review.guid} />)}
+            {reviewsListPending && <Text style={styles.emptyText}>Загрузка списка отзывов...</Text>}
+            {!reviewsListPending && !reviewsList.length && <Text style={styles.emptyText}>Отзывов пока нет...</Text>}
+            {!reviewsListPending &&
+              !!reviewsList.length &&
+              reviewsList.map(review => <ReviewBlock key={review.guid} guid={review.guid} />)}
           </View>
         </View>
       </View>

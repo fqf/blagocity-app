@@ -30,6 +30,7 @@ import { createReview } from "@/actions/review-actions";
 import useProfileStore from "@/stores/profile-store";
 import dayjs from "dayjs";
 import * as SecureStore from "expo-secure-store";
+import { useBus } from "react-bus";
 import hairlineWidth = StyleSheet.hairlineWidth;
 
 type TValues = {
@@ -128,6 +129,7 @@ const EditReviewModal: FC = () => {
   const { name, location } = useLocalSearchParams();
   const { userData } = useProfileStore();
   const router = useRouter();
+  const bus = useBus();
   const handleOnClosePress = () => {
     if (router.canGoBack()) {
       router.back();
@@ -182,6 +184,8 @@ const EditReviewModal: FC = () => {
           value: acc.value === 1 ? true : acc.value === -1 ? false : null,
         });
       }
+
+      bus.emit("refresh-reviews-list");
 
       if (router.canGoBack()) {
         router.back();

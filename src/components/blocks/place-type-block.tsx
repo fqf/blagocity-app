@@ -81,9 +81,8 @@ const PlaceTypeBlock: FC<TProps> = ({ value, error, disabled, onPress }) => {
               <Button
                 key={type.guid}
                 type="secondary"
-                active={type.guid === value}
+                theme={error ? "error" : type.guid === value ? "active" : "default"}
                 text={type.name}
-                error={!!error}
                 disabled={disabled}
                 onPress={() => onPress?.(type.guid)}
               />

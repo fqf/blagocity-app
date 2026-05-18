@@ -4,8 +4,10 @@ import TGetReviewResponse from "@/models/contracts/review/getReviewResponse";
 import TCreateReviewRequest from "@/models/contracts/review/createReviewRequest";
 import TCreateReviewResponse from "@/models/contracts/review/createReviewResponse";
 
-export const getReviewsList = async () => {
-  return await blagocityApi().get<TGetReviewsListResponse>("/reviews").json();
+export const getReviewsList = async (placeGuid: string) => {
+  return await blagocityApi()
+    .get<TGetReviewsListResponse>(`/reviews?establishment=/api/establishments/${placeGuid}`)
+    .json();
 };
 
 export const getReview = async (guid: string) => {

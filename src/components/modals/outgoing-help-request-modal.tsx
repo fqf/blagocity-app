@@ -6,7 +6,7 @@ import Button from "@/components/buttons/button";
 import Icon from "@/components/icons/icon";
 import EIcon from "@/models/enums/icon";
 import CloseButton from "@/components/buttons/close-button";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import Animated, {
   cancelAnimation,
   useAnimatedStyle,
@@ -119,6 +119,7 @@ const styles = StyleSheet.create({
 });
 const OutgoingHelpRequestModal: FC = () => {
   const [status, setStatus] = useState<"sent" | "received">("sent");
+  const { name } = useLocalSearchParams();
   const scale = useSharedValue(0.01);
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -181,7 +182,7 @@ const OutgoingHelpRequestModal: FC = () => {
         {status === "received" && <Text style={styles.title}>Помощник в пути!</Text>}
         {status === "sent" && (
           <Text style={styles.description}>
-            Сотрудники <Text style={styles.name}>Доброе утро</Text> получили ваше уведомление и скоро подойдут.
+            Сотрудники <Text style={styles.name}>{name}</Text> получили ваше уведомление и скоро подойдут.
           </Text>
         )}
         {status === "received" && (
@@ -191,11 +192,20 @@ const OutgoingHelpRequestModal: FC = () => {
         )}
         {status === "sent" && <TimerBlock />}
         <View style={styles.buttons}>
-          {status === "sent" && <Button fullWidth size="large" type="secondary" text="Отменить вызов" />}
+          {status === "sent" && (
+            <Button fullWidth size="large" type="secondary" theme="default" text="Отменить вызов" />
+          )}
           {status === "received" && (
             <>
-              <Button fullWidth size="large" type="primary" text="Хорошо, жду" />
-              <Button fullWidth size="large" type="secondary" text="Отменить вызов" />
+              <Button
+                fullWidth
+                size="large"
+                type="primary"
+                theme="active"
+                text="Хорошо, жду"
+                onPress={handleOnClosePress}
+              />
+              <Button fullWidth size="large" type="secondary" theme="default" text="Отменить вызов" />
             </>
           )}
         </View>
