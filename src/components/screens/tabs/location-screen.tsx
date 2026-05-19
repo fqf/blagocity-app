@@ -15,7 +15,7 @@ import Constants from "expo-constants";
 import Skeleton from "@/components/others/skeleton";
 import { isHTTPError, isKyError } from "ky";
 import { getPlaceTypesList } from "@/actions/place-actions";
-import TGetPlaceResponse from "@/models/contracts/place/getPlaceResponse";
+import TGetPlaceResponse from "@/models/contracts/place/get-place-response";
 import { getAccessibilityList } from "@/actions/accesibility-actions";
 import { getUser } from "@/actions/user-actions";
 import * as SecureStore from "expo-secure-store";
@@ -23,7 +23,7 @@ import useProfileStore from "@/stores/profile-store";
 import useMapStore from "@/stores/map-store";
 import { getReviewsList } from "@/actions/review-actions";
 import { useListener } from "react-bus";
-import TGetReviewResponse from "@/models/contracts/review/getReviewResponse";
+import TGetReviewResponse from "@/models/contracts/review/get-review-response";
 
 type TProps = {
   id: string;

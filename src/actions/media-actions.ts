@@ -1,6 +1,6 @@
 import blagocityApi from "@/api/blagocity-api";
-import type TCreateMediaRequest from "@/models/contracts/media/createMediaRequest";
-import type TGetMediaResponse from "@/models/contracts/media/getMediaResponse";
+import type TCreateMediaRequest from "@/models/contracts/media/create-media-request";
+import type TGetMediaResponse from "@/models/contracts/media/get-media-response";
 
 export const createMedia = async (token: string, request: TCreateMediaRequest) => {
   return await blagocityApi(token)

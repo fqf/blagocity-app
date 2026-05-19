@@ -1,5 +1,5 @@
-import type TGetPlaceResponse from "@/models/contracts/place/getPlaceResponse";
-import type { TGetReviewAccessibilityResponse } from "@/models/contracts/accessibility/getReviewAccessibilityListResponse";
+import type TGetPlaceResponse from "@/models/contracts/place/get-place-response";
+import type { TGetReviewAccessibilityResponse } from "@/models/contracts/accessibility/get-review-accessibility-list-response";
 
 type TGetReviewResponse = {
   guid: string;

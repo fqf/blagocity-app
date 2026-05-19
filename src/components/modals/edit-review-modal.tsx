@@ -14,7 +14,7 @@ import {
 import { useLocalSearchParams, useRouter } from "expo-router";
 import COLORS from "@/constants/colors";
 import Input from "@/components/inputs/input";
-import UploadButton from "@/components/buttons/upload-button";
+import UploadButton, { TImage } from "@/components/buttons/upload-button";
 import Icon from "@/components/icons/icon";
 import EIcon from "@/models/enums/icon";
 import FeaturePicker, { TFeaturePickerValue } from "@/components/pickers/feature-picker";
@@ -25,7 +25,7 @@ import { createReviewAccessibility, getAccessibilityList } from "@/actions/acces
 import editReviewSchema from "@/schemes/tabs/edit-review-schema";
 import { isHTTPError, isKyError } from "ky";
 import Skeleton from "@/components/others/skeleton";
-import TGetAccessibilityListResponse from "@/models/contracts/accessibility/getAccessibilityListResponse";
+import TGetAccessibilityListResponse from "@/models/contracts/accessibility/get-accessibility-list-response";
 import { createReview } from "@/actions/review-actions";
 import useProfileStore from "@/stores/profile-store";
 import dayjs from "dayjs";
@@ -126,6 +126,7 @@ const EditReviewModal: FC = () => {
   const [accessibilityPending, setAccessibilityPending] = useState(true);
   const [accessibility, setAccessibility] = useState<TGetAccessibilityListResponse>([]);
   const [behavior, setBehavior] = useState<"height" | undefined>();
+  const [images, setImages] = useState<TImage[]>([]);
   const { name, location } = useLocalSearchParams();
   const { userData } = useProfileStore();
   const router = useRouter();
@@ -235,6 +236,8 @@ const EditReviewModal: FC = () => {
     })();
   }, []);
 
+  console.log(images);
+
   return (
     <SafeAreaView style={styles.safeAreaView}>
       <KeyboardAvoidingView behavior={Platform.OS === "android" ? behavior : "height"} style={styles.container}>
@@ -277,7 +280,7 @@ const EditReviewModal: FC = () => {
               </View>
               <View style={styles.block}>
                 <Text style={styles.label}>Фотографии</Text>
-                <UploadButton />
+                <UploadButton images={images} setImages={setImages} />
               </View>
               <View style={styles.block}>
                 <Text style={[styles.ratingTitle, { textAlign: "left" }]}>Оцените доступность</Text>

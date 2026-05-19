@@ -82,7 +82,28 @@
           "locationPermission": "Allow $(PRODUCT_NAME) to use your location"
         }
       ],
-      "@rnmapbox/maps"
+      "@rnmapbox/maps",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Приложению необходимо получить доступ к вашим фото, для отправки изображений в систему.",
+          "colors": {
+            "cropToolbarColor": "#5F33E1"
+          },
+          "dark": {
+            "colors": {
+              "cropToolbarColor": "#5F33E1"
+            }
+          }
+        }
+      ],
+      [
+        "expo-file-system",
+        {
+          "supportsOpeningDocumentsInPlace": true,
+          "enableFileSharing": true
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

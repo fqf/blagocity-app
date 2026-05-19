@@ -1,6 +1,6 @@
 import blagocityApi from "@/api/blagocity-api";
-import TSignIResponse from "@/models/contracts/auth/signInResponse";
-import TSignInRequest from "@/models/contracts/auth/signInRequest";
+import TSignIResponse from "@/models/contracts/auth/signIn-response";
+import TSignInRequest from "@/models/contracts/auth/signIn-request";
 
 export const signIn = async (request: TSignInRequest) => {
   return await blagocityApi()

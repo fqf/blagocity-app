@@ -1,4 +1,4 @@
-import { TGetAccessibilityResponse } from "@/models/contracts/accessibility/getAccessibilityListResponse";
+import { TGetAccessibilityResponse } from "@/models/contracts/accessibility/get-accessibility-list-response";
 
 export type TGetPlaceTypeResponse = {
   guid: string;

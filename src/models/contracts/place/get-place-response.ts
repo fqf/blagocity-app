@@ -1,4 +1,4 @@
-import TGetReviewResponse from "@/models/contracts/review/getReviewResponse";
+import TGetReviewResponse from "@/models/contracts/review/get-review-response";
 
 type TGetPlaceResponse = {
   guid: string;

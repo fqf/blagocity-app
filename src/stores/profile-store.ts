@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import TGetUserResponse from "@/models/contracts/user/getUserResponse";
+import TGetUserResponse from "@/models/contracts/user/get-user-response";
 
 type TState = {
   userData?: TGetUserResponse;

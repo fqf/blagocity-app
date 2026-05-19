@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import TabsLayout from "@/components/layouts/tabs-layout";
 import { FlatList, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -8,6 +8,9 @@ import DiscountButton from "@/components/buttons/discount-button";
 import EIcon from "@/models/enums/icon";
 import DiscountBlock from "@/components/blocks/discount-block";
 import { Href, useRouter } from "expo-router";
+import { getDiscountCategoriesList } from "@/actions/discount-actions";
+import * as SecureStore from "expo-secure-store";
+import { isHTTPError, isKyError } from "ky";
 
 const buttons = [
   {
@@ -128,6 +131,28 @@ const DiscountsScreen: FC = () => {
   const handleOnActionPress = (actionId: string) => {
     router.push(`/tabs/discounts/action/${actionId}` as Href);
   };
+
+  useEffect(() => {
+    const token = SecureStore.getItem(process.env.EXPO_PUBLIC_SECURE_AUTH_STATE_KEY!);
+
+    (async () => {
+      try {
+        if (!token) {
+          throw new Error("Bad token");
+        }
+
+        const x = await getDiscountCategoriesList(token);
+        console.log(x);
+      } catch (e) {
+        if (isHTTPError(e)) {
+          //console.error((e.data as any).detail);
+          console.log(e);
+        } else if (isKyError(e)) {
+          console.error(e.message);
+        }
+      }
+    })();
+  }, []);
 
   return (
     <TabsLayout>

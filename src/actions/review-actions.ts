@@ -1,8 +1,8 @@
 import blagocityApi from "@/api/blagocity-api";
-import TGetReviewsListResponse from "@/models/contracts/review/getReviewsListResponse";
-import TGetReviewResponse from "@/models/contracts/review/getReviewResponse";
-import TCreateReviewRequest from "@/models/contracts/review/createReviewRequest";
-import TCreateReviewResponse from "@/models/contracts/review/createReviewResponse";
+import TGetReviewsListResponse from "@/models/contracts/review/get-reviews-list-response";
+import TGetReviewResponse from "@/models/contracts/review/get-review-response";
+import TCreateReviewRequest from "@/models/contracts/review/create-review-request";
+import TCreateReviewResponse from "@/models/contracts/review/create-review-response";
 
 export const getReviewsList = async (placeGuid: string) => {
   return await blagocityApi()

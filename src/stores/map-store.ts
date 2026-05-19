@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import TGetPlacesListResponse from "@/models/contracts/place/getPlacesListResponse";
+import TGetPlacesListResponse from "@/models/contracts/place/get-places-list-response";
 
 type TState = {
   placesList?: TGetPlacesListResponse;

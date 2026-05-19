@@ -5,7 +5,7 @@ import COLORS from "@/constants/colors";
 import Button from "@/components/buttons/button";
 import Skeleton from "@/components/others/skeleton";
 import { getPlaceTypesList } from "@/actions/place-actions";
-import TGetPlaceTypesListResponse from "@/models/contracts/place/getPlaceTypesListResponse";
+import TGetPlaceTypesListResponse from "@/models/contracts/place/get-place-types-list-response";
 import { isKyError } from "ky";
 
 type TProps = Partial<{
