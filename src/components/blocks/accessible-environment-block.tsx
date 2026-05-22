@@ -3,10 +3,10 @@ import { StyleSheet, Text, View } from "react-native";
 import ShadowBlock from "@/components/blocks/shadow-block";
 import COLORS from "@/constants/colors";
 import Button from "@/components/buttons/button";
-import { isKyError } from "ky";
 import TGetAccessibilityListResponse from "@/models/contracts/accessibility/get-accessibility-list-response";
 import { getAccessibilityList } from "@/actions/accesibility-actions";
 import Skeleton from "@/components/others/skeleton";
+import processError from "@/lib/process-error";
 
 type TProps = Partial<{
   value: string[];
@@ -54,10 +54,8 @@ const AccessibleEnvironmentBlock: FC<TProps> = ({ value, error, disabled, onPres
       try {
         const response = await getAccessibilityList();
         setAccessibility(response);
-      } catch (e) {
-        if (isKyError(e)) {
-          console.error(e.message);
-        }
+      } catch (e: unknown) {
+        await processError(e);
       }
 
       setPending(false);

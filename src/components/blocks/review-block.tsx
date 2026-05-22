@@ -5,7 +5,6 @@ import Rating from "@/components/others/rating";
 import Avatar from "@/components/others/avatar";
 import dayjs from "dayjs";
 import ShadowBlock from "@/components/blocks/shadow-block";
-import { isHTTPError, isKyError } from "ky";
 import { getReview } from "@/actions/review-actions";
 import Skeleton from "@/components/others/skeleton";
 import TGetReviewResponse from "@/models/contracts/review/get-review-response";
@@ -15,6 +14,7 @@ import * as SecureStore from "expo-secure-store";
 import { TAvatarType } from "@/components/buttons/avatar-button";
 import Tag from "@/components/others/tag";
 import { getAccessibility } from "@/actions/accesibility-actions";
+import processError from "@/lib/process-error";
 
 type TProps = {
   guid: string;
@@ -132,13 +132,8 @@ const ReviewBlock: FC<TProps> = ({ guid }) => {
 
           setAccessibility(accessibilityResponse);
           setPending(false);
-        } catch (e) {
-          if (isHTTPError(e)) {
-            const json = await e.response.json();
-            console.error(json);
-          } else if (isKyError(e)) {
-            console.error(e.message);
-          }
+        } catch (e: unknown) {
+          await processError(e);
         }
       })();
     }

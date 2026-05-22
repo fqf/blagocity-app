@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
     marginTop: 48,
   },
 });
-const OutgoingHelpRequestModal: FC = () => {
+const CallModal: FC = () => {
   const [status, setStatus] = useState<"sent" | "received">("sent");
   const { name } = useLocalSearchParams();
   const scale = useSharedValue(0.01);
@@ -214,4 +214,4 @@ const OutgoingHelpRequestModal: FC = () => {
   );
 };
 
-export default OutgoingHelpRequestModal;
+export default CallModal;

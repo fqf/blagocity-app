@@ -23,7 +23,6 @@ import { toFormikValidationSchema } from "zod-formik-adapter";
 import { Formik } from "formik";
 import { createReviewAccessibility, getAccessibilityList } from "@/actions/accesibility-actions";
 import editReviewSchema from "@/schemes/tabs/edit-review-schema";
-import { isHTTPError, isKyError } from "ky";
 import Skeleton from "@/components/others/skeleton";
 import TGetAccessibilityListResponse from "@/models/contracts/accessibility/get-accessibility-list-response";
 import { createReview } from "@/actions/review-actions";
@@ -31,6 +30,7 @@ import useProfileStore from "@/stores/profile-store";
 import dayjs from "dayjs";
 import * as SecureStore from "expo-secure-store";
 import { useBus } from "react-bus";
+import processError from "@/lib/process-error";
 import hairlineWidth = StyleSheet.hairlineWidth;
 
 type TValues = {
@@ -193,12 +193,8 @@ const EditReviewModal: FC = () => {
       } else {
         router.replace("/tabs/map");
       }
-    } catch (e) {
-      if (isHTTPError(e)) {
-        console.error((e.data as any).detail);
-      } else if (isKyError(e)) {
-        console.error(e.message);
-      }
+    } catch (e: unknown) {
+      await processError(e);
 
       setPending(false);
     }
@@ -226,10 +222,8 @@ const EditReviewModal: FC = () => {
       try {
         const response = await getAccessibilityList();
         setAccessibility(response);
-      } catch (e) {
-        if (isKyError(e)) {
-          console.error(e.message);
-        }
+      } catch (e: unknown) {
+        await processError(e);
       }
 
       setAccessibilityPending(false);

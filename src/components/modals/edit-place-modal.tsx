@@ -12,12 +12,12 @@ import { defaultLocation } from "@/components/screens/tabs/map-screen";
 import { Formik } from "formik";
 import { toFormikValidationSchema } from "zod-formik-adapter";
 import editPlaceSchema from "@/schemes/tabs/edit-place-schema";
-import { isHTTPError, isKyError } from "ky";
 import { createPlace, getPlacesList } from "@/actions/place-actions";
 import * as SecureStore from "expo-secure-store";
 import useProfileStore from "@/stores/profile-store";
 import { useRouter } from "expo-router";
 import useMapStore from "@/stores/map-store";
+import processError from "@/lib/process-error";
 
 type TProps = {
   id: string;
@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
     paddingBottom: 30,
   },
 });
-const EditLocationModal: FC<TProps> = ({ id, coords }) => {
+const EditPlaceModal: FC<TProps> = ({ id, coords }) => {
   const [pending, setPending] = useState(false);
   const [behavior, setBehavior] = useState<"height" | undefined>();
   const [address, setAddress] = useState("");
@@ -98,12 +98,8 @@ const EditLocationModal: FC<TProps> = ({ id, coords }) => {
       } else {
         router.replace("/tabs/map");
       }
-    } catch (e) {
-      if (isHTTPError(e)) {
-        console.error((e.data as any).detail);
-      } else if (isKyError(e)) {
-        console.error(e.message);
-      }
+    } catch (e: unknown) {
+      await processError(e);
 
       setPending(false);
     }
@@ -191,4 +187,4 @@ const EditLocationModal: FC<TProps> = ({ id, coords }) => {
   return <ModalLayout title="Редактирование локации"></ModalLayout>;
 };
 
-export default EditLocationModal;
+export default EditPlaceModal;

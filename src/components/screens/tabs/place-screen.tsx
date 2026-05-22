@@ -13,10 +13,7 @@ import Icon from "@/components/icons/icon";
 import IconButton from "@/components/buttons/icon-button";
 import Constants from "expo-constants";
 import Skeleton from "@/components/others/skeleton";
-import { isHTTPError, isKyError } from "ky";
-import { getPlaceTypesList } from "@/actions/place-actions";
 import TGetPlaceResponse from "@/models/contracts/place/get-place-response";
-import { getAccessibilityList } from "@/actions/accesibility-actions";
 import { getUser } from "@/actions/user-actions";
 import * as SecureStore from "expo-secure-store";
 import useProfileStore from "@/stores/profile-store";
@@ -24,6 +21,7 @@ import useMapStore from "@/stores/map-store";
 import { getReviewsList } from "@/actions/review-actions";
 import { useListener } from "react-bus";
 import TGetReviewResponse from "@/models/contracts/review/get-review-response";
+import processError from "@/lib/process-error";
 
 type TProps = {
   id: string;
@@ -162,7 +160,7 @@ const styles = StyleSheet.create({
     color: COLORS.label,
   },
 });
-const LocationScreen: FC<TProps> = ({ id }) => {
+const PlaceScreen: FC<TProps> = ({ id }) => {
   const [pending, setPending] = useState(true);
   const [reviewsListPending, setReviewsListPending] = useState(true);
   const [placeData, setPlaceData] = useState<TGetPlaceResponse | null>(null);
@@ -179,7 +177,7 @@ const LocationScreen: FC<TProps> = ({ id }) => {
     }
   };
   const handleOnAlertPress = () => {
-    router.push(`/tabs/map/location/outgoing-help-request?name=${placeData?.name}&location=${placeData?.guid}`);
+    router.push(`/tabs/map/place/call?name=${placeData?.name}&location=${placeData?.guid}`);
   };
   const handleOnCreateReviewPress = () => {
     router.push(`/tabs/map/review/edit/-1?name=${placeData?.name}&location=${placeData?.guid}`);
@@ -196,13 +194,8 @@ const LocationScreen: FC<TProps> = ({ id }) => {
 
       const reviewsListResponse = await getReviewsList(id);
       setReviewsList(reviewsListResponse);
-    } catch (e) {
-      if (isHTTPError(e)) {
-        const error = await e.response.json();
-        console.log(error);
-      } else if (isKyError(e)) {
-        console.error(e.message);
-      }
+    } catch (e: unknown) {
+      await processError(e);
     }
 
     setReviewsListPending(false);
@@ -226,10 +219,7 @@ const LocationScreen: FC<TProps> = ({ id }) => {
           throw new Error("Place not found");
         }
 
-        const placeTypeId = placeDataResponse?.placeType.split("/").slice(-1)[0];
-        const placeTypesListResponse = await getPlaceTypesList();
-        const placeTypeName = placeTypesListResponse.find(pt => pt.guid === placeTypeId)?.name;
-        setPlaceType(placeTypeName ?? "");
+        setPlaceType(placeDataResponse.placeType.name ?? "");
 
         const userId = placeDataResponse?.createdBy.split("/").slice(-1)[0];
 
@@ -240,23 +230,14 @@ const LocationScreen: FC<TProps> = ({ id }) => {
           setAuthor(userDataResponse.name);
         }
 
-        const accessibilityListResponse = await getAccessibilityList();
-        const accessibilityList = placeDataResponse?.accessibilityCriteria.map(acc => {
-          const guid = acc.split("/api/accessibility_criteria/")[1];
-          return accessibilityListResponse.find(item => item.guid === guid)?.name ?? "";
-        });
+        const accessibilityList = placeDataResponse?.accessibilityCriteria.map(acc => acc.name);
         setAccessibility(accessibilityList);
         setPlaceData(placeDataResponse);
         setReviewsList(placeDataResponse.reviews);
         setPending(false);
         setReviewsListPending(false);
-      } catch (e) {
-        if (isHTTPError(e)) {
-          const error = await e.response.json();
-          console.log(error);
-        } else if (isKyError(e)) {
-          console.error(e.message);
-        }
+      } catch (e: unknown) {
+        await processError(e);
       }
     })();
   }, [id, placesList, userData?.guid, userData?.name]);
@@ -396,4 +377,4 @@ const LocationScreen: FC<TProps> = ({ id }) => {
   );
 };
 
-export default LocationScreen;
+export default PlaceScreen;

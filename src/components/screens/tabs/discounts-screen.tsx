@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from "react";
 import TabsLayout from "@/components/layouts/tabs-layout";
-import { FlatList, ScrollView, StyleSheet, Text, View } from "react-native";
+import { FlatList, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import COLORS from "@/constants/colors";
 import Input from "@/components/inputs/input";
@@ -8,83 +8,70 @@ import DiscountButton from "@/components/buttons/discount-button";
 import EIcon from "@/models/enums/icon";
 import DiscountBlock from "@/components/blocks/discount-block";
 import { Href, useRouter } from "expo-router";
-import { getDiscountCategoriesList } from "@/actions/discount-actions";
+import { getDiscountCategoriesList, getDiscountsList } from "@/actions/discount-actions";
 import * as SecureStore from "expo-secure-store";
-import { isHTTPError, isKyError } from "ky";
+import Skeleton from "@/components/others/skeleton";
+import processError from "@/lib/process-error";
+import type TGetDiscountResponse from "@/models/contracts/discount/get-discount-response";
 
 const buttons = [
   {
-    id: "0",
     icon: EIcon.Label,
     title: "Все скидки",
   },
   {
-    id: "1",
     icon: EIcon.Like,
     title: "Избранное",
   },
   {
-    id: "2",
     icon: EIcon.Like,
     title: "Мои скидки",
   },
   {
-    id: "3",
     icon: EIcon.Percent,
     title: "Новогодние",
   },
   {
-    id: "4",
     icon: EIcon.New,
     title: "Новинки",
   },
   {
-    id: "5",
     icon: EIcon.Electronics,
     title: "Техника и электроника",
   },
   {
-    id: "6",
     icon: EIcon.Goods,
     title: "Товары",
   },
   {
-    id: "7",
     icon: EIcon.Food,
     title: "Рестораны и доставка",
   },
   {
-    id: "8",
     icon: EIcon.Book,
     title: "Обучение",
   },
   {
-    id: "10",
     icon: EIcon.Palm,
     title: "Отдых",
   },
   {
-    id: "11",
     icon: EIcon.Sport,
     title: "Спорт",
   },
   {
-    id: "12",
     icon: EIcon.Cherry,
     title: "Красота и здоровье",
   },
   {
-    id: "13",
     icon: EIcon.Kid,
     title: "Дети",
   },
   {
-    id: "14",
     icon: EIcon.Coupon,
     title: "Развлечения",
   },
   {
-    id: "15",
     icon: EIcon.Service,
     title: "Услуги",
   },
@@ -93,6 +80,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
+    gap: 16,
   },
   header: {
     paddingHorizontal: 20,
@@ -109,11 +97,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: COLORS.label,
   },
+  buttonsContainer: {
+    height: 111,
+  },
   buttons: {
-    height: 130,
     flexDirection: "row",
     gap: 8,
-    marginTop: 16,
     paddingHorizontal: 20,
   },
   content: {
@@ -121,18 +110,38 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     gap: 16,
   },
+  categorySkeletonsContainer: {
+    paddingBottom: 2,
+  },
+  categorySkeleton: {
+    width: 120,
+    height: 74,
+    borderRadius: 16,
+  },
+  discountsSkeletonContainer: {
+    gap: 12,
+    paddingHorizontal: 20,
+  },
+  discountsSkeleton: {
+    borderRadius: 16,
+    height: 200,
+  },
 });
 const DiscountsScreen: FC = () => {
-  const [selected, setSelected] = useState("0");
+  const [pending, setPending] = useState(true);
+  const [categories, setCategories] = useState<{ id: number; title: string; icon: EIcon }[]>([]);
+  const [discounts, setDiscounts] = useState<TGetDiscountResponse[]>([]);
+  const [selected, setSelected] = useState(-1);
   const router = useRouter();
-  const handleOnTypePress = (selected: string) => {
+  const handleOnTypePress = (selected: number) => {
     setSelected(selected);
   };
-  const handleOnActionPress = (actionId: string) => {
+  const handleOnActionPress = (actionId: number) => {
     router.push(`/tabs/discounts/action/${actionId}` as Href);
   };
 
   useEffect(() => {
+    setPending(true);
     const token = SecureStore.getItem(process.env.EXPO_PUBLIC_SECURE_AUTH_STATE_KEY!);
 
     (async () => {
@@ -141,15 +150,24 @@ const DiscountsScreen: FC = () => {
           throw new Error("Bad token");
         }
 
-        const x = await getDiscountCategoriesList(token);
-        console.log(x);
-      } catch (e) {
-        if (isHTTPError(e)) {
-          //console.error((e.data as any).detail);
-          console.log(e);
-        } else if (isKyError(e)) {
-          console.error(e.message);
+        const categoriesResponse = await getDiscountCategoriesList(token);
+
+        if (categoriesResponse.data) {
+          setCategories(
+            categoriesResponse.data.map(item => ({
+              id: item.id,
+              title: item.name,
+              icon: buttons.find(button => button.title === item.name)?.icon ?? EIcon.Label,
+            })),
+          );
         }
+
+        const discountsResponse = await getDiscountsList(token);
+        setDiscounts(discountsResponse.data);
+
+        setPending(false);
+      } catch (e: unknown) {
+        await processError(e);
       }
     })();
   }, []);
@@ -162,44 +180,55 @@ const DiscountsScreen: FC = () => {
           <Text style={styles.description}>Эксклюзивные предложения за вашу активность в городе.</Text>
           <Input placeholder="Введите название..." />
         </View>
-        <FlatList
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          data={buttons}
-          renderItem={({ item }) => (
-            <DiscountButton
-              icon={item.icon}
-              title={item.title}
-              active={selected === item.id}
-              onPress={() => handleOnTypePress(item.id)}
-            />
-          )}
-          keyExtractor={item => item.id}
-          contentContainerStyle={styles.buttons}
-        />
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
-          <DiscountBlock
-            image="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1b/15/7e/cf/artur-restorant.jpg?w=1000&h=-1&s=1"
-            title="Доброе утро"
-            description="Уютная кофейня с эко-френдли подходом. Скидка за свой стаканчик."
-            discount="Первое бесплатно"
-            onButtonPress={() => handleOnActionPress("17")}
+        {pending && (
+          <View style={[styles.buttons, styles.categorySkeletonsContainer]}>
+            <Skeleton style={styles.categorySkeleton} />
+            <Skeleton style={styles.categorySkeleton} />
+            <Skeleton style={styles.categorySkeleton} />
+          </View>
+        )}
+        {!pending && (
+          <FlatList
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            data={categories}
+            renderItem={({ item }) => (
+              <DiscountButton
+                icon={item.icon}
+                title={item.title}
+                active={selected === item.id}
+                onPress={() => handleOnTypePress(item.id)}
+              />
+            )}
+            keyExtractor={item => item.id.toString()}
+            style={styles.buttonsContainer}
+            contentContainerStyle={styles.buttons}
           />
-          <DiscountBlock
-            image="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1b/15/7e/cf/artur-restorant.jpg?w=1000&h=-1&s=1"
-            title="Доброе утро"
-            description="Уютная кофейня с эко-френдли подходом. Скидка за свой стаканчик."
-            discount="15%"
-            onButtonPress={() => handleOnActionPress("17")}
+        )}
+        {pending && (
+          <View style={styles.discountsSkeletonContainer}>
+            <Skeleton style={styles.discountsSkeleton} />
+            <Skeleton style={styles.discountsSkeleton} />
+            <Skeleton style={styles.discountsSkeleton} />
+          </View>
+        )}
+        {!pending && (
+          <FlatList
+            data={discounts}
+            showsVerticalScrollIndicator={false}
+            renderItem={({ item }) => (
+              <DiscountBlock
+                image={item.image_url}
+                title={item.name}
+                description="Уютная кофейня с эко-френдли подходом. Скидка за свой стаканчик."
+                discount="Первое бесплатно"
+                onButtonPress={() => handleOnActionPress(item.id)}
+              />
+            )}
+            keyExtractor={item => item.id.toString()}
+            contentContainerStyle={styles.content}
           />
-          <DiscountBlock
-            image="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1b/15/7e/cf/artur-restorant.jpg?w=1000&h=-1&s=1"
-            title="Доброе утро"
-            description="Уютная кофейня с эко-френдли подходом. Скидка за свой стаканчик."
-            discount="15%"
-            onButtonPress={() => handleOnActionPress("17")}
-          />
-        </ScrollView>
+        )}
       </SafeAreaView>
     </TabsLayout>
   );

@@ -3,6 +3,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import COLORS from "@/constants/colors";
 import Icon from "@/components/icons/icon";
 import EIcon from "@/models/enums/icon";
+import Divider from "@/components/others/divider";
 
 export type TFeaturePickerValue = -1 | 0 | 1;
 type TProps = {
@@ -63,9 +64,11 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: COLORS.inputBorder,
     borderRightWidth: 0,
+    borderRightColor: "transparent",
   },
   pickerMiddleButton: {
-    borderWidth: 1,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
     borderColor: COLORS.inputBorder,
   },
   pickerRightButton: {
@@ -78,16 +81,17 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: COLORS.inputBorder,
     borderLeftWidth: 0,
+    borderLeftColor: "transparent",
   },
   activeButton: {
     borderLeftColor: COLORS.active,
     borderTopColor: COLORS.active,
     borderRightColor: COLORS.active,
     borderBottomColor: COLORS.active,
-    backgroundColor: COLORS.active,
+    backgroundColor: COLORS.activeBackground,
   },
   activeText: {
-    color: "white",
+    color: COLORS.active,
   },
 });
 const FeaturePicker: FC<TProps> = ({ guid, title, value, error, disabled, onPick }) => {
@@ -100,23 +104,33 @@ const FeaturePicker: FC<TProps> = ({ guid, title, value, error, disabled, onPick
           activeOpacity={0.75}
           style={[styles.pickerButton, styles.pickerLeftButton, value === 1 ? styles.activeButton : null]}
           onPress={() => onPick?.(guid, 1)}>
-          <Icon icon={EIcon.Plus} fill={value === 1 ? "white" : COLORS.icon} style={styles.pickerIcon} />
+          <Icon icon={EIcon.Plus} fill={value === 1 ? COLORS.active : COLORS.icon} style={styles.pickerIcon} />
           <Text style={[styles.pickerText, value === 1 ? styles.activeText : null]}>Есть</Text>
         </TouchableOpacity>
+        <Divider
+          direction="vertical"
+          thickness={1}
+          color={[-1, 1].includes(value ?? 9) ? COLORS.active : COLORS.inputBorder}
+        />
         <TouchableOpacity
           disabled={disabled}
           activeOpacity={0.75}
           style={[styles.pickerButton, styles.pickerMiddleButton, value === -1 ? styles.activeButton : null]}
           onPress={() => onPick?.(guid, -1)}>
-          <Icon icon={EIcon.Minus} fill={value === -1 ? "white" : COLORS.icon} style={styles.pickerIcon} />
+          <Icon icon={EIcon.Minus} fill={value === -1 ? COLORS.active : COLORS.icon} style={styles.pickerIcon} />
           <Text style={[styles.pickerText, value === -1 ? styles.activeText : null]}>Нет</Text>
         </TouchableOpacity>
+        <Divider
+          direction="vertical"
+          thickness={1}
+          color={[-1, 0].includes(value ?? 9) ? COLORS.active : COLORS.inputBorder}
+        />
         <TouchableOpacity
           disabled={disabled}
           activeOpacity={0.75}
           style={[styles.pickerButton, styles.pickerRightButton, value === 0 ? styles.activeButton : null]}
           onPress={() => onPick?.(guid, 0)}>
-          <Icon icon={EIcon.Question} fill={value === 0 ? "white" : COLORS.icon} style={styles.pickerIcon} />
+          <Icon icon={EIcon.Question} fill={value === 0 ? COLORS.active : COLORS.icon} style={styles.pickerIcon} />
           <Text style={[styles.pickerText, value === 0 ? styles.activeText : null]}>Не знаю</Text>
         </TouchableOpacity>
       </View>

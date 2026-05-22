@@ -12,12 +12,12 @@ import Skeleton from "@/components/others/skeleton";
 import { getDisabilityTypesList } from "@/actions/disability-type-actions";
 import TGetDisabilityTypesListResponse from "@/models/contracts/disability-type/get-disability-types-list-response";
 import { getRolesList } from "@/actions/role-actions";
-import { isKyError } from "ky";
 import { createUser } from "@/actions/user-actions";
 import EGender from "@/models/enums/gender";
 import * as SecureStore from "expo-secure-store";
 import { signIn } from "@/actions/auth-actions";
 import useProfileStore from "@/stores/profile-store";
+import processError from "@/lib/process-error";
 
 const styles = StyleSheet.create({
   container: {
@@ -74,10 +74,8 @@ const Step2Screen: FC = () => {
       SecureStore.setItem(process.env.EXPO_PUBLIC_SECURE_AUTH_STATE_KEY!, token);
       reset();
       router.push("/onboarding/places");
-    } catch (e) {
-      if (isKyError(e)) {
-        console.error(e.message);
-      }
+    } catch (e: unknown) {
+      await processError(e);
     }
 
     setPending(false);
@@ -98,10 +96,8 @@ const Step2Screen: FC = () => {
         if (userRole) {
           setRole(userRole.guid);
         }
-      } catch (e) {
-        if (isKyError(e)) {
-          console.error(e.message);
-        }
+      } catch (e: unknown) {
+        await processError(e);
       }
 
       setDisabilityTypesPending(false);
@@ -135,9 +131,10 @@ const Step2Screen: FC = () => {
                 key={i}
                 disabled={pending}
                 type="outlined"
+                theme={
+                  values.disabilityTypes?.includes(t.guid) ? "active" : errors.disabilityTypes ? "error" : "default"
+                }
                 text={t.displayName}
-                active={values.disabilityTypes?.includes(t.guid)}
-                error={!!errors.disabilityTypes}
                 onPress={() => handleOnPress(values.disabilityTypes, t.guid, setFieldValue)}
               />
             ))}

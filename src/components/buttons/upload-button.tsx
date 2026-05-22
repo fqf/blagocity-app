@@ -9,8 +9,8 @@ import uuid from "react-native-uuid";
 
 export type TImage = { id: string; uri: string };
 type TProps = {
-  images: TImage[];
-  setImages: (images: TImage[]) => void;
+  images?: TImage[];
+  setImages?: (images: TImage[]) => void;
 };
 
 const styles = StyleSheet.create({
@@ -62,16 +62,16 @@ const UploadButton: FC<TProps> = ({ images, setImages }) => {
     });
 
     if (result.assets?.[0].uri) {
-      setImages([...images, { id: uuid.v4(), uri: result.assets?.[0].uri }]);
+      setImages?.([...(images ?? []), { id: uuid.v4(), uri: result.assets?.[0].uri }]);
     }
   };
   const handleOnDeleteImagePress = (id: string) => {
-    setImages([...images.filter(image => image.id !== id)]);
+    setImages?.([...(images ?? []).filter(image => image.id !== id)]);
   };
 
   return (
     <View style={styles.container}>
-      {!!images.length && (
+      {!!images?.length && (
         <View style={styles.imagesContainer}>
           {images.map(image => (
             <ImagePreview key={image.id} uri={image.uri} onDeletePress={() => handleOnDeleteImagePress(image.id)} />

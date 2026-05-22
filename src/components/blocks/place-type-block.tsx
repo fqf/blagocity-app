@@ -6,7 +6,7 @@ import Button from "@/components/buttons/button";
 import Skeleton from "@/components/others/skeleton";
 import { getPlaceTypesList } from "@/actions/place-actions";
 import TGetPlaceTypesListResponse from "@/models/contracts/place/get-place-types-list-response";
-import { isKyError } from "ky";
+import processError from "@/lib/process-error";
 
 type TProps = Partial<{
   value: string;
@@ -54,10 +54,8 @@ const PlaceTypeBlock: FC<TProps> = ({ value, error, disabled, onPress }) => {
       try {
         const response = await getPlaceTypesList();
         setTypes(response);
-      } catch (e) {
-        if (isKyError(e)) {
-          console.error(e.message);
-        }
+      } catch (e: unknown) {
+        await processError(e);
       }
 
       setPending(false);

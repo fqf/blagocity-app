@@ -15,7 +15,7 @@ import { getMe } from "@/actions/user-actions";
 import useProfileStore from "@/stores/profile-store";
 import Alert from "@/components/others/alert";
 import EIcon from "@/models/enums/icon";
-import { isHTTPError, isKyError } from "ky";
+import processError from "@/lib/process-error";
 
 const styles = StyleSheet.create({
   container: {
@@ -80,12 +80,8 @@ const SignInScreen: FC = () => {
       setTimeout(() => {
         router.navigate("/tabs/map");
       }, 500);
-    } catch (e) {
-      if (isHTTPError(e)) {
-        console.error((e.data as any).detail);
-      } else if (isKyError(e)) {
-        console.error(e.message);
-      }
+    } catch (e: unknown) {
+      await processError(e);
 
       setAuthError(true);
       setPending(false);

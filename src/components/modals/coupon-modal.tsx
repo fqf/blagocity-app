@@ -82,7 +82,7 @@ const CouponModal: FC = () => {
         <View style={styles.imageContainer}>
           <Icon icon={EIcon.QRCode} fill={COLORS.text} />
         </View>
-        <Button fullWidth type="outlined" text="V3R4RLP3" />
+        <Button fullWidth type="secondary" theme="default" text="V3R4RLP3" />
       </View>
     </DropShadow>
   );

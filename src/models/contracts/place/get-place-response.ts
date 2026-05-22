@@ -1,4 +1,6 @@
 import TGetReviewResponse from "@/models/contracts/review/get-review-response";
+import { TGetPlaceTypeResponse } from "@/models/contracts/place/get-place-types-list-response";
+import { TGetAccessibilityResponse } from "@/models/contracts/accessibility/get-accessibility-list-response";
 
 type TGetPlaceResponse = {
   guid: string;
@@ -6,8 +8,8 @@ type TGetPlaceResponse = {
   address: string;
   latitude: number;
   longitude: number;
-  placeType: string;
-  accessibilityCriteria: string[];
+  placeType: TGetPlaceTypeResponse;
+  accessibilityCriteria: TGetAccessibilityResponse[];
   photos: string[];
   createdBy: string;
   ownerReviewTrackingEnabled: boolean;

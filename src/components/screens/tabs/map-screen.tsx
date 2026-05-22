@@ -27,7 +27,7 @@ import Preloader from "@/components/others/preloader";
 import * as SecureStore from "expo-secure-store";
 import { getMe } from "@/actions/user-actions";
 import { getPlacesList } from "@/actions/place-actions";
-import { isHTTPError, isKyError } from "ky";
+import processError from "@/lib/process-error";
 
 Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_TOKEN!).then();
 
@@ -112,7 +112,7 @@ const MapScreen: FC = () => {
   };
   const handleOnMapLongPress = async ({ geometry }: Feature<Point>) => {
     const { coordinates } = geometry;
-    router.push(`/tabs/map/location/edit/-1?coords=${coordinates}`);
+    router.push(`/tabs/map/place/edit/-1?coords=${coordinates}`);
   };
   const handleOnAddPress = () => {
     setPin(location.current);
@@ -134,7 +134,7 @@ const MapScreen: FC = () => {
     setShowAddButton(false);
     setAddButton(undefined);
     setPin(null);
-    router.push(`/tabs/map/location/edit/-1?coords=${pin}`);
+    router.push(`/tabs/map/place/edit/-1?coords=${pin}`);
   };
   const handleOnRemovePinPress = () => {
     setPin(null);
@@ -182,12 +182,8 @@ const MapScreen: FC = () => {
           const placesList = await getPlacesList();
           setPlacesList(placesList);
         }
-      } catch (e) {
-        if (isHTTPError(e)) {
-          console.error((e.data as any).detail);
-        } else if (isKyError(e)) {
-          console.error(e.message);
-        }
+      } catch (e: unknown) {
+        await processError(e);
       }
 
       setProfilePending(false);
@@ -246,7 +242,7 @@ const MapScreen: FC = () => {
         )}
         {placesList?.map(place => (
           <MarkerView key={place.guid} coordinate={[place.longitude, place.latitude]}>
-            <PinButton href={`/tabs/map/location/${place.guid}`} />
+            <PinButton href={`/tabs/map/place/${place.guid}`} />
           </MarkerView>
         ))}
       </MapView>
