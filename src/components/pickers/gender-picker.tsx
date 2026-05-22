@@ -46,18 +46,16 @@ const GenderPicker: FC<TProps> = ({ value, error, disabled, onPick }) => {
         <Button
           disabled={disabled}
           type="outlined"
+          theme={value === EGender.Male ? "active" : error ? "error" : "default"}
           text="Мужской"
-          active={value === EGender.Male}
-          error={!!error}
           style={styles.button}
           onPress={() => onPick?.(EGender.Male)}
         />
         <Button
           disabled={disabled}
           type="outlined"
+          theme={value === EGender.Female ? "active" : error ? "error" : "default"}
           text="Женский"
-          active={value === EGender.Female}
-          error={!!error}
           style={styles.button}
           onPress={() => onPick?.(EGender.Female)}
         />

@@ -4,15 +4,10 @@ import { StyleSheet, Text, View } from "react-native";
 import Button from "@/components/buttons/button";
 import { Image } from "expo-image";
 import COLORS from "@/constants/colors";
-import Feature from "@/components/others/feature";
-import EIcon from "@/models/enums/icon";
-import DropShadow from "react-native-drop-shadow";
 
 type TProps = {
   image: string;
   title: string;
-  description: string;
-  discount: string;
   onButtonPress?: () => void;
 };
 
@@ -22,6 +17,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     gap: 16,
     overflow: "hidden",
+    width: "100%",
   },
   image: {
     height: 128,
@@ -59,7 +55,7 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
   },
 });
-const DiscountBlock: FC<TProps> = ({ image, title, description, discount, onButtonPress }) => {
+const DiscountBlock: FC<TProps> = ({ image, title, onButtonPress }) => {
   return (
     <ShadowBlock>
       <View style={styles.container}>
@@ -70,14 +66,8 @@ const DiscountBlock: FC<TProps> = ({ image, title, description, discount, onButt
           contentFit="cover"
           style={styles.image}
         />
-        <View style={styles.discount}>
-          <DropShadow style={styles.shadow}>
-            <Feature variant="error" icon={EIcon.Label} title={discount.toString()} />
-          </DropShadow>
-        </View>
         <View style={styles.texts}>
           <Text style={styles.title}>{title}</Text>
-          <Text style={styles.description}>{description}</Text>
         </View>
         <View style={styles.buttons}>
           <Button type="secondary" theme="active" text="Описание акции" onPress={onButtonPress} />

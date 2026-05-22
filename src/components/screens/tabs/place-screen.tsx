@@ -203,8 +203,6 @@ const PlaceScreen: FC<TProps> = ({ id }) => {
 
   useListener("refresh-reviews-list", handleOnRefreshReviewsList);
   useEffect(() => {
-    setPending(true);
-
     (async () => {
       try {
         const token = SecureStore.getItem(process.env.EXPO_PUBLIC_SECURE_AUTH_STATE_KEY!);

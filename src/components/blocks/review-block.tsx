@@ -103,8 +103,6 @@ const ReviewBlock: FC<TProps> = ({ guid }) => {
 
   useEffect(() => {
     if (guid) {
-      setPending(true);
-
       (async () => {
         try {
           const token = SecureStore.getItem(process.env.EXPO_PUBLIC_SECURE_AUTH_STATE_KEY!);

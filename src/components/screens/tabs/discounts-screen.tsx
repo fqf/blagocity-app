@@ -141,7 +141,6 @@ const DiscountsScreen: FC = () => {
   };
 
   useEffect(() => {
-    setPending(true);
     const token = SecureStore.getItem(process.env.EXPO_PUBLIC_SECURE_AUTH_STATE_KEY!);
 
     (async () => {
@@ -220,8 +219,6 @@ const DiscountsScreen: FC = () => {
               <DiscountBlock
                 image={item.image_url}
                 title={item.name}
-                description="Уютная кофейня с эко-френдли подходом. Скидка за свой стаканчик."
-                discount="Первое бесплатно"
                 onButtonPress={() => handleOnActionPress(item.id)}
               />
             )}
