@@ -32,6 +32,7 @@ import * as SecureStore from "expo-secure-store";
 import { useBus } from "react-bus";
 import processError from "@/lib/process-error";
 import hairlineWidth = StyleSheet.hairlineWidth;
+import { createMedia } from "@/actions/media-actions";
 
 type TValues = {
   guid: string;
@@ -168,6 +169,18 @@ const EditReviewModal: FC = () => {
         throw new Error("Bad token");
       }
 
+      const photos: string[] = [];
+
+      if (images.length) {
+        for (const image of images) {
+          const result = await createMedia(token, image.uri);
+
+          if (result.items[0]?.iri) {
+            photos.push(result.items[0].iri);
+          }
+        }
+      }
+
       const { guid } = await createReview(token, {
         establishment: `api/establishments/${location}`,
         author: `api/users/${userData?.guid}`,
@@ -175,7 +188,7 @@ const EditReviewModal: FC = () => {
         text: review,
         isActive: true,
         reviewedAt: dayjs().toISOString(),
-        photos: [],
+        photos,
       });
 
       for (const acc of accessibility) {
@@ -209,28 +222,25 @@ const EditReviewModal: FC = () => {
         setBehavior(undefined);
       });
 
+      (async () => {
+        setAccessibilityPending(true);
+
+        try {
+          const response = await getAccessibilityList();
+          setAccessibility(response);
+        } catch (e: unknown) {
+          await processError(e);
+        }
+
+        setAccessibilityPending(false);
+      })();
+
       return () => {
         showListener.remove();
         hideListener.remove();
       };
     }
   }, []);
-  useEffect(() => {
-    (async () => {
-      setAccessibilityPending(true);
-
-      try {
-        const response = await getAccessibilityList();
-        setAccessibility(response);
-      } catch (e: unknown) {
-        await processError(e);
-      }
-
-      setAccessibilityPending(false);
-    })();
-  }, []);
-
-  console.log(images);
 
   return (
     <SafeAreaView style={styles.safeAreaView}>

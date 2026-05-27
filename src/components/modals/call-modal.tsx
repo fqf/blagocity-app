@@ -16,6 +16,9 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import TimerBlock from "@/components/blocks/timer-block";
+import * as SecureStore from "expo-secure-store";
+import processError from "@/lib/process-error";
+import { createCall } from "@/actions/call-actions";
 
 const styles = StyleSheet.create({
   safeAreaView: {
@@ -119,7 +122,7 @@ const styles = StyleSheet.create({
 });
 const CallModal: FC = () => {
   const [status, setStatus] = useState<"sent" | "received">("sent");
-  const { name } = useLocalSearchParams();
+  const { name, guid } = useLocalSearchParams<{ name: string; guid: string }>();
   const scale = useSharedValue(0.01);
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -146,11 +149,27 @@ const CallModal: FC = () => {
   };
 
   useEffect(() => {
-    setTimeout(() => {
-      setStatus("received");
-    }, 7500);
-  }, []);
+    (async () => {
+      try {
+        const token = SecureStore.getItem(process.env.EXPO_PUBLIC_SECURE_AUTH_STATE_KEY!);
+
+        if (!token) {
+          throw new Error("Bad token");
+        }
+
+        if (!guid) {
+          throw new Error("Bad guid");
+        }
+
+        const x = await createCall(token, guid);
+        console.log(x);
+      } catch (e: unknown) {
+        await processError(e);
+      }
+    })();
+  }, [guid]);
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/immutability
     scale.value = withDelay(
       500,
       withRepeat(

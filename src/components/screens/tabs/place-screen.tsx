@@ -176,8 +176,8 @@ const PlaceScreen: FC<TProps> = ({ id }) => {
       router.back();
     }
   };
-  const handleOnAlertPress = () => {
-    router.push(`/tabs/map/place/call?name=${placeData?.name}&location=${placeData?.guid}`);
+  const handleOnCallPress = () => {
+    router.push(`/tabs/map/place/call?name=${placeData?.name}&guid=${placeData?.guid}`);
   };
   const handleOnCreateReviewPress = () => {
     router.push(`/tabs/map/review/edit/-1?name=${placeData?.name}&location=${placeData?.guid}`);
@@ -333,7 +333,7 @@ const PlaceScreen: FC<TProps> = ({ id }) => {
             theme="error"
             text="Позвать помощника"
             icon={EIcon.Ring}
-            onPress={handleOnAlertPress}
+            onPress={handleOnCallPress}
           />
           <View style={styles.buttonsRow}>
             <Button
