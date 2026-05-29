@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import TabsLayout from "@/components/layouts/tabs-layout";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -98,12 +98,17 @@ const styles = StyleSheet.create({
     color: COLORS.label,
   },
   buttonsContainer: {
-    height: 111,
+    height: 80,
+    minHeight: 80,
+    maxHeight: 80,
   },
   buttons: {
     flexDirection: "row",
     gap: 8,
     paddingHorizontal: 20,
+  },
+  contentContainer: {
+    height: "100%",
   },
   content: {
     paddingBottom: 100,
@@ -111,15 +116,16 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   categorySkeletonsContainer: {
-    paddingBottom: 2,
+    paddingBottom: 4,
   },
   categorySkeleton: {
     width: 120,
-    height: 74,
+    height: 76,
     borderRadius: 16,
   },
   discountsSkeletonContainer: {
-    gap: 12,
+    flex: 1,
+    gap: 16,
     paddingHorizontal: 20,
   },
   discountsSkeleton: {
@@ -128,13 +134,31 @@ const styles = StyleSheet.create({
   },
 });
 const DiscountsScreen: FC = () => {
-  const [pending, setPending] = useState(true);
+  const [categoriesPending, setCategoriesPending] = useState(true);
+  const [contentPending, setContentPending] = useState(true);
+  const [searchString, setSearchString] = useState("");
+  const [query, setQuery] = useState("");
   const [categories, setCategories] = useState<{ id: number; title: string; icon: EIcon }[]>([]);
   const [discounts, setDiscounts] = useState<TGetDiscountResponse[]>([]);
-  const [selected, setSelected] = useState(-1);
+  const [selected, setSelected] = useState(0);
   const router = useRouter();
-  const handleOnTypePress = (selected: number) => {
-    setSelected(selected);
+  const timeoutRef = useRef<number | null>(null);
+  const handleOnQueryChange = (text: string) => {
+    setSearchString(text);
+
+    if (timeoutRef.current !== null) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    timeoutRef.current = setTimeout(() => {
+      setQuery(text);
+    }, 1000);
+  };
+  const handleOnCategoryPress = (category: number) => {
+    if (selected !== category) {
+      setContentPending(true);
+      setSelected(category);
+    }
   };
   const handleOnActionPress = (actionId: number) => {
     router.push(`/tabs/discounts/action/${actionId}` as Href);
@@ -159,17 +183,18 @@ const DiscountsScreen: FC = () => {
               icon: buttons.find(button => button.title === item.name)?.icon ?? EIcon.Label,
             })),
           );
+          setCategoriesPending(false);
         }
 
-        const discountsResponse = await getDiscountsList(token);
+        const discountsResponse = await getDiscountsList(token, { category: selected, query });
+        console.log(discountsResponse.data);
         setDiscounts(discountsResponse.data);
-
-        setPending(false);
+        setContentPending(false);
       } catch (e: unknown) {
         await processError(e);
       }
     })();
-  }, []);
+  }, [selected, query]);
 
   return (
     <TabsLayout>
@@ -177,16 +202,16 @@ const DiscountsScreen: FC = () => {
         <View style={styles.header}>
           <Text style={styles.title}>Скидки</Text>
           <Text style={styles.description}>Эксклюзивные предложения за вашу активность в городе.</Text>
-          <Input placeholder="Введите название..." />
+          <Input placeholder="Введите название..." value={searchString} onChange={handleOnQueryChange} />
         </View>
-        {pending && (
+        {categoriesPending && (
           <View style={[styles.buttons, styles.categorySkeletonsContainer]}>
             <Skeleton style={styles.categorySkeleton} />
             <Skeleton style={styles.categorySkeleton} />
             <Skeleton style={styles.categorySkeleton} />
           </View>
         )}
-        {!pending && (
+        {!categoriesPending && (
           <FlatList
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -196,7 +221,7 @@ const DiscountsScreen: FC = () => {
                 icon={item.icon}
                 title={item.title}
                 active={selected === item.id}
-                onPress={() => handleOnTypePress(item.id)}
+                onPress={() => handleOnCategoryPress(item.id)}
               />
             )}
             keyExtractor={item => item.id.toString()}
@@ -204,14 +229,14 @@ const DiscountsScreen: FC = () => {
             contentContainerStyle={styles.buttons}
           />
         )}
-        {pending && (
+        {contentPending && (
           <View style={styles.discountsSkeletonContainer}>
             <Skeleton style={styles.discountsSkeleton} />
             <Skeleton style={styles.discountsSkeleton} />
             <Skeleton style={styles.discountsSkeleton} />
           </View>
         )}
-        {!pending && (
+        {!contentPending && (
           <FlatList
             data={discounts}
             showsVerticalScrollIndicator={false}
@@ -224,6 +249,7 @@ const DiscountsScreen: FC = () => {
             )}
             keyExtractor={item => item.id.toString()}
             contentContainerStyle={styles.content}
+            style={styles.contentContainer}
           />
         )}
       </SafeAreaView>

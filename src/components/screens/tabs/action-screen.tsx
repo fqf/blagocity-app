@@ -1,15 +1,17 @@
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 import Constants from "expo-constants";
 import { Image } from "expo-image";
 import IconButton from "@/components/buttons/icon-button";
 import EIcon from "@/models/enums/icon";
-import Feature from "@/components/others/feature";
-import DropShadow from "react-native-drop-shadow";
 import OnboardingButton from "@/components/buttons/onboarding-button";
 import COLORS from "@/constants/colors";
 import Icon from "@/components/icons/icon";
+import Skeleton from "@/components/others/skeleton";
+import * as SecureStore from "expo-secure-store";
+import processError from "@/lib/process-error";
+import { getDiscount } from "@/actions/discount-actions";
 
 type TProps = {
   id: string;
@@ -19,6 +21,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "white",
+  },
+  imageSkeleton: {
+    height: 300,
+    width: "100%",
+    borderRadius: 0,
   },
   image: {
     height: 300,
@@ -40,18 +47,9 @@ const styles = StyleSheet.create({
     elevation: 1,
     position: "absolute",
     paddingHorizontal: 20,
-    top: 180,
+    top: 210,
     alignItems: "flex-start",
     gap: 8,
-  },
-  shadow: {
-    shadowColor: "black",
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
   },
   title: {
     fontFamily: "LexendDeca-ExtraBold",
@@ -71,10 +69,17 @@ const styles = StyleSheet.create({
     gap: 8,
     paddingHorizontal: 20,
   },
+  subTitleSkeleton: {
+    height: 30,
+    width: 150,
+  },
   subTitle: {
     fontFamily: "LexendDeca-Bold",
     fontSize: 18,
     color: COLORS.text,
+  },
+  descriptionSkeleton: {
+    height: 150,
   },
   description: {
     fontFamily: "LexendDeca-Regular",
@@ -85,6 +90,9 @@ const styles = StyleSheet.create({
   detailsContainer: {
     flex: 1,
     paddingHorizontal: 20,
+  },
+  detailsSkeleton: {
+    height: 145,
   },
   detailsBlock: {
     backgroundColor: COLORS.blockBackground,
@@ -122,6 +130,7 @@ const styles = StyleSheet.create({
   },
 });
 const ActionScreen: FC<TProps> = ({ id }) => {
+  const [pending, setPending] = useState(true);
   const router = useRouter();
   const handleOnBackPress = () => {
     if (router.canGoBack()) {
@@ -132,56 +141,86 @@ const ActionScreen: FC<TProps> = ({ id }) => {
     router.push("/tabs/discounts/action/coupon");
   };
 
+  useEffect(() => {
+    const token = SecureStore.getItem(process.env.EXPO_PUBLIC_SECURE_AUTH_STATE_KEY!);
+
+    (async () => {
+      try {
+        if (!token) {
+          throw new Error("Bad token");
+        }
+
+        console.log(id);
+
+        const actionResponse = await getDiscount(token, id);
+        console.log(actionResponse);
+      } catch (e: unknown) {
+        await processError(e);
+      }
+    })();
+  }, [id]);
+
   return (
     <View style={styles.container}>
-      <Image
-        source={{
-          uri: "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1b/15/7e/cf/artur-restorant.jpg?w=1000&h=-1&s=1",
-        }}
-        contentFit="cover"
-        style={styles.image}
-      />
+      {pending && <Skeleton style={styles.imageSkeleton} />}
+      {!pending && (
+        <Image
+          source={{
+            uri: "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1b/15/7e/cf/artur-restorant.jpg?w=1000&h=-1&s=1",
+          }}
+          contentFit="cover"
+          style={styles.image}
+        />
+      )}
       <View style={styles.topHud}>
         <IconButton icon={EIcon.ChevronLeft} onPress={handleOnBackPress} />
-        <IconButton icon={EIcon.Like} />
+        {!pending && <IconButton icon={EIcon.Like} />}
       </View>
-      <View style={styles.bottomHud}>
-        <DropShadow style={styles.shadow}>
-          <Feature variant="error" icon={EIcon.Label} title="Первое бесплатно" />
-        </DropShadow>
-        <Text style={styles.title}>Доброе утро</Text>
-      </View>
+      {!pending && (
+        <View style={styles.bottomHud}>
+          <Text style={styles.title}>Доброе утро</Text>
+        </View>
+      )}
       <View style={styles.content}>
         <View style={styles.texts}>
-          <Text style={styles.subTitle}>Описание акции</Text>
-          <Text style={styles.description}>
-            Уютная кофейня с эко-френдли подходом. Скидка за свой стаканчик. Получите эксклюзивную скидку при посещении.
-            Предложение ограничено и доступно только для активных пользователей приложения.
-          </Text>
+          {pending && <Skeleton style={styles.subTitleSkeleton} />}
+          {!pending && <Text style={styles.subTitle}>Описание акции</Text>}
+          {pending && <Skeleton style={styles.descriptionSkeleton} />}
+          {!pending && (
+            <Text style={styles.description}>
+              Уютная кофейня с эко-френдли подходом. Скидка за свой стаканчик. Получите эксклюзивную скидку при
+              посещении. Предложение ограничено и доступно только для активных пользователей приложения.
+            </Text>
+          )}
         </View>
         <View style={styles.detailsContainer}>
-          <View style={styles.detailsBlock}>
-            <View style={styles.rowContainer}>
-              <Icon icon={EIcon.Clock} style={styles.icon} />
-              <View>
-                <Text style={styles.rowTitle}>Срок действия</Text>
-                <Text style={styles.rowDescription}>До 31 декабря 2026 г.</Text>
+          {pending && <Skeleton style={styles.detailsSkeleton} />}
+          {!pending && (
+            <View style={styles.detailsBlock}>
+              <View style={styles.rowContainer}>
+                <Icon icon={EIcon.Clock} style={styles.icon} />
+                <View>
+                  <Text style={styles.rowTitle}>Срок действия</Text>
+                  <Text style={styles.rowDescription}>До 31 декабря 2026 г.</Text>
+                </View>
+              </View>
+              <View style={styles.rowContainer}>
+                <Icon icon={EIcon.Info} style={styles.icon} />
+                <View>
+                  <Text style={styles.rowTitle}>Условия</Text>
+                  <Text style={styles.rowDescription}>
+                    Скидка не суммируется с другими акциями и спецпредложениями заведения.
+                  </Text>
+                </View>
               </View>
             </View>
-            <View style={styles.rowContainer}>
-              <Icon icon={EIcon.Info} style={styles.icon} />
-              <View>
-                <Text style={styles.rowTitle}>Условия</Text>
-                <Text style={styles.rowDescription}>
-                  Скидка не суммируется с другими акциями и спецпредложениями заведения.
-                </Text>
-              </View>
-            </View>
+          )}
+        </View>
+        {!pending && (
+          <View style={styles.footer}>
+            <OnboardingButton text="Получить купон" icon={EIcon.QRCode} onPress={handleOnCouponPress} />
           </View>
-        </View>
-        <View style={styles.footer}>
-          <OnboardingButton text="Получить купон" icon={EIcon.QRCode} onPress={handleOnCouponPress} />
-        </View>
+        )}
       </View>
     </View>
   );

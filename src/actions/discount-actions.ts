@@ -2,11 +2,11 @@ import type TGetDiscountsListResponse from "@/models/contracts/discount/get-disc
 import type TGetDiscountCategoriesListResponse from "@/models/contracts/discount/get-discount-categories-list-response";
 import blagocityApi from "@/api/blagocity-api";
 
-export const getDiscountsList = async (token: string) => {
-  return await blagocityApi(token).get<TGetDiscountsListResponse>("/discounts").json();
+export const getDiscountsList = async (token: string, { query, category }: { query?: string; category?: number }) => {
+  return await blagocityApi(token).get<TGetDiscountsListResponse>(`/discounts?category=${category}&q=${query}`).json();
 };
 
-export const getDiscount = async (id: string) => {
+export const getDiscount = async (token: string, id: string) => {
   return await blagocityApi().get<TGetDiscountsListResponse>(`/discounts/${id}`).json();
 };
 
