@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from "react";
 import { useRouter } from "expo-router";
-import { StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import Constants from "expo-constants";
 import { Image } from "expo-image";
 import IconButton from "@/components/buttons/icon-button";
@@ -12,6 +12,7 @@ import Skeleton from "@/components/others/skeleton";
 import * as SecureStore from "expo-secure-store";
 import processError from "@/lib/process-error";
 import { getDiscount } from "@/actions/discount-actions";
+import dayjs from "dayjs";
 
 type TProps = {
   id: string;
@@ -35,19 +36,24 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    zIndex: 1,
-    elevation: 1,
+    zIndex: 2,
+    elevation: 2,
     position: "absolute",
     top: Constants.statusBarHeight,
     paddingHorizontal: 20,
   },
-  bottomHud: {
-    width: "100%",
+  header: {
+    position: "absolute",
     zIndex: 1,
     elevation: 1,
+    width: "100%",
+    height: 284,
+  },
+  bottomHud: {
+    width: "100%",
     position: "absolute",
     paddingHorizontal: 20,
-    top: 210,
+    bottom: 16,
     alignItems: "flex-start",
     gap: 8,
   },
@@ -56,14 +62,16 @@ const styles = StyleSheet.create({
     fontSize: 30,
     color: "white",
   },
-  content: {
+  scrollable: {
     flex: 1,
+    marginTop: -16,
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
     backgroundColor: "white",
-    marginTop: -20,
-    paddingTop: 20,
+  },
+  content: {
     gap: 24,
+    paddingTop: 20,
   },
   texts: {
     gap: 8,
@@ -125,12 +133,16 @@ const styles = StyleSheet.create({
   footer: {
     borderTopWidth: 1,
     borderTopColor: COLORS.inputBorder,
-    paddingTop: 32,
+    paddingTop: 20,
     paddingBottom: 30,
   },
 });
 const ActionScreen: FC<TProps> = ({ id }) => {
   const [pending, setPending] = useState(true);
+  const [image, setImage] = useState("");
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [end, setEnd] = useState<string | undefined>();
   const router = useRouter();
   const handleOnBackPress = () => {
     if (router.canGoBack()) {
@@ -150,23 +162,26 @@ const ActionScreen: FC<TProps> = ({ id }) => {
           throw new Error("Bad token");
         }
 
-        console.log(id);
-
         const actionResponse = await getDiscount(token, id);
-        console.log(actionResponse);
+        setImage(actionResponse.data.image_url);
+        setName(actionResponse.data.name);
+        setDescription(actionResponse.data.description);
+        setEnd(actionResponse.data.end);
       } catch (e: unknown) {
         await processError(e);
       }
+
+      setPending(false);
     })();
   }, [id]);
 
   return (
     <View style={styles.container}>
       {pending && <Skeleton style={styles.imageSkeleton} />}
-      {!pending && (
+      {!pending && !!image && (
         <Image
           source={{
-            uri: "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1b/15/7e/cf/artur-restorant.jpg?w=1000&h=-1&s=1",
+            uri: image,
           }}
           contentFit="cover"
           style={styles.image}
@@ -177,40 +192,28 @@ const ActionScreen: FC<TProps> = ({ id }) => {
         {!pending && <IconButton icon={EIcon.Like} />}
       </View>
       {!pending && (
-        <View style={styles.bottomHud}>
-          <Text style={styles.title}>Доброе утро</Text>
+        <View style={styles.header}>
+          <View style={styles.bottomHud}>
+            <Text style={styles.title}>{name}</Text>
+          </View>
         </View>
       )}
-      <View style={styles.content}>
+      <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollable} contentContainerStyle={styles.content}>
         <View style={styles.texts}>
           {pending && <Skeleton style={styles.subTitleSkeleton} />}
           {!pending && <Text style={styles.subTitle}>Описание акции</Text>}
           {pending && <Skeleton style={styles.descriptionSkeleton} />}
-          {!pending && (
-            <Text style={styles.description}>
-              Уютная кофейня с эко-френдли подходом. Скидка за свой стаканчик. Получите эксклюзивную скидку при
-              посещении. Предложение ограничено и доступно только для активных пользователей приложения.
-            </Text>
-          )}
+          {!pending && <Text style={styles.description}>{description}</Text>}
         </View>
         <View style={styles.detailsContainer}>
           {pending && <Skeleton style={styles.detailsSkeleton} />}
-          {!pending && (
+          {!pending && !!end && (
             <View style={styles.detailsBlock}>
               <View style={styles.rowContainer}>
                 <Icon icon={EIcon.Clock} style={styles.icon} />
                 <View>
                   <Text style={styles.rowTitle}>Срок действия</Text>
-                  <Text style={styles.rowDescription}>До 31 декабря 2026 г.</Text>
-                </View>
-              </View>
-              <View style={styles.rowContainer}>
-                <Icon icon={EIcon.Info} style={styles.icon} />
-                <View>
-                  <Text style={styles.rowTitle}>Условия</Text>
-                  <Text style={styles.rowDescription}>
-                    Скидка не суммируется с другими акциями и спецпредложениями заведения.
-                  </Text>
+                  <Text style={styles.rowDescription}>До {dayjs(end).locale("ru").format("DD MMMM YYYY")} г.</Text>
                 </View>
               </View>
             </View>
@@ -221,7 +224,7 @@ const ActionScreen: FC<TProps> = ({ id }) => {
             <OnboardingButton text="Получить купон" icon={EIcon.QRCode} onPress={handleOnCouponPress} />
           </View>
         )}
-      </View>
+      </ScrollView>
     </View>
   );
 };

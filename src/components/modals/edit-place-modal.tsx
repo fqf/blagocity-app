@@ -155,7 +155,6 @@ const EditPlaceModal: FC<TProps> = ({ id, coords }) => {
                       onChange={e => handleOnInputChange(handleChange("name"), e)}
                       onBlur={handleBlur("name")}
                     />
-                    <PhotoUploadBlock />
                     <PlaceTypeBlock
                       value={values.type}
                       error={errors.type}

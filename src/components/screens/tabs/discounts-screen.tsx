@@ -12,7 +12,7 @@ import { getDiscountCategoriesList, getDiscountsList } from "@/actions/discount-
 import * as SecureStore from "expo-secure-store";
 import Skeleton from "@/components/others/skeleton";
 import processError from "@/lib/process-error";
-import type TGetDiscountResponse from "@/models/contracts/discount/get-discount-response";
+import { TGetDiscountsListItem } from "@/models/contracts/discount/get-discounts-list-response";
 
 const buttons = [
   {
@@ -136,10 +136,13 @@ const styles = StyleSheet.create({
 const DiscountsScreen: FC = () => {
   const [categoriesPending, setCategoriesPending] = useState(true);
   const [contentPending, setContentPending] = useState(true);
+  const [newPagePending, setNewPagePending] = useState(false);
   const [searchString, setSearchString] = useState("");
   const [query, setQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1);
   const [categories, setCategories] = useState<{ id: number; title: string; icon: EIcon }[]>([]);
-  const [discounts, setDiscounts] = useState<TGetDiscountResponse[]>([]);
+  const [discounts, setDiscounts] = useState<TGetDiscountsListItem[]>([]);
   const [selected, setSelected] = useState(0);
   const router = useRouter();
   const timeoutRef = useRef<number | null>(null);
@@ -151,17 +154,37 @@ const DiscountsScreen: FC = () => {
     }
 
     timeoutRef.current = setTimeout(() => {
+      setContentPending(true);
+      setSelected(0);
       setQuery(text);
+      setDiscounts([]);
+      setCurrentPage(1);
+      setLastPage(1);
     }, 1000);
   };
   const handleOnCategoryPress = (category: number) => {
+    setContentPending(true);
+    setSearchString("");
+    setQuery("");
+
     if (selected !== category) {
-      setContentPending(true);
       setSelected(category);
+    } else {
+      setSelected(0);
     }
+
+    setDiscounts([]);
+    setCurrentPage(1);
+    setLastPage(1);
   };
   const handleOnActionPress = (actionId: number) => {
     router.push(`/tabs/discounts/action/${actionId}` as Href);
+  };
+  const handleOnEndReached = async () => {
+    if (currentPage !== lastPage) {
+      setNewPagePending(true);
+      setCurrentPage(prev => prev + 1);
+    }
   };
 
   useEffect(() => {
@@ -186,15 +209,16 @@ const DiscountsScreen: FC = () => {
           setCategoriesPending(false);
         }
 
-        const discountsResponse = await getDiscountsList(token, { category: selected, query });
-        console.log(discountsResponse.data);
-        setDiscounts(discountsResponse.data);
+        const discountsResponse = await getDiscountsList(token, { category: selected, query, page: currentPage });
+        setLastPage(discountsResponse.meta.last_page);
+        setDiscounts(prev => [...prev, ...discountsResponse.data]);
         setContentPending(false);
+        setNewPagePending(false);
       } catch (e: unknown) {
         await processError(e);
       }
     })();
-  }, [selected, query]);
+  }, [selected, query, currentPage]);
 
   return (
     <TabsLayout>
@@ -238,16 +262,29 @@ const DiscountsScreen: FC = () => {
         )}
         {!contentPending && (
           <FlatList
-            data={discounts}
+            data={newPagePending ? ([...discounts, "pending"] as TGetDiscountsListItem[]) : discounts}
             showsVerticalScrollIndicator={false}
-            renderItem={({ item }) => (
-              <DiscountBlock
-                image={item.image_url}
-                title={item.name}
-                onButtonPress={() => handleOnActionPress(item.id)}
-              />
-            )}
-            keyExtractor={item => item.id.toString()}
+            renderItem={({ item }) => {
+              if (item === "pending") {
+                return <Skeleton style={styles.discountsSkeleton} />;
+              }
+
+              return (
+                <DiscountBlock
+                  image={item.image_url}
+                  title={item.name}
+                  onButtonPress={() => handleOnActionPress(item.id)}
+                />
+              );
+            }}
+            keyExtractor={(item, index) => {
+              if (item === "pending") {
+                return `pending_${index}`;
+              }
+
+              return item.id.toString();
+            }}
+            onEndReached={handleOnEndReached}
             contentContainerStyle={styles.content}
             style={styles.contentContainer}
           />

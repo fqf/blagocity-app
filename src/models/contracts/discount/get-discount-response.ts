@@ -1,18 +1,18 @@
-type TCategory = {
-  id: number;
-  order: number;
-  name: string;
-};
+import { TDiscountCategory } from "@/models/contracts/discount/get-discounts-list-response";
 
 type TGetDiscountResponse = {
-  id: number;
-  name: string;
-  image_url: string;
-  main_category: TCategory;
-  categories: TCategory[];
-  isFavorite: boolean;
-  updated_at: string;
-  end: string;
+  data: {
+    id: number;
+    name: string;
+    description: string;
+    about: string;
+    content: string;
+    image_url: string;
+    main_category: TDiscountCategory;
+    categories: TDiscountCategory[];
+    isFavorite: boolean;
+    end: string;
+  };
 };
 
 export default TGetDiscountResponse;

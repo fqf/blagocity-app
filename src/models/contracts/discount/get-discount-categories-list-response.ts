@@ -1,10 +1,7 @@
+import { TDiscountCategory } from "@/models/contracts/discount/get-discounts-list-response";
+
 type TGetDiscountCategoriesListResponse = {
-  data: {
-    id: number;
-    image: string;
-    name: string;
-    order: number;
-  }[];
+  data: TDiscountCategory[];
 };
 
 export default TGetDiscountCategoriesListResponse;
