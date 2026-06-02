@@ -53,9 +53,12 @@ const styles = StyleSheet.create({
     width: "100%",
     position: "absolute",
     paddingHorizontal: 20,
-    bottom: 16,
+    paddingTop: 10,
+    paddingBottom: 26,
+    bottom: -16,
     alignItems: "flex-start",
     gap: 8,
+    backgroundColor: "rgba(0, 0, 0, 0.25)",
   },
   title: {
     fontFamily: "LexendDeca-ExtraBold",
@@ -68,6 +71,8 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
     backgroundColor: "white",
+    zIndex: 2,
+    elevation: 2,
   },
   content: {
     gap: 24,
@@ -183,7 +188,7 @@ const ActionScreen: FC<TProps> = ({ id }) => {
           source={{
             uri: image,
           }}
-          contentFit="cover"
+          contentFit="fill"
           style={styles.image}
         />
       )}

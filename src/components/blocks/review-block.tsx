@@ -106,7 +106,6 @@ const styles = StyleSheet.create({
     width: 80,
     height: 60,
     borderRadius: 8,
-    backgroundColor: "red",
   },
 });
 const ReviewBlock: FC<TProps> = ({ guid }) => {

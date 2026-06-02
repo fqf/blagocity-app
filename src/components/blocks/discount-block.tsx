@@ -1,6 +1,6 @@
 import { FC } from "react";
 import ShadowBlock from "@/components/blocks/shadow-block";
-import { StyleSheet, Text, View } from "react-native";
+import { Dimensions, StyleSheet, Text, View } from "react-native";
 import Button from "@/components/buttons/button";
 import { Image } from "expo-image";
 import COLORS from "@/constants/colors";
@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   image: {
-    height: 128,
+    height: (370 * (Dimensions.get("window").width - 40)) / 830,
   },
   discount: {
     position: "absolute",
@@ -63,7 +63,7 @@ const DiscountBlock: FC<TProps> = ({ image, title, onButtonPress }) => {
           source={{
             uri: image,
           }}
-          contentFit="cover"
+          contentFit="contain"
           style={styles.image}
         />
         <View style={styles.texts}>

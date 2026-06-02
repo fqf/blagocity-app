@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: chroma("white").alpha(0.25).hex(),
+    backgroundColor: chroma("black").alpha(0.25).hex(),
   },
   icon: {
     width: 20,

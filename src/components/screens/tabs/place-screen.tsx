@@ -31,8 +31,15 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "white",
   },
+  imageContainer: {
+    top: 0,
+    height: 210,
+    overflow: "hidden",
+  },
   image: {
+    width: "100%",
     height: 300,
+    position: "absolute",
   },
   hud: {
     width: "100%",
@@ -277,13 +284,15 @@ const PlaceScreen: FC<TProps> = ({ id }) => {
 
   return (
     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.container}>
-      <Image
-        source={{
-          uri: "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1b/15/7e/cf/artur-restorant.jpg?w=1000&h=-1&s=1",
-        }}
-        contentFit="cover"
-        style={styles.image}
-      />
+      <View style={styles.imageContainer}>
+        <Image
+          source={{
+            uri: "blagocity_placeholder",
+          }}
+          contentFit="cover"
+          style={styles.image}
+        />
+      </View>
       <View style={styles.hud}>
         <IconButton icon={EIcon.ChevronLeft} onPress={handleOnBackPress} />
         <IconButton icon={EIcon.Like} />
