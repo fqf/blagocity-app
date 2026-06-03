@@ -166,7 +166,7 @@ const SignInScreen: FC = () => {
                   />
                   <View style={styles.footer}>
                     <Text style={styles.footerText}>Забыли кодовое слово?</Text>
-                    <LinkButton text="Восстановить" href="/auth/sign-in" />
+                    <LinkButton text="Восстановить" href="/volunteer" />
                   </View>
                 </View>
               </View>

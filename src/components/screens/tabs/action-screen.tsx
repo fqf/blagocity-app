@@ -59,6 +59,8 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     gap: 8,
     backgroundColor: "rgba(0, 0, 0, 0.25)",
+    borderTopRightRadius: 16,
+    borderTopLeftRadius: 16,
   },
   title: {
     fontFamily: "LexendDeca-ExtraBold",

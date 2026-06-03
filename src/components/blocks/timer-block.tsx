@@ -42,9 +42,7 @@ const TimerBlock: FC = () => {
       setTime(duration.format("mm:ss"));
     }, 1000);
 
-    return () => {
-      clearInterval(interval);
-    };
+    return () => clearInterval(interval);
   }, []);
 
   return (

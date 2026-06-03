@@ -5,7 +5,6 @@ import { getAddressByCoords } from "@/actions/mapbox-actions";
 import OnboardingButton from "@/components/buttons/onboarding-button";
 import GeoPositionBlock from "@/components/blocks/geo-position-block";
 import PlaceNameBlock from "@/components/blocks/place-name-block";
-import PhotoUploadBlock from "@/components/blocks/photo-upload-block";
 import PlaceTypeBlock from "@/components/blocks/place-type-block";
 import AccessibleEnvironmentBlock from "@/components/blocks/accessible-environment-block";
 import { defaultLocation } from "@/components/screens/tabs/map-screen";

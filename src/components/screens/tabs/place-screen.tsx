@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     top: 0,
-    height: 210,
+    height: 215,
     overflow: "hidden",
   },
   image: {
@@ -287,7 +287,7 @@ const PlaceScreen: FC<TProps> = ({ id }) => {
       <View style={styles.imageContainer}>
         <Image
           source={{
-            uri: "blagocity_placeholder",
+            uri: placeData?.photos.length ? placeData.photos[0] : "blagocity_placeholder",
           }}
           contentFit="cover"
           style={styles.image}
