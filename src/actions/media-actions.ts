@@ -14,11 +14,11 @@ export const createMedia = async (token: string, uri: string) => {
     fieldName: "files",
     onProgress: ({ bytesSent, totalBytes }: { bytesSent: number; totalBytes: number }) => {
       const percentage = (bytesSent / totalBytes) * 100;
-      console.log(percentage);
     },
   };
   const uploadTask = file.createUploadTask("https://blagocity.ru/api/media", options);
   const result = await uploadTask.uploadAsync();
+  console.log(result?.body);
 
   return JSON.parse(result?.body) as TCreateMediaResponse;
 };

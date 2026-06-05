@@ -31,8 +31,8 @@ import dayjs from "dayjs";
 import * as SecureStore from "expo-secure-store";
 import { useBus } from "react-bus";
 import processError from "@/lib/process-error";
-import hairlineWidth = StyleSheet.hairlineWidth;
 import { createMedia } from "@/actions/media-actions";
+import hairlineWidth = StyleSheet.hairlineWidth;
 
 type TValues = {
   guid: string;
@@ -174,6 +174,7 @@ const EditReviewModal: FC = () => {
       if (images.length) {
         for (const image of images) {
           const result = await createMedia(token, image.uri);
+          console.log("TESSS");
 
           if (result.items[0]?.iri) {
             photos.push(result.items[0].iri);

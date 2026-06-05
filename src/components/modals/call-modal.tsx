@@ -162,7 +162,6 @@ const CallModal: FC = () => {
         }
 
         const x = await createCall(token, guid);
-        console.log(x);
       } catch (e: unknown) {
         await processError(e);
       }
