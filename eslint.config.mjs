@@ -23,6 +23,7 @@ export default defineConfig([
     rules: {
       "prettier/prettier": "error",
       "react-compiler/react-compiler": "error",
+      "react-hooks/set-state-in-effect": "off",
       "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/ban-ts-comment": "off",
     },

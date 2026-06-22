@@ -1,12 +1,13 @@
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import { Dimensions, StyleSheet, Text, View } from "react-native";
 import COLORS from "@/constants/colors";
-import Icon from "@/components/icons/icon";
-import EIcon from "@/models/enums/icon";
-import Button from "@/components/buttons/button";
 import CloseButton from "@/components/buttons/close-button";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import DropShadow from "react-native-drop-shadow";
+import Skeleton from "@/components/others/skeleton";
+import { getDiscountCode } from "@/actions/discount-actions";
+import * as SecureStore from "expo-secure-store";
+import processError from "@/lib/process-error";
 
 const styles = StyleSheet.create({
   shadow: {
@@ -19,7 +20,7 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.2,
     shadowRadius: 15,
-    marginTop: Dimensions.get("window").height - 510,
+    marginTop: Dimensions.get("window").height - 350,
   },
   container: {
     flex: 1,
@@ -62,8 +63,28 @@ const styles = StyleSheet.create({
     borderColor: COLORS.inputBorder,
     borderStyle: "dashed",
   },
+  code: {
+    fontFamily: "LexendDeca-Bold",
+    fontSize: 40,
+    textAlign: "center",
+    color: COLORS.active,
+  },
+  error: {
+    fontFamily: "LexendDeca-Regular",
+    fontSize: 20,
+    textAlign: "center",
+    color: COLORS.error,
+  },
+  skeleton: {
+    height: 60,
+    width: 250,
+  },
 });
 const CouponModal: FC = () => {
+  const { id } = useLocalSearchParams();
+  const [pending, setPending] = useState(true);
+  const [status, setStatus] = useState<"error" | "success" | undefined>();
+  const [promoCode, setPromoCode] = useState("");
   const router = useRouter();
   const handleOnClosePress = () => {
     if (router.canGoBack()) {
@@ -71,18 +92,43 @@ const CouponModal: FC = () => {
     }
   };
 
+  useEffect(() => {
+    if (id && typeof id === "string") {
+      const token = SecureStore.getItem(process.env.EXPO_PUBLIC_SECURE_AUTH_STATE_KEY!);
+
+      if (token) {
+        (async () => {
+          try {
+            const { data, status } = await getDiscountCode(token, id);
+
+            if (status === "success") {
+              setStatus("success");
+              setPromoCode(data.code);
+            } else {
+              setStatus("error");
+              setPromoCode("Ошибка получения данных...");
+            }
+          } catch (e: unknown) {
+            await processError(e);
+          }
+
+          setPending(false);
+        })();
+      }
+    }
+  }, [id]);
+
   return (
     <DropShadow style={styles.shadow}>
       <View style={styles.container}>
         <CloseButton style={styles.close} onPress={handleOnClosePress} />
         <View style={styles.texts}>
-          <Text style={styles.title}>Ваш купон</Text>
-          <Text style={styles.description}>Покажите этот код на кассе для получения скидки</Text>
+          <Text style={styles.title}>Ваш промокод</Text>
+          <Text style={styles.description}>Покажите этот промокод на кассе для получения скидки:</Text>
         </View>
-        <View style={styles.imageContainer}>
-          <Icon icon={EIcon.QRCode} fill={COLORS.text} />
-        </View>
-        <Button fullWidth type="secondary" theme="default" text="V3R4RLP3" />
+        {pending && <Skeleton style={styles.skeleton} />}
+        {!pending && status === "success" && <Text style={styles.code}>{promoCode}</Text>}
+        {!pending && status === "error" && <Text style={styles.error}>{promoCode}</Text>}
       </View>
     </DropShadow>
   );

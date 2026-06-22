@@ -157,7 +157,7 @@ const ActionScreen: FC<TProps> = ({ id }) => {
     }
   };
   const handleOnCouponPress = () => {
-    router.push("/tabs/discounts/action/coupon");
+    router.push(`/tabs/discounts/action/coupon?id=${id}`);
   };
 
   useEffect(() => {
