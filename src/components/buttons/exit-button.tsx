@@ -34,7 +34,7 @@ const ExitButton: FC = () => {
   const { reset } = useProfileStore();
   const handleOnButtonPress = async () => {
     await SecureStore.deleteItemAsync(process.env.EXPO_PUBLIC_SECURE_AUTH_STATE_KEY!);
-    router.replace("/");
+    router.replace("/auth/sign-in");
     reset();
   };
 

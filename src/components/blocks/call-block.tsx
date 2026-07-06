@@ -63,10 +63,10 @@ const styles = StyleSheet.create({
   },
 });
 const CallBlock: FC<TProps> = ({ name, time, status, onButtonPress }) => {
-  const [timer, setTimer] = useState(time);
+  const [timer, setTimer] = useState("00:00");
 
   useEffect(() => {
-    let duration = dayjs.duration(0, "s");
+    let duration = dayjs.duration(dayjs().diff(dayjs(time)), "s");
     const interval = setInterval(() => {
       duration = duration.add(1, "s");
       setTimer(duration.format("mm:ss"));
@@ -102,13 +102,15 @@ const CallBlock: FC<TProps> = ({ name, time, status, onButtonPress }) => {
           />
         )}
       </View>
-      <Button
-        size="large"
-        type={status === "incoming" ? "primary" : "secondary"}
-        theme={status === "incoming" ? "active" : "default"}
-        text={status === "incoming" ? "Принять вызов" : status === "accepted" ? "Завершить" : "Удалить"}
-        onPress={onButtonPress}
-      />
+      {["incoming", "accepted"].includes(status) && (
+        <Button
+          size="large"
+          type={status === "incoming" ? "primary" : "secondary"}
+          theme={status === "incoming" ? "active" : "default"}
+          text={status === "incoming" ? "Принять вызов" : "Завершить"}
+          onPress={onButtonPress}
+        />
+      )}
     </View>
   );
 };

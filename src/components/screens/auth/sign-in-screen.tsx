@@ -74,11 +74,23 @@ const SignInScreen: FC = () => {
     try {
       const { token } = await signIn({ login: nickname, password: code });
       const userData = await getMe(token);
+
       setUserData(userData);
       SecureStore.setItem(process.env.EXPO_PUBLIC_SECURE_AUTH_STATE_KEY!, token);
 
+      if (userData.establishmentUsers.length) {
+        SecureStore.setItem(
+          "BLAGOCITY_VOLUNTEER_ESTABLISHMENT_GUID",
+          userData.establishmentUsers[0].establishment.guid,
+        );
+      }
+
       setTimeout(() => {
-        router.navigate("/tabs/map");
+        if (userData.establishmentUsers.length) {
+          router.navigate(`/volunteer?establishment=${userData.establishmentUsers[0].establishment.guid}`);
+        } else {
+          router.navigate("/tabs/map");
+        }
       }, 500);
     } catch (e: unknown) {
       await processError(e);

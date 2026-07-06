@@ -161,7 +161,11 @@ const CallModal: FC = () => {
           throw new Error("Bad guid");
         }
 
-        const x = await createCall(token, guid);
+        await createCall(token, guid, {
+          address: "Вход в заведение",
+          description: "Вызов помощника",
+          shortDescription: "Вызов помощника",
+        });
       } catch (e: unknown) {
         await processError(e);
       }

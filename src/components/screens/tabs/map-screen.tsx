@@ -166,10 +166,8 @@ const MapScreen: FC = () => {
     (async () => {
       try {
         if (!token) {
-          throw new Error("Bad token");
-        }
-
-        if (!userData) {
+          router.replace("/auth/sign-in");
+        } else if (!userData) {
           setProfilePending(true);
 
           const userData = await getMe(token);
@@ -189,7 +187,7 @@ const MapScreen: FC = () => {
       setProfilePending(false);
       setPlacesPending(false);
     })();
-  }, [userData, placesList, setPlacesList, setUserData]);
+  }, [userData, placesList, setPlacesList, setUserData, router]);
 
   return (
     <TabsLayout>
