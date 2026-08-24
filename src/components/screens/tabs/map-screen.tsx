@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     width: "100%",
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "center",
     paddingHorizontal: 20,
     top: Constants.statusBarHeight + 10,
   },
@@ -50,6 +50,7 @@ const styles = StyleSheet.create({
     right: 20,
     gap: 10,
     alignItems: "flex-end",
+    paddingBottom: 100,
   },
   assistContainer: {
     marginTop: 60,
@@ -245,22 +246,22 @@ const MapScreen: FC = () => {
         ))}
       </MapView>
       <View style={styles.header}>
-        <MapButton icon={EIcon.List} />
+        {/*<MapButton icon={EIcon.List} />*/}
         <AvatarButton
           pending={profilePending}
           size="small"
           type={+(userData?.avatar ?? 1) as TAvatarType}
           onPress={handleOnAvatarPress}
         />
-        <MapButton icon={EIcon.Filter} />
+        {/*<MapButton icon={EIcon.Filter} />*/}
       </View>
       <View style={styles.mapTools}>
         <MapButton icon={EIcon.Plus} onPress={handleOnPlusPress} />
         <MapButton icon={EIcon.Minus} onPress={handleOnMinusPress} />
         <MapButton icon={EIcon.Location} onPress={handleOnSetCurrentLocationPress} />
-        <View style={styles.assistContainer}>
+        {/*<View style={styles.assistContainer}>
           <AssistButton />
-        </View>
+        </View>*/}
       </View>
       {placesPending && (
         <View style={styles.preloaderContainer}>

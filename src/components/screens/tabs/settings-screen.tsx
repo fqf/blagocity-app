@@ -27,8 +27,8 @@ const SettingsScreen: FC = () => {
     <>
       <Header withBack title="Настройки" />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.container}>
-        <ProfileBlock />
-        <NavigationMenu />
+        {/*<ProfileBlock />*/}
+        {/*<NavigationMenu />*/}
         <ExitButton />
         <Text style={styles.versionText}>Версия приложения {version}</Text>
       </ScrollView>

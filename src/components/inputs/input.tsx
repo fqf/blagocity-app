@@ -23,6 +23,7 @@ type TProps = Partial<{
   maskType: "custom" | "datetime" | "cel-phone" | "credit-card" | "money" | "only-numbers";
   maskOptions: object;
   maxLength: number;
+  checkText: (currentValue: string, nextValue: string) => boolean;
   onIconPress: () => void;
   onFocus: () => void;
   onChange: (text: string) => void;
@@ -96,6 +97,7 @@ const Input: FC<TProps> = ({
   maskType,
   maskOptions,
   maxLength,
+  checkText,
   onIconPress,
   onFocus,
   onChange,
@@ -132,6 +134,7 @@ const Input: FC<TProps> = ({
             keyboardType={keyboardType}
             readOnly={disabled}
             maxLength={maxLength}
+            checkText={checkText}
             style={[
               styles.input,
               focused ? { borderColor: COLORS.active, backgroundColor: "white" } : null,

@@ -16,6 +16,7 @@ import useProfileStore from "@/stores/profile-store";
 import Alert from "@/components/others/alert";
 import EIcon from "@/models/enums/icon";
 import processError from "@/lib/process-error";
+import { EMOJI_PATTERN } from "@/constants/patterns";
 
 const styles = StyleSheet.create({
   container: {
@@ -66,7 +67,7 @@ const SignInScreen: FC = () => {
   const { setUserData } = useProfileStore();
   const router = useRouter();
   const handleOnInputChange = (callBack: (e: string | ChangeEvent<any>) => void, e: string | ChangeEvent<any>) => {
-    callBack(e);
+    callBack(typeof e === "string" ? e.replace(EMOJI_PATTERN, "") : e);
   };
   const handleOnSubmit = async ({ nickname, code }: { nickname: string; code: string }) => {
     setPending(true);
@@ -166,7 +167,7 @@ const SignInScreen: FC = () => {
                     <Alert
                       variant="error"
                       title="Ошибка авторизации"
-                      description="Что-то пошло не так..."
+                      description="Неверный логин или пароль"
                       onClosePress={handleOnCloseAlertPress}
                     />
                   )}
@@ -178,7 +179,7 @@ const SignInScreen: FC = () => {
                   />
                   <View style={styles.footer}>
                     <Text style={styles.footerText}>Забыли кодовое слово?</Text>
-                    <LinkButton text="Восстановить" href="/volunteer" />
+                    <LinkButton disabled text="Восстановить" href="/volunteer" />
                   </View>
                 </View>
               </View>

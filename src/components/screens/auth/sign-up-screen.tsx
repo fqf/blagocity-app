@@ -11,6 +11,7 @@ import signUpSchema from "@/schemes/auth/sign-up-schema";
 import { useRouter } from "expo-router";
 import useSignUpStore from "@/stores/sign-up-store";
 import EIcon from "@/models/enums/icon";
+import { EMOJI_PATTERN } from "@/constants/patterns";
 
 const styles = StyleSheet.create({
   container: {
@@ -61,7 +62,7 @@ const SignUpScreen: FC = () => {
   const { setName, setPassword } = useSignUpStore();
   const router = useRouter();
   const handleOnInputChange = (callBack: (e: string | ChangeEvent<any>) => void, e: string | ChangeEvent<any>) => {
-    callBack(e);
+    callBack(typeof e === "string" ? e.replace(EMOJI_PATTERN, "") : e);
   };
   const handleOnSubmit = async ({ nickname, code }: { nickname: string; code: string }) => {
     setName(nickname);

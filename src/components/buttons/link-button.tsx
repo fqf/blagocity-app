@@ -6,6 +6,7 @@ import COLORS from "@/constants/colors";
 type TProps = {
   text: string;
   href: Href;
+  disabled?: boolean;
 };
 
 const styles = StyleSheet.create({
@@ -15,9 +16,9 @@ const styles = StyleSheet.create({
     color: COLORS.active,
   },
 });
-const LinkButton: FC<TProps> = ({ text, href }) => {
+const LinkButton: FC<TProps> = ({ text, href, disabled }) => {
   return (
-    <Link href={href}>
+    <Link disabled={disabled} href={href}>
       <Text style={styles.text}>{text}</Text>
     </Link>
   );

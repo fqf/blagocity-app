@@ -9,6 +9,7 @@ type TProps = {
   icon: EIcon;
   active?: boolean;
   href: Href;
+  disabled?: boolean;
 };
 
 const styles = StyleSheet.create({
@@ -23,7 +24,7 @@ const styles = StyleSheet.create({
     height: 32,
   },
 });
-const TabButton: FC<TProps> = ({ icon, active, href }) => {
+const TabButton: FC<TProps> = ({ icon, active, href, disabled }) => {
   const router = useRouter();
   const handleOnPress = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).then();
@@ -31,7 +32,11 @@ const TabButton: FC<TProps> = ({ icon, active, href }) => {
   };
 
   return (
-    <TouchableOpacity activeOpacity={0.5} style={[styles.container]} onPress={handleOnPress}>
+    <TouchableOpacity
+      disabled={disabled}
+      activeOpacity={0.5}
+      style={[styles.container, disabled ? { opacity: 0.35 } : null]}
+      onPress={handleOnPress}>
       <Icon icon={icon} style={styles.icon} />
     </TouchableOpacity>
   );

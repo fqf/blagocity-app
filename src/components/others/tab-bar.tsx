@@ -43,8 +43,8 @@ const TabBar: FC = () => {
         <TabButton icon={EIcon.Percent} href="/tabs/discounts" />
       </View>
       <View style={styles.right}>
-        <TabButton icon={EIcon.Clans} href="/tabs/clan" />
-        <TabButton icon={EIcon.Search} href="/tabs/search" />
+        <TabButton disabled icon={EIcon.Clans} href="/tabs/clan" />
+        <TabButton disabled icon={EIcon.Search} href="/tabs/search" />
       </View>
       <View style={styles.addContainer}>
         <AddButton />
