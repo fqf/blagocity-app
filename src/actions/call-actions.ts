@@ -11,7 +11,7 @@ export const createCall = async (token: string, placeGuid: string, request: TCre
 };
 
 export const getCallsList = async (token: string) => {
-  return await blagocityApi(token).get<TGetCallsListResponse>("/tasks").json();
+  return await blagocityApi(token).get<TGetCallsListResponse>("/tasks?page=1&itemsPerPage=1000").json();
 };
 
 export const setCallStatus = async (
@@ -29,11 +29,12 @@ export const setCallStatus = async (
     .json();
 };
 
-export const takeCall = async (token: string, callGuid: string) => {
+export const takeCall = async (token: string, callGuid: string, status: "accepted" | "completed") => {
   return await blagocityApi(token)
     .put(`/tasks/${callGuid}/recipients/me/status`, {
-      headers: {
-        "Content-Type": "application/json; charset=utf8",
+      json: {
+        status,
+        reason: `Updated by user`,
       },
     })
     .json();

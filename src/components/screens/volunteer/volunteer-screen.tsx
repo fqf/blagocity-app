@@ -10,7 +10,7 @@ import Button from "@/components/buttons/button";
 import { useRouter } from "expo-router";
 import useProfileStore from "@/stores/profile-store";
 import * as SecureStore from "expo-secure-store";
-import { getCallsList, setCallStatus } from "@/actions/call-actions";
+import { getCallsList, takeCall } from "@/actions/call-actions";
 import TGetCallsListResponse from "@/models/contracts/call/get-calls-list-response";
 import { getPlace } from "@/actions/place-actions";
 
@@ -68,7 +68,7 @@ const VolunteerScreen: FC = () => {
   const [list, setList] = useState<TGetCallsListResponse>([]);
   const params = useSearchParams();
   const router = useRouter();
-  const { userData, reset } = useProfileStore();
+  const { reset } = useProfileStore();
   const handleOnLogOutPress = async () => {
     await SecureStore.deleteItemAsync(process.env.EXPO_PUBLIC_SECURE_AUTH_STATE_KEY!);
     await SecureStore.deleteItemAsync("BLAGOCITY_VOLUNTEER_ESTABLISHMENT_GUID");
@@ -82,8 +82,11 @@ const VolunteerScreen: FC = () => {
       return;
     }
 
-    //await takeCall(token, userData?.guid ?? "");
-    await setCallStatus(token, guid, status);
+    console.log(token);
+    console.log(guid);
+    console.log(status);
+
+    await takeCall(token, guid, status);
     const establishmentGuid = params.get("establishment");
     const callsListData = await getCallsList(token);
     setList(callsListData.filter(item => item.establishment.split("/")[3] === establishmentGuid));
@@ -99,7 +102,7 @@ const VolunteerScreen: FC = () => {
         setEstablishment(`${place.placeType.name} "${place.name}"`);
 
         const callsListData = await getCallsList(token);
-        setList(callsListData.filter(item => item.establishment.split("/")[3] === establishmentGuid));
+        setList(callsListData.filter(item => item.establishment === `/api/establishments/${establishmentGuid}`));
       }
     })();
   }, []);
@@ -121,7 +124,7 @@ const VolunteerScreen: FC = () => {
             .map(item => (
               <CallBlock
                 key={item.guid}
-                name={item.author.split("/")[3]}
+                name={item.author.name}
                 time={item.calledAt}
                 status="incoming"
                 onButtonPress={() => handleOnButtonPress(item.guid, "accepted")}
@@ -138,7 +141,7 @@ const VolunteerScreen: FC = () => {
             .map(item => (
               <CallBlock
                 key={item.guid}
-                name={item.author.split("/")[3]}
+                name={item.author.name}
                 time={item.calledAt}
                 status="accepted"
                 onButtonPress={() => handleOnButtonPress(item.guid, "completed")}
@@ -155,7 +158,7 @@ const VolunteerScreen: FC = () => {
             .map(item => (
               <CallBlock
                 key={item.guid}
-                name={item.author.split("/")[3]}
+                name={item.author.name}
                 time={item.calledAt}
                 status="rejected"
                 onButtonPress={() => {}}

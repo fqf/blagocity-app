@@ -32,6 +32,7 @@ const VideoSplashScreen = () => {
 
       if (token) {
         const userData = await getMe(token);
+
         setUserData(userData);
 
         if (volunteerEstablishmentGuid) {

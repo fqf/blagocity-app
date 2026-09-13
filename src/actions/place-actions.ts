@@ -9,7 +9,7 @@ export const getPlaceTypesList = async () => {
 };
 
 export const getPlacesList = async () => {
-  return await blagocityApi().get<TGetPlacesListResponse>("/establishments").json();
+  return await blagocityApi().get<TGetPlacesListResponse>("/establishments?page=1&itemsPerPage=1000").json();
 };
 
 export const getPlace = async (guid: string) => {

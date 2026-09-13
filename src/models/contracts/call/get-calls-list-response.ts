@@ -1,3 +1,5 @@
+import type TGetUserResponse from "@/models/contracts/user/get-user-response";
+
 type TGetCallsListItem = {
   guid: string;
   type: string;
@@ -7,7 +9,7 @@ type TGetCallsListItem = {
   address: string;
   calledAt: string;
   establishment: string;
-  author: string;
+  author: TGetUserResponse;
 };
 
 type TGetCallsListResponse = TGetCallsListItem[];
